@@ -232,7 +232,19 @@
         </div>
 
         <figure class="about-portrait" data-reveal data-reveal-delay="120">
-          <div class="portrait-inner">NO</div>
+          <div class="portrait-inner">
+            <img
+              class="portrait-img"
+              src="img/profile.jpg"
+              alt="Nifemi Ogiehe"
+              width="600"
+              height="600"
+              loading="lazy"
+              decoding="async"
+              onerror="this.remove()"
+            />
+            <span class="portrait-initials" aria-hidden="true">NO</span>
+          </div>
           <figcaption>Nifemi Ogiehe · Developer</figcaption>
         </figure>
       </div>
@@ -260,7 +272,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© <span id="year"></span> Nifemi Ogiehe. Built with HTML, CSS &amp; JS.</p>
+      <p>© <span id="year"></span> Nifemi Ogiehe. Built with HTML, CSS, JS &amp; SQL.</p>
       <a href="#top" class="link">Back to top ↑</a>
     </div>
   </footer>
