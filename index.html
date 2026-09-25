@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nifemi Ogiehe — Front-end Developer</title>
+  <meta name="description" content="Nifemi Ogiehe — front-end developer building clean, accessible interfaces with HTML, CSS, JavaScript and SQL." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>▸</text></svg>" />
+</head>
+<body>
+
+  <!-- Scroll progress -->
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <!-- Skip link -->
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="#top" class="logo">
+        <span class="logo-text">nifemi_lab</span>
+      </a>
+
+      <nav class="nav" id="nav" aria-label="Primary">
+        <ul class="nav-list">
+          <li><a href="#work" class="nav-link">Work</a></li>
+          <li><a href="#skills" class="nav-link">Skills</a></li>
+          <li><a href="#about" class="nav-link">About</a></li>
+          <li><a href="#contact" class="nav-link nav-cta">Contact</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero container">
+      <p class="eyebrow" data-reveal>Front-end developer</p>
+
+      <h1 class="hero-title" data-reveal data-reveal-delay="80">
+        I build clean interfaces<br />
+        <span class="grad">and the data behind them.</span>
+      </h1>
+
+      <p class="hero-lede" data-reveal data-reveal-delay="160">
+        HTML, CSS, JavaScript and SQL. I care about typography, fast pages,
+        accessible components and interfaces that feel obvious to use.
+      </p>
+
+      <div class="hero-actions" data-reveal data-reveal-delay="240">
+        <a href="#work" class="btn btn-primary">View work</a>
+        <a href="#contact" class="btn btn-ghost">Get in touch</a>
+      </div>
+
+      <dl class="hero-stats" data-reveal data-reveal-delay="320">
+        <div><dt>Building since</dt><dd>2025</dd></div>
+        <div><dt>Live sites</dt><dd>3</dd></div>
+        <div><dt>Stack</dt><dd>HTML · CSS · JS · SQL</dd></div>
+      </dl>
+    </section>
+
+    <!-- ============ WORK (SLIDESHOW) ============ -->
+    <section class="section container" id="work" aria-labelledby="work-title">
+      <div class="section-head" data-reveal>
+        <h2 id="work-title" class="section-title">Selected work</h2>
+        <p class="section-sub">Swipe, drag or use the arrows. Keyboard: ← →</p>
+      </div>
+
+      <div class="slideshow" id="slideshow" data-reveal tabindex="0" role="region" aria-roledescription="carousel" aria-label="Selected projects">
+
+        <div class="slides" id="slides">
+
+          <article class="slide" role="group" aria-roledescription="slide" aria-label="1 of 3">
+            <div class="slide-art art-1" aria-hidden="true">
+              <div class="art-grid"></div>
+            </div>
+            <div class="slide-body">
+              <p class="slide-index">01 / 03</p>
+              <h3 class="slide-title">Uncle's Welding Works</h3>
+              <p class="slide-text">
+                A quote-request app for a metalwork business: pick your job,
+                choose an available welder, and the details land on WhatsApp.
+                Multi-step form state, a staff admin area, and a SQL backend
+                driving jobs, welders and build tickets. Installable as a PWA.
+              </p>
+              <ul class="tags">
+                <li>JavaScript</li><li>SQL (Supabase)</li><li>PWA</li><li>Forms</li>
+              </ul>
+              <div class="slide-links">
+                <a href="https://uncle-welding-9o3sevk6i74.qoder.website" class="link" target="_blank" rel="noopener">Live demo <span aria-hidden="true">↗</span></a>
+                <a href="https://github.com/nifemi-lab/uncle-s_welding_works" class="link" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide" role="group" aria-roledescription="slide" aria-label="2 of 3">
+            <div class="slide-art art-2" aria-hidden="true">
+              <div class="art-grid"></div>
+            </div>
+            <div class="slide-body">
+              <p class="slide-index">02 / 03</p>
+              <h3 class="slide-title">Gafari Animation</h3>
+              <p class="slide-text">
+                Studio site for a stick-figure animation house. An interactive
+                stage you can trigger moves on, plus a 10-second fight scene
+                with a scrub bar, freeze frames, afterimages and camera shake —
+                all hand-timed in vanilla JavaScript.
+              </p>
+              <ul class="tags">
+                <li>JavaScript</li><li>Animation</li><li>CSS</li><li>Forms</li>
+              </ul>
+              <div class="slide-links">
+                <a href="https://nifemi-lab.github.io/Gafari_animation/" class="link" target="_blank" rel="noopener">Live demo <span aria-hidden="true">↗</span></a>
+                <a href="https://github.com/nifemi-lab/Gafari_animation" class="link" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide" role="group" aria-roledescription="slide" aria-label="3 of 3">
+            <div class="slide-art art-3" aria-hidden="true">
+              <div class="art-grid"></div>
+            </div>
+            <div class="slide-body">
+              <p class="slide-index">03 / 03</p>
+              <h3 class="slide-title">Coalhouse</h3>
+              <p class="slide-text">
+                Multi-page site for a wood-fire restaurant — story, menu, visit
+                and a table-reservation flow. Semantic HTML, responsive layout
+                and food-photography-led art direction.
+              </p>
+              <ul class="tags">
+                <li>HTML</li><li>CSS</li><li>Responsive</li><li>Multi-page</li>
+              </ul>
+              <div class="slide-links">
+                <a href="https://nifemi-lab.github.io/Coalhouse/" class="link" target="_blank" rel="noopener">Live demo <span aria-hidden="true">↗</span></a>
+                <a href="https://github.com/nifemi-lab/Coalhouse" class="link" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span></a>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="slideshow-controls">
+          <button class="ctrl" id="prevBtn" aria-label="Previous project">←</button>
+
+          <div class="dots" id="dots" role="tablist" aria-label="Choose project"></div>
+
+          <button class="ctrl" id="nextBtn" aria-label="Next project">→</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SKILLS ============ -->
+    <section class="section container" id="skills" aria-labelledby="skills-title">
+      <div class="section-head" data-reveal>
+        <h2 id="skills-title" class="section-title">Skills</h2>
+        <p class="section-sub">What I reach for, grouped by where it sits.</p>
+      </div>
+
+      <div class="skill-grid">
+        <div class="skill-card" data-reveal>
+          <h3>Front-end</h3>
+          <ul>
+            <li>HTML5 — semantics &amp; a11y</li>
+            <li>CSS — Grid, Flexbox, custom properties</li>
+            <li>Responsive &amp; fluid type</li>
+            <li>JavaScript — ES6+, DOM, async/await</li>
+            <li>Forms &amp; validation</li>
+          </ul>
+        </div>
+
+        <div class="skill-card" data-reveal data-reveal-delay="80">
+          <h3>Data &amp; back-end</h3>
+          <ul>
+            <li>SQL — joins, indexes, schema design</li>
+            <li>MySQL / SQLite / PostgreSQL (basics)</li>
+            <li>REST APIs with Node &amp; Express</li>
+            <li>Fetch, error states, caching</li>
+            <li>Auth fundamentals</li>
+          </ul>
+        </div>
+
+        <div class="skill-card" data-reveal data-reveal-delay="160">
+          <h3>Tooling</h3>
+          <ul>
+            <li>Git &amp; GitHub</li>
+            <li>DevTools &amp; Lighthouse</li>
+            <li>Vite / npm</li>
+            <li>Figma handoff</li>
+            <li>Learning: React</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="section container about" id="about" aria-labelledby="about-title">
+      <div class="section-head" data-reveal>
+        <h2 id="about-title" class="section-title">About</h2>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-text" data-reveal>
+          <p class="lead">
+            I'm a developer who likes the part where a messy problem turns into
+            a simple interface.
+          </p>
+          <p>
+            I started in HTML and CSS, got curious about how the data was
+            shaped, and ended up writing SQL queries too. That loop — interface,
+            logic, database — is where I'm most useful.
+          </p>
+          <p>
+            Most of my work is client-side with a real database behind it:
+            quote flows, reservation forms, dashboards. Outside of code I'm
+            usually reading or rebuilding the same side project for the third
+            time.
+          </p>
+        </div>
+
+        <figure class="about-portrait" data-reveal data-reveal-delay="120">
+          <div class="portrait-inner">NO</div>
+          <figcaption>Nifemi Ogiehe · Developer</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="section container contact" id="contact" aria-labelledby="contact-title">
+      <div class="contact-inner" data-reveal>
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title" class="contact-title">
+          Let's build something <span class="grad">worth using.</span>
+        </h2>
+        <p class="section-sub">
+          Open to junior/mid front-end roles and small freelance projects.
+        </p>
+
+        <div class="contact-actions">
+          <a href="mailto:ogiehenifemi@gmail.com" class="btn btn-primary">ogiehenifemi@gmail.com</a>
+          <a href="https://github.com/nifemi-lab" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://uncle-welding-9o3sevk6i74.qoder.website" class="btn btn-ghost" target="_blank" rel="noopener">Uncle's Welding Works</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> Nifemi Ogiehe. Built with HTML, CSS &amp; JS.</p>
+      <a href="#top" class="link">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
