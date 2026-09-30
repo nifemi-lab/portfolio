@@ -22,12 +22,16 @@
     <div class="container header-inner">
       <a href="#dashboard" class="logo"><span class="logo-text">jamb_study</span></a>
 
-      <nav class="tabs" id="tabs" aria-label="App sections">
-        <button class="tab is-active" data-tab="dashboard" aria-selected="true">Dashboard</button>
-        <button class="tab" data-tab="timetable" aria-selected="false">Timetable</button>
-        <button class="tab" data-tab="subjects" aria-selected="false">Subjects</button>
-        <button class="tab" data-tab="practice" aria-selected="false">Practice</button>
-      </nav>
+      <div class="header-right">
+        <span class="sync-chip" id="syncChip" title="Where your data is saved">saved locally</span>
+
+        <nav class="tabs" id="tabs" aria-label="App sections">
+          <button class="tab is-active" data-tab="dashboard" aria-selected="true">Dashboard</button>
+          <button class="tab" data-tab="timetable" aria-selected="false">Timetable</button>
+          <button class="tab" data-tab="subjects" aria-selected="false">Subjects</button>
+          <button class="tab" data-tab="practice" aria-selected="false">Practice</button>
+        </nav>
+      </div>
     </div>
   </header>
 
@@ -199,10 +203,12 @@
 
       <section class="card" aria-labelledby="db-title">
         <div class="card-head"><h2 id="db-title">Your data</h2></div>
-        <p class="hint">Everything lives in your browser as five tables — <code>subjects</code>, <code>sessions</code>, <code>logs</code>, <code>quiz_results</code> and <code>questions</code> — so it works offline. Export a JSON copy to back it up.</p>
+        <p class="hint">Five tables — <code>subjects</code>, <code>sessions</code>, <code>logs</code>, <code>quiz_results</code> and <code>questions</code>. Saved in this browser first (works offline), then synced to your Supabase database when <code>js/config.js</code> is filled in. Export a JSON copy to move data between devices by hand.</p>
         <div class="btn-row">
           <button class="btn btn-ghost" id="exportBtn">Export JSON</button>
+          <button class="btn btn-ghost" id="importBtn">Import JSON</button>
           <button class="btn btn-ghost" id="resetBtn">Reset everything</button>
+          <input type="file" id="importFile" accept="application/json,.json" hidden />
         </div>
       </section>
     </section>
@@ -308,6 +314,7 @@
     </div>
   </footer>
 
+  <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -179,6 +179,18 @@
     };
   }
 
+  function normalise(parsed) {
+    const base = defaultDB();
+    return {
+      subjects: Array.isArray(parsed.subjects) ? parsed.subjects : base.subjects,
+      sessions: Array.isArray(parsed.sessions) ? parsed.sessions : base.sessions,
+      logs: Array.isArray(parsed.logs) ? parsed.logs : [],
+      quiz_results: Array.isArray(parsed.quiz_results) ? parsed.quiz_results : [],
+      questions: Array.isArray(parsed.questions) ? parsed.questions : [],
+      settings: Object.assign({}, base.settings, parsed.settings || {})
+    };
+  }
+
   function load() {
     let raw = null;
     try {
@@ -188,16 +200,7 @@
     }
     if (!raw) return defaultDB();
     try {
-      const parsed = JSON.parse(raw);
-      const base = defaultDB();
-      return {
-        subjects: Array.isArray(parsed.subjects) ? parsed.subjects : base.subjects,
-        sessions: Array.isArray(parsed.sessions) ? parsed.sessions : base.sessions,
-        logs: Array.isArray(parsed.logs) ? parsed.logs : [],
-        quiz_results: Array.isArray(parsed.quiz_results) ? parsed.quiz_results : [],
-        questions: Array.isArray(parsed.questions) ? parsed.questions : [],
-        settings: Object.assign({}, base.settings, parsed.settings || {})
-      };
+      return normalise(JSON.parse(raw));
     } catch (e) {
       return defaultDB();
     }
@@ -205,13 +208,197 @@
 
   let db = load();
 
-  function save() {
+  /* Local write — always the source of truth for the UI. */
+  function persistLocal() {
     if (memoryOnly) return;
     try {
       window.localStorage.setItem(STORE_KEY, JSON.stringify(db));
     } catch (e) {
       memoryOnly = true;
     }
+  }
+
+  /* =========================================================
+     Optional cloud sync — Supabase REST, no SDK
+     Configured in js/config.js. When the keys are empty the
+     app runs local-only and this code path never fires.
+     ========================================================= */
+
+  const CFG = window.STUDY_CONFIG || {};
+  const CLOUD_URL = String(CFG.supabaseUrl || '').replace(/\/+$/, '');
+  const CLOUD_KEY = CFG.supabaseAnonKey || '';
+  const cloudEnabled = CFG.syncEnabled !== false && !!CLOUD_URL && !!CLOUD_KEY;
+
+  const SESSION_KEY = 'jamb_study_session_v1';
+  let session = null;
+  try {
+    session = JSON.parse(window.localStorage.getItem(SESSION_KEY) || 'null');
+  } catch (e) {
+    session = null;
+  }
+
+  let pushTimer = null;
+
+  function setStatus(text, kind) {
+    const chip = document.getElementById('syncChip');
+    if (!chip) return;
+    chip.textContent = text;
+    chip.className = 'sync-chip' + (kind ? ' is-' + kind : '');
+  }
+
+  function persistSession() {
+    try {
+      window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    } catch (e) { /* storage blocked — sync just won't persist */ }
+  }
+
+  function buildSession(r) {
+    return {
+      access_token: r.access_token,
+      refresh_token: r.refresh_token,
+      user_id: (r.user && r.user.id) || r.user_id,
+      expires_at: r.expires_at || Math.floor(Date.now() / 1000) + (r.expires_in || 3600)
+    };
+  }
+
+  async function api(path, opts) {
+    const o = opts || {};
+    const headers = Object.assign({ apikey: CLOUD_KEY }, o.headers || {});
+    if (o.body) headers['Content-Type'] = 'application/json';
+    if (session && session.access_token) headers.Authorization = 'Bearer ' + session.access_token;
+
+    const res = await fetch(CLOUD_URL + path, { method: o.method || 'GET', headers: headers, body: o.body });
+
+    if (!res.ok) {
+      let msg = 'HTTP ' + res.status;
+      try {
+        const j = await res.json();
+        msg = j.msg || j.message || j.error_description || j.error || msg;
+      } catch (e) { /* non-JSON error body */ }
+      const err = new Error(msg);
+      err.status = res.status;
+      throw err;
+    }
+    if (res.status === 204) return null;
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
+  }
+
+  const Cloud = {
+    /* Anonymous sign-in: one hidden account per browser, no password. */
+    auth: async function () {
+      if (session && session.access_token && session.expires_at > Date.now() / 1000 + 60) return;
+
+      if (session && session.refresh_token) {
+        try {
+          const r = await api('/auth/v1/token?grant_type=refresh_token', {
+            method: 'POST',
+            body: JSON.stringify({ refresh_token: session.refresh_token })
+          });
+          session = buildSession(r);
+          persistSession();
+          return;
+        } catch (e) {
+          session = null; // expired for good — sign in again below
+        }
+      }
+
+      const r = await api('/auth/v1/signup', {
+        method: 'POST',
+        body: JSON.stringify({ data: {} })
+      });
+      session = buildSession(r);
+      persistSession();
+    },
+
+    pull: async function () {
+      const rows = await api('/rest/v1/study_data?user_id=eq.' + session.user_id + '&select=data,updated_at');
+      return Array.isArray(rows) && rows.length ? rows[0] : null;
+    },
+
+    push: async function () {
+      await api('/rest/v1/study_data', {
+        method: 'POST',
+        headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify({
+          user_id: session.user_id,
+          data: db,
+          updated_at: new Date().toISOString()
+        })
+      });
+    }
+  };
+
+  /* Local write now, cloud push debounced. */
+  function save() {
+    db.settings.updatedAt = Date.now();
+    persistLocal();
+    queuePush();
+  }
+
+  function queuePush() {
+    if (!cloudEnabled) return;
+    if (pushTimer) window.clearTimeout(pushTimer);
+    setStatus('saving…', 'busy');
+    pushTimer = window.setTimeout(async function () {
+      pushTimer = null;
+      try {
+        await Cloud.auth();
+        await Cloud.push();
+        setStatus('synced', 'ok');
+      } catch (e) {
+        setStatus('local only', 'warn');
+        const chip = document.getElementById('syncChip');
+        if (chip) chip.title = 'Sync failed: ' + (e.message || 'unknown error');
+      }
+    }, 1200);
+  }
+
+  /* On start: pull the cloud copy, adopt it if it is newer than
+     what this device has (last-writer-wins on updated_at). */
+  async function cloudStart() {
+    setStatus('connecting…', 'busy');
+    try {
+      await Cloud.auth();
+      const remote = await Cloud.pull();
+      const ra = remote && remote.data && remote.data.settings ? (remote.data.settings.updatedAt || 0) : 0;
+      const la = db.settings.updatedAt || 0;
+
+      if (remote && remote.data && ra > la) {
+        db = normalise(remote.data);
+        persistLocal();
+        renderAll();
+      } else if (!remote) {
+        await Cloud.push();
+      }
+      setStatus('synced', 'ok');
+    } catch (e) {
+      setStatus('local only', 'warn');
+      const chip = document.getElementById('syncChip');
+      if (chip) chip.title = 'Sync unavailable: ' + (e.message || 'unknown error');
+    }
+  }
+
+  /* Import a JSON backup (the other half of "no back-end"). */
+  function importJSON(file, done) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      try {
+        const incoming = JSON.parse(reader.result);
+        if (!incoming || !Array.isArray(incoming.subjects)) {
+          throw new Error('that is not a study-data file');
+        }
+        if (!window.confirm('Replace your current data with this file?')) return;
+        db = normalise(incoming);
+        save();
+        renderAll();
+        setStatus('imported', 'ok');
+        if (done) done(null);
+      } catch (err) {
+        if (done) done(err);
+      }
+    };
+    reader.readAsText(file);
   }
 
   /* ---------------- Helpers ---------------- */
@@ -938,6 +1125,16 @@
       showTab('dashboard');
     });
 
+    $('#importBtn').addEventListener('click', () => $('#importFile').click());
+    $('#importFile').addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (!file) return;
+      importJSON(file, (err) => {
+        if (err) window.alert('Could not read that file: ' + err.message);
+      });
+    });
+
     /* scroll progress */
     window.addEventListener('scroll', () => {
       const h = document.documentElement.scrollHeight - window.innerHeight;
@@ -976,6 +1173,14 @@
     const hash = (location.hash || '#dashboard').slice(1);
     const valid = ['dashboard', 'timetable', 'subjects', 'practice'];
     showTab(valid.indexOf(hash) !== -1 ? hash : 'dashboard');
+
+    if (cloudEnabled) {
+      cloudStart();
+    } else {
+      setStatus('saved locally', '');
+      const chip = document.getElementById('syncChip');
+      if (chip) chip.title = 'Offline-first: data lives in this browser. Add Supabase keys in js/config.js to sync across devices.';
+    }
 
     if (memoryOnly) {
       const hint = document.createElement('p');
