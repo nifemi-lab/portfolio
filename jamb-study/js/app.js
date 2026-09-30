@@ -21,117 +21,8 @@
   ];
 
   /* Built-in question bank: { s: subject, q: question, o: options, a: answer index } */
-  const BANK = [
-    /* --- Use of English --- */
-    { s: 'Use of English', q: 'Choose the option nearest in meaning to the word in capital letters: The chairman was EBULLIENT during the ceremony.', o: ['Tired', 'Cheerful', 'Angry', 'Silent'], a: 1 },
-    { s: 'Use of English', q: 'Choose the option opposite in meaning to the word: BENEVOLENT', o: ['Kind', 'Generous', 'Malevolent', 'Caring'], a: 2 },
-    { s: 'Use of English', q: 'Complete the sentence: Neither of the boys ___ the answer.', o: ['have', 'were', 'has', 'are'], a: 2 },
-    { s: 'Use of English', q: 'Fill the gap: She has been living in Lagos ___ 2015.', o: ['for', 'from', 'since', 'by'], a: 2 },
-    { s: 'Use of English', q: 'A person who hates the whole of mankind is a ___', o: ['philanthropist', 'misanthrope', 'stoic', 'hermit'], a: 1 },
-    { s: 'Use of English', q: 'The word "candid" means most nearly:', o: ['secretive', 'frank', 'careless', 'bitter'], a: 1 },
-    { s: 'Use of English', q: 'Choose the correctly punctuated sentence:', o: ['"Where are you going?" he asked.', '"Where are you going" he asked?', '"Where are you going?", he asked.', 'Where are you going? he asked.'], a: 0 },
-    { s: 'Use of English', q: 'The plural of "crisis" is:', o: ['crisises', 'crises', 'crisis', 'crisi'], a: 1 },
-
-    /* --- Mathematics --- */
-    { s: 'Mathematics', q: 'Simplify: 2/3 + 3/4', o: ['17/12', '5/7', '6/12', '24/17'], a: 0 },
-    { s: 'Mathematics', q: 'If 3x − 5 = 16, what is x?', o: ['5', '6', '7', '8'], a: 2 },
-    { s: 'Mathematics', q: 'Find the area of a circle of radius 7 cm. (Take π = 22/7)', o: ['44 cm²', '154 cm²', '22 cm²', '308 cm²'], a: 1 },
-    { s: 'Mathematics', q: 'What is 15% of ₦200?', o: ['₦15', '₦25', '₦30', '₦35'], a: 2 },
-    { s: 'Mathematics', q: 'Solve: 2(x + 3) = 18', o: ['x = 5', 'x = 6', 'x = 7', 'x = 12'], a: 1 },
-    { s: 'Mathematics', q: 'A right-angled triangle has sides 3 cm, 4 cm and 5 cm. Its area is:', o: ['6 cm²', '12 cm²', '7 cm²', '15 cm²'], a: 0 },
-    { s: 'Mathematics', q: 'Simplify: √144 + √25', o: ['12', '15', '17', '25'], a: 2 },
-    { s: 'Mathematics', q: 'Simple interest on ₦5,000 at 10% per annum for 2 years is:', o: ['₦500', '₦1,000', '₦1,500', '₦2,000'], a: 1 },
-
-    /* --- Physics --- */
-    { s: 'Physics', q: 'The SI unit of force is the:', o: ['Joule', 'Watt', 'Newton', 'Pascal'], a: 2 },
-    { s: 'Physics', q: 'Which of these is a vector quantity?', o: ['Speed', 'Distance', 'Mass', 'Velocity'], a: 3 },
-    { s: 'Physics', q: "Newton's first law of motion is also called the law of:", o: ['Inertia', 'Momentum', 'Acceleration', 'Reaction'], a: 0 },
-    { s: 'Physics', q: 'The unit of power is the:', o: ['Volt', 'Ampere', 'Watt', 'Ohm'], a: 2 },
-    { s: 'Physics', q: 'The formula for kinetic energy is:', o: ['mgh', '½mv²', 'Fd', 'mc²'], a: 1 },
-    { s: 'Physics', q: 'The speed of light is approximately:', o: ['3 × 10⁶ m/s', '3 × 10⁸ m/s', '3 × 10¹⁰ m/s', '340 m/s'], a: 1 },
-    { s: 'Physics', q: 'A body moving in a circle at constant speed has:', o: ['zero acceleration', 'constant velocity', 'centripetal acceleration', 'increasing speed'], a: 2 },
-    { s: 'Physics', q: 'Which instrument measures atmospheric pressure?', o: ['Barometer', 'Hygrometer', 'Anemometer', 'Thermometer'], a: 0 },
-
-    /* --- Chemistry --- */
-    { s: 'Chemistry', q: 'The chemical symbol for gold is:', o: ['Go', 'Gd', 'Au', 'Ag'], a: 2 },
-    { s: 'Chemistry', q: 'The pH of pure water at 25°C is:', o: ['0', '7', '10', '14'], a: 1 },
-    { s: 'Chemistry', q: 'Zinc reacts with dilute hydrochloric acid to produce:', o: ['Oxygen', 'Chlorine', 'Hydrogen', 'Carbon dioxide'], a: 2 },
-    { s: 'Chemistry', q: 'The most abundant gas in the air is:', o: ['Oxygen', 'Carbon dioxide', 'Nitrogen', 'Hydrogen'], a: 2 },
-    { s: 'Chemistry', q: 'The atomic number of an element is the number of:', o: ['neutrons', 'protons', 'shells', 'isotopes'], a: 1 },
-    { s: 'Chemistry', q: 'The chemical formula of common salt is:', o: ['KCl', 'NaOH', 'NaCl', 'NaHCO₃'], a: 2 },
-    { s: 'Chemistry', q: 'Which of these is a noble gas?', o: ['Chlorine', 'Neon', 'Nitrogen', 'Helium compounds'], a: 1 },
-    { s: 'Chemistry', q: 'Water is formed when hydrogen burns in:', o: ['chlorine', 'oxygen', 'nitrogen', 'sulphur'], a: 1 },
-
-    /* --- Biology --- */
-    { s: 'Biology', q: 'The powerhouse of the cell is the:', o: ['ribosome', 'mitochondrion', 'nucleus', 'vacuole'], a: 1 },
-    { s: 'Biology', q: 'Photosynthesis takes place mainly in the:', o: ['chloroplast', 'cell wall', 'cytoplasm', 'membrane'], a: 0 },
-    { s: 'Biology', q: 'Which blood cells fight infection?', o: ['Red blood cells', 'Platelets', 'White blood cells', 'Plasma cells only'], a: 2 },
-    { s: 'Biology', q: 'The largest organ of the human body is the:', o: ['Liver', 'Skin', 'Heart', 'Brain'], a: 1 },
-    { s: 'Biology', q: 'The basic unit of life is the:', o: ['tissue', 'organ', 'cell', 'molecule'], a: 2 },
-    { s: 'Biology', q: 'During photosynthesis, plants take in:', o: ['oxygen', 'nitrogen', 'carbon dioxide', 'hydrogen'], a: 2 },
-    { s: 'Biology', q: 'The universal donor blood group is:', o: ['AB+', 'A', 'B', 'O'], a: 3 },
-    { s: 'Biology', q: 'Cell division that produces two identical cells is:', o: ['meiosis', 'mitosis', 'fertilisation', 'binary fission'], a: 1 },
-
-    /* --- Economics --- */
-    { s: 'Economics', q: 'The fundamental economic problem is:', o: ['inflation', 'scarcity', 'unemployment', 'monopoly'], a: 1 },
-    { s: 'Economics', q: 'Man-made factors of production are called:', o: ['land', 'labour', 'capital', 'entrepreneurship'], a: 2 },
-    { s: 'Economics', q: 'A market where buyers and sellers meet is the:', o: ['factor market only', 'market', 'stock exchange', 'bank'], a: 1 },
-    { s: 'Economics', q: 'The demand curve normally slopes:', o: ['upward', 'downward', 'horizontally', 'vertically'], a: 1 },
-    { s: 'Economics', q: 'Goods that see demand rise as income rises are:', o: ['inferior goods', 'normal goods', 'substitute goods', 'public goods'], a: 1 },
-    { s: 'Economics', q: 'The central bank of Nigeria is:', o: ['CBN', 'NDIC', 'SEC', 'NSE'], a: 0 },
-    { s: 'Economics', q: 'The measure of the average level of prices is the:', o: ['index of retail prices', 'interest rate', 'exchange rate', 'budget'], a: 0 },
-    { s: 'Economics', q: 'An economy that relies only on the public sector is a:', o: ['mixed economy', 'market economy', 'command economy', 'free economy'], a: 2 },
-
-    /* --- Government --- */
-    { s: 'Government', q: 'The arm of government that interprets the law is the:', o: ['executive', 'legislature', 'judiciary', 'civil service'], a: 2 },
-    { s: 'Government', q: 'How many states does Nigeria have?', o: ['24', '30', '36', '37'], a: 2 },
-    { s: 'Government', q: 'Local government is the ___ tier of government in Nigeria.', o: ['first', 'second', 'third', 'fourth'], a: 2 },
-    { s: 'Government', q: 'Suffrage means the right to:', o: ['own property', 'vote', 'hold office', 'free speech'], a: 1 },
-    { s: 'Government', q: 'Nigeria became a republic in:', o: ['1960', '1963', '1966', '1979'], a: 1 },
-    { s: 'Government', q: 'A bicameral legislature has:', o: ['one chamber', 'two chambers', 'three chambers', 'no chamber'], a: 1 },
-    { s: 'Government', q: 'The 1999 Constitution of Nigeria is the ___ constitution.', o: ['first', 'second', 'third', 'fourth'], a: 3 },
-    { s: 'Government', q: 'The head of state and government of Nigeria is the:', o: ['President', 'Governor', 'Speaker', 'Chief Justice'], a: 0 },
-
-    /* --- Geography --- */
-    { s: 'Geography', q: 'The instrument used to measure atmospheric pressure is the:', o: ['thermometer', 'barometer', 'hygrometer', 'rain gauge'], a: 1 },
-    { s: 'Geography', q: 'The line of latitude 0° is called the:', o: ['Tropic of Cancer', 'Equator', 'Prime Meridian', 'Tropic of Capricorn'], a: 1 },
-    { s: 'Geography', q: 'The capital of Nigeria is:', o: ['Lagos', 'Abuja', 'Kano', 'Ibadan'], a: 1 },
-    { s: 'Geography', q: 'The river that meets the Benue at Lokoja is the River:', o: ['Nile', 'Niger', 'Cross', 'Benue'], a: 1 },
-    { s: 'Geography', q: 'Crude oil in Nigeria is found mainly in the:', o: ['Sahel', 'Niger Delta', 'Chad Basin', 'North Central'], a: 1 },
-    { s: 'Geography', q: 'The largest ethnic group in Nigeria by population is the:', o: ['Yoruba', 'Igbo', 'Hausa-Fulani', 'Ijaw'], a: 2 },
-    { s: 'Geography', q: 'Which of these is a non-renewable resource?', o: ['Solar energy', 'Wind', 'Crude oil', 'Water'], a: 2 },
-    { s: 'Geography', q: 'The climate of the southern part of Nigeria is:', o: ['arid', 'tropical rainforest', 'sahel', 'temperate'], a: 1 },
-
-    /* --- Literature-in-English --- */
-    { s: 'Literature-in-English', q: 'Who wrote "Things Fall Apart"?', o: ['Wole Soyinka', 'Chinua Achebe', 'Ngugi wa Thiong\'o', 'Ben Okri'], a: 1 },
-    { s: 'Literature-in-English', q: 'The protagonist of "Things Fall Apart" is:', o: ['Obierika', 'Okonkwo', 'Ekwefi', 'Nwoye'], a: 1 },
-    { s: 'Literature-in-English', q: '"The wind whispered through the trees" is an example of:', o: ['simile', 'hyperbole', 'personification', 'alliteration'], a: 2 },
-    { s: 'Literature-in-English', q: 'A poem of fourteen lines is a:', o: [' ode', 'elegy', 'sonnet', 'ballad'], a: 2 },
-    { s: 'Literature-in-English', q: 'A comparison using "like" or "as" is a:', o: ['metaphor', 'simile', 'irony', 'synecdoche'], a: 1 },
-    { s: 'Literature-in-English', q: 'Who wrote "The Lion and the Jewel"?', o: ['Christopher Okigbo', 'Wole Soyinka', 'J.P. Clark', 'Flora Nwapa'], a: 1 },
-    { s: 'Literature-in-English', q: 'The author of "The Road Not Taken" is:', o: ['Robert Frost', 'William Wordsworth', 'Alfred Tennyson', 'Pablo Neruda'], a: 0 },
-    { s: 'Literature-in-English', q: 'A prose narrative long enough to be published as a book is a:', o: ['novel', 'epic', 'lyric', 'proverb'], a: 0 },
-
-    /* --- History --- */
-    { s: 'History', q: 'Nigeria gained independence in:', o: ['1957', '1960', '1963', '1970'], a: 1 },
-    { s: 'History', q: 'The amalgamation of the Northern and Southern Protectorates took place in:', o: ['1900', '1914', '1946', '1954'], a: 1 },
-    { s: 'History', q: 'The first indigenous Governor-General of Nigeria was:', o: ['Nnamdi Azikiwe', 'Tafawa Balewa', 'John Macpherson', 'Nwafor Orizu'], a: 0 },
-    { s: 'History', q: 'The Nigerian Civil War was fought between:', o: ['1966–1968', '1967–1970', '1970–1973', '1964–1966'], a: 1 },
-    { s: 'History', q: 'The Sokoto Caliphate was founded by:', o: ['Usman dan Fodio', 'Muhammad Bello', 'Aliyu Bida', 'Attahiru Ahmadu'], a: 0 },
-    { s: 'History', q: 'The first political party in Nigeria was the:', o: ['NCNC', 'AG', 'NPC', 'UMBC'], a: 0 },
-    { s: 'History', q: 'Nigeria\'s capital moved from Lagos to Abuja in:', o: ['1979', '1986', '1991', '1999'], a: 2 },
-    { s: 'History', q: 'The military coup that ended the First Republic occurred in:', o: ['1964', '1966', '1967', '1975'], a: 1 },
-
-    /* --- Commerce --- */
-    { s: 'Commerce', q: 'A written promise to pay a sum of money at a future date is a:', o: ['cheque', 'promissory note', 'invoice', 'bill of lading'], a: 1 },
-    { s: 'Commerce', q: 'Insurance of goods against loss while being carried by sea is:', o: ['fire insurance', 'marine insurance', 'life insurance', 'burglary insurance'], a: 1 },
-    { s: 'Commerce', q: 'A person who sells goods on behalf of another for a commission is an:', o: ['agent', 'broker', 'merchant', 'wholesaler'], a: 0 },
-    { s: 'Commerce', q: 'A market with very few sellers is an:', o: ['perfect competition', 'oligopoly', 'monopoly', 'monopsony'], a: 1 },
-    { s: 'Commerce', q: 'The Nigerian Stock Exchange is now known as the:', o: ['NSE', 'NGX', 'CBN', 'SEC'], a: 1 },
-    { s: 'Commerce', q: 'Buying and selling of goods without changing their form is:', o: ['production', 'trade', 'distribution', 'retailing'], a: 1 },
-    { s: 'Commerce', q: 'A document that shows the description and price of goods sent is the:', o: ['invoice', 'receipt', 'order', 'quotation'], a: 0 },
-    { s: 'Commerce', q: 'The reward for an entrepreneur is:', o: ['wage', 'rent', 'profit', 'interest'], a: 2 }
-  ];
+  /* Past questions live in js/questions.js, loaded first as window.QUESTION_BANK. */
+  const BANK = window.QUESTION_BANK || [];
 
   /* ---------------- Storage ---------------- */
 
@@ -175,7 +66,8 @@
       logs: [],
       quiz_results: [],
       questions: [],
-      settings: { dailyGoal: 120, examDate: '' }
+      missed: [],
+      settings: { dailyGoal: 120, examDate: '', theme: '' }
     };
   }
 
@@ -187,6 +79,7 @@
       logs: Array.isArray(parsed.logs) ? parsed.logs : [],
       quiz_results: Array.isArray(parsed.quiz_results) ? parsed.quiz_results : [],
       questions: Array.isArray(parsed.questions) ? parsed.questions : [],
+      missed: Array.isArray(parsed.missed) ? parsed.missed : [],
       settings: Object.assign({}, base.settings, parsed.settings || {})
     };
   }
@@ -599,6 +492,100 @@
     $('#progressList').innerHTML = items.length ? items.join('') : '<li class="empty">Add subjects to see progress here.</li>';
   }
 
+  /* Subjects you keep getting wrong in quizzes. */
+  function renderWeak() {
+    const agg = {};
+    db.quiz_results.forEach((r) => {
+      if (!agg[r.subject]) agg[r.subject] = { correct: 0, total: 0, quizzes: 0 };
+      agg[r.subject].correct += r.correct;
+      agg[r.subject].total += r.total;
+      agg[r.subject].quizzes += 1;
+    });
+
+    const rows = Object.keys(agg)
+      .filter((k) => agg[k].total > 0)
+      .map((k) => ({
+        name: k,
+        pct: Math.round((agg[k].correct / agg[k].total) * 100),
+        correct: agg[k].correct,
+        total: agg[k].total,
+        quizzes: agg[k].quizzes
+      }))
+      .sort((a, b) => a.pct - b.pct)
+      .slice(0, 4);
+
+    if (!rows.length) {
+      $('#weakList').innerHTML =
+        '<li class="empty">No quiz data yet. Take one in <button class="linklike" data-goto="practice">Practice</button> and your weak subjects show up here.</li>';
+      return;
+    }
+
+    $('#weakList').innerHTML = rows.map((r) => {
+      const cls = r.pct >= 70 ? 'good' : (r.pct >= 50 ? 'mid' : 'bad');
+      return '<li class="weak-item">' +
+        '<span class="weak-name">' + esc(r.name) +
+          '<span>' + r.correct + ' of ' + r.total + ' correct · ' + r.quizzes + (r.quizzes === 1 ? ' quiz' : ' quizzes') + '</span>' +
+        '</span>' +
+        '<span class="weak-score ' + cls + '">' + r.pct + '%</span>' +
+      '</li>';
+    }).join('');
+  }
+
+  /* Month heatmap of logged minutes. */
+  function renderHeat() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth();
+    const pad = (n) => String(n).padStart(2, '0');
+    const days = new Date(y, m + 1, 0).getDate();
+    const offset = (new Date(y, m, 1).getDay() + 6) % 7; // Monday-first
+    const dows = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+    let html = dows.map((d) => '<span class="dow">' + d + '</span>').join('');
+    for (let i = 0; i < offset; i++) html += '<span class="heat-cell pad"></span>';
+
+    const todayISO = isoDate(now);
+    for (let d = 1; d <= days; d++) {
+      const iso = y + '-' + pad(m + 1) + '-' + pad(d);
+      const mins = minutesOn(iso);
+      const lvl = mins === 0 ? 0 : (mins < 45 ? 1 : (mins < 120 ? 2 : 3));
+      html += '<span class="heat-cell l' + lvl +
+        (iso === todayISO ? ' today' : '') +
+        '" title="' + mins + ' min on ' + d + '">' + d + '</span>';
+    }
+
+    const grid = $('#heatGrid');
+    grid.innerHTML = html;
+    grid.setAttribute('aria-label',
+      'Minutes studied each day in ' + now.toLocaleString('en-GB', { month: 'long', year: 'numeric' }));
+    $('#heatMonth').textContent = now.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+  }
+
+  /* Saved mistakes, newest first. */
+  function renderReview() {
+    const n = db.missed.length;
+    const count = $('#reviewCount');
+    count.textContent = n;
+    count.classList.toggle('zero', n === 0);
+    $('#reviewCard').hidden = n === 0;
+    $('#reviewTotal').textContent = n + (n === 1 ? ' saved' : ' saved');
+    $('#reviewStart').disabled = n === 0;
+    $('#reviewClear').disabled = n === 0;
+
+    if (!n) {
+      $('#reviewList').innerHTML = '';
+      return;
+    }
+
+    $('#reviewList').innerHTML = db.missed.slice(0, 20).map((m) =>
+      '<li class="review-item">' +
+        '<p class="review-sub">' + esc(m.s) + '</p>' +
+        '<p class="review-q">' + esc(m.q) + '</p>' +
+        '<p class="review-meta">Missed ' + m.hits + (m.hits === 1 ? ' time' : ' times') +
+          (m.last ? ' · last on ' + esc(m.last) : '') + '</p>' +
+      '</li>').join('');
+  }
+
   /* ---------------- Timetable ---------------- */
 
   function renderWeekGrid() {
@@ -666,12 +653,28 @@
     const opts = db.subjects.map((s) => '<option value="' + esc(s.name) + '">' + esc(s.name) + '</option>').join('');
     const any = db.subjects.length === 0 ? '<option value="">Add a subject first</option>' : '';
 
-    ['#sSubject', '#timerSubject', '#qSubject', '#cSubject'].forEach((sel) => {
+    ['#sSubject', '#timerSubject', '#cSubject'].forEach((sel) => {
       const el = $(sel);
       const keep = el.value;
       el.innerHTML = any + opts;
       if (keep && db.subjects.some((s) => s.name === keep)) el.value = keep;
     });
+
+    /* Practice offers every subject that actually has questions. */
+    const qSelect = $('#qSubject');
+    const keepQ = qSelect.value;
+    const seen = {};
+    const names = db.subjects.map((s) => s.name)
+      .concat(BANK.map((q) => q.s))
+      .concat(db.questions.map((q) => q.s))
+      .filter((n) => (seen[n] ? false : (seen[n] = true)));
+
+    qSelect.innerHTML =
+      '<option value="' + MIXED + '">Mixed — every subject</option>' +
+      names.map((n) => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('');
+    qSelect.value = keepQ && (keepQ === MIXED || names.indexOf(keepQ) !== -1)
+      ? keepQ
+      : (names.indexOf('Use of English') !== -1 ? 'Use of English' : MIXED);
 
     $('#subjectPresets').innerHTML = PRESETS.map((p) => '<option value="' + esc(p) + '">').join('');
 
@@ -681,37 +684,119 @@
 
   /* ---------------- Quiz ---------------- */
 
-  const quiz = { pool: [], idx: 0, score: 0, answered: false, subject: '' };
+  const MIXED = '__mixed__';
+  const MOCK_SECONDS = 60;
+
+  const quiz = {
+    pool: [], idx: 0, score: 0, answered: false, subject: '',
+    mode: 'practice', lastOpts: null, deadline: 0, timerId: null
+  };
 
   function poolFor(subject) {
-    const builtIn = BANK.filter((q) => q.s === subject);
-    const custom = db.questions.filter((q) => q.s === subject);
-    return builtIn.concat(custom).map((q) => ({ s: q.s, q: q.q, o: q.o, a: q.a }));
+    const all = BANK.concat(db.questions);
+    const chosen = subject === MIXED ? all : all.filter((q) => q.s === subject);
+    return chosen.map((q) => ({ s: q.s, q: q.q, o: q.o, a: q.a }));
   }
 
-  function startQuiz() {
-    const subject = $('#qSubject').value;
-    const count = parseInt($('#qCount').value, 10);
-    if (!subject) return;
+  /* Mistake queue — a wrong answer saves the whole question here. */
+  function recordMistake(item) {
+    const i = db.missed.findIndex((m) => m.q === item.q);
+    if (i !== -1) {
+      db.missed[i].hits += 1;
+      db.missed[i].last = isoDate(new Date());
+    } else {
+      db.missed.push({
+        s: item.s, q: item.q, o: item.o, a: item.a,
+        hits: 1, last: isoDate(new Date())
+      });
+    }
+    db.missed = db.missed.slice(0, 60);
+    save();
+  }
 
-    const pool = shuffle(poolFor(subject));
-    if (!pool.length) {
-      $('#qSubject').innerHTML = $('#qSubject').innerHTML; // no-op, keeps selection
-      $('#quizSetup').insertAdjacentHTML('beforeend',
-        '<p class="hint" id="noQ">No questions for ' + esc(subject) + ' yet — add your own below.</p>');
-      setTimeout(() => { const n = $('#noQ'); if (n) n.remove(); }, 4000);
+  function clearMistake(item) {
+    const before = db.missed.length;
+    db.missed = db.missed.filter((m) => m.q !== item.q);
+    if (db.missed.length !== before) save();
+  }
+
+  function startQuiz(opts) {
+    const options = Object.assign({ mode: 'practice' }, opts || {});
+    const subject = options.mode === 'review'
+      ? null
+      : (options.subject !== undefined ? options.subject : $('#qSubject').value);
+    const count = parseInt(
+      options.count !== undefined ? options.count : $('#qCount').value, 10
+    );
+
+    if (options.mode === 'practice' && !subject) return;
+
+    const source = options.mode === 'review' ? db.missed : shuffle(poolFor(subject));
+
+    if (!source.length) {
+      const msg = options.mode === 'review'
+        ? 'No mistakes saved yet — answer a quiz first and wrong answers land here.'
+        : 'No questions for ' + esc(subject) + ' yet — add your own below.';
+      let hint = $('#noQ');
+      if (!hint) {
+        hint = document.createElement('p');
+        hint.id = 'noQ';
+        hint.className = 'hint';
+        $('#quizSetup').appendChild(hint);
+      }
+      hint.textContent = msg;
       return;
     }
 
-    quiz.pool = pool.slice(0, Math.min(count, pool.length));
+    quiz.pool = options.mode === 'review'
+      ? shuffle(source).slice(0, Math.min(20, source.length))
+      : source.slice(0, Math.min(count, source.length));
     quiz.idx = 0;
     quiz.score = 0;
-    quiz.subject = subject;
+    quiz.mode = options.mode;
+    quiz.subject = options.mode === 'review' ? 'Mistake review' : (subject === MIXED ? 'Mixed subjects' : subject);
+    quiz.lastOpts = options;
+
+    /* Mock exam: a hard clock, one minute per question. */
+    stopMockClock();
+    if (options.mode === 'mock') {
+      quiz.deadline = Date.now() + quiz.pool.length * MOCK_SECONDS * 1000;
+      $('#qClock').hidden = false;
+      $('#qClock').classList.remove('urgent');
+      paintClock();
+      quiz.timerId = window.setInterval(tickClock, 250);
+    } else {
+      $('#qClock').hidden = true;
+    }
 
     $('#quizSetup').hidden = true;
     $('#quizResult').hidden = true;
     $('#quizCard').hidden = false;
     renderQuestion();
+  }
+
+  function stopMockClock() {
+    if (quiz.timerId) window.clearInterval(quiz.timerId);
+    quiz.timerId = null;
+    $('#qClock').hidden = true;
+    $('#qClock').classList.remove('urgent');
+  }
+
+  function paintClock() {
+    const left = Math.max(0, Math.ceil((quiz.deadline - Date.now()) / 1000));
+    const m = Math.floor(left / 60);
+    const s = left % 60;
+    const el = $('#qClock');
+    el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    el.classList.toggle('urgent', left <= 60);
+    return left;
+  }
+
+  function tickClock() {
+    if (paintClock() <= 0) {
+      stopMockClock();
+      finishQuiz(true);
+    }
   }
 
   function renderQuestion() {
@@ -720,16 +805,19 @@
 
     $('#qProgress').textContent = (quiz.idx + 1) + ' / ' + quiz.pool.length;
     $('#qScore').textContent = quiz.score + ' correct';
-    $('#qSubjectLabel').textContent = item.s;
+    $('#qSubjectLabel').textContent = item.s + (quiz.mode === 'mock' ? ' · mock exam' : '');
     $('#qText').textContent = item.q;
     $('#qBar').style.width = ((quiz.idx) / quiz.pool.length * 100) + '%';
     $('#qNext').disabled = true;
     $('#qNext').textContent = quiz.idx === quiz.pool.length - 1 ? 'See result' : 'Next question';
 
-    $('#qOptions').innerHTML = item.o.map((text, i) =>
-      '<li><button class="opt" data-opt="' + i + '">' +
-        '<span class="opt-key">' + KEYS[i] + '</span>' +
-        '<span class="opt-text">' + esc(text) + '</span>' +
+    /* Options are reshuffled every question so the answer position
+       never gives the pattern away. data-opt keeps the real index. */
+    quiz.order = shuffle([0, 1, 2, 3]);
+    $('#qOptions').innerHTML = quiz.order.map((realIdx) =>
+      '<li><button class="opt" data-opt="' + realIdx + '">' +
+        '<span class="opt-key">' + KEYS[quiz.order.indexOf(realIdx)] + '</span>' +
+        '<span class="opt-text">' + esc(item.o[realIdx]) + '</span>' +
       '</button></li>').join('');
   }
 
@@ -739,14 +827,17 @@
 
     const item = quiz.pool[quiz.idx];
     const buttons = $$('#qOptions .opt');
+    const byIndex = (idx) => buttons.filter((b) => parseInt(b.dataset.opt, 10) === idx)[0];
     buttons.forEach((b) => { b.disabled = true; });
 
     if (i === item.a) {
       quiz.score++;
-      buttons[i].classList.add('correct');
+      byIndex(i).classList.add('correct');
+      if (quiz.mode === 'review') clearMistake(item);
     } else {
-      buttons[i].classList.add('wrong');
-      buttons[item.a].classList.add('correct');
+      byIndex(i).classList.add('wrong');
+      byIndex(item.a).classList.add('correct');
+      recordMistake(item);
     }
 
     $('#qScore').textContent = quiz.score + ' correct';
@@ -760,20 +851,22 @@
       quiz.idx++;
       renderQuestion();
     } else {
-      finishQuiz();
+      finishQuiz(false);
     }
   }
 
-  function finishQuiz() {
+  function finishQuiz(timeUp) {
+    stopMockClock();
     const total = quiz.pool.length;
-    const pct = Math.round((quiz.score / total) * 100);
+    const pct = total ? Math.round((quiz.score / total) * 100) : 0;
 
     db.quiz_results.unshift({
       id: uid('qr'),
       date: isoDate(new Date()),
       subject: quiz.subject,
       correct: quiz.score,
-      total: total
+      total: total,
+      mode: quiz.mode
     });
     db.quiz_results = db.quiz_results.slice(0, 60);
     save();
@@ -781,11 +874,17 @@
     $('#quizCard').hidden = true;
     $('#quizResult').hidden = false;
     $('#rScore').textContent = pct + '%';
-    $('#rText').textContent = 'You got ' + quiz.score + ' out of ' + total + ' in ' + quiz.subject + '. ' +
-      (pct >= 80 ? 'Excellent — keep it sharp.' : pct >= 50 ? 'Solid base. Review the ones you missed.' : 'Worth another pass before you move on.');
+    $('#rText').textContent =
+      (timeUp ? 'Time up — ' : '') +
+      'You got ' + quiz.score + ' out of ' + total + ' in ' + quiz.subject + '. ' +
+      (pct >= 80 ? 'Excellent — keep it sharp.'
+        : pct >= 50 ? 'Solid base. Review the ones you missed.'
+        : 'Worth another pass before you move on.');
 
     renderStats();
     renderHistory();
+    renderWeak();
+    renderReview();
   }
 
   function renderHistory() {
@@ -1071,18 +1170,40 @@
     });
 
     /* quiz */
-    $('#startQuiz').addEventListener('click', startQuiz);
+    $('#startQuiz').addEventListener('click', () => startQuiz({ mode: 'practice' }));
+    $('#startMock').addEventListener('click', () => startQuiz({ mode: 'mock' }));
+    $('#reviewStart').addEventListener('click', () => startQuiz({ mode: 'review' }));
+    $('#reviewClear').addEventListener('click', () => {
+      if (!db.missed.length) return;
+      if (!window.confirm('Clear all saved mistakes?')) return;
+      db.missed = [];
+      save();
+      renderReview();
+    });
+
     $('#qOptions').addEventListener('click', (e) => {
       const b = e.target.closest('[data-opt]');
       if (b) answer(parseInt(b.dataset.opt, 10));
     });
     $('#qNext').addEventListener('click', nextQuestion);
     $('#qQuit').addEventListener('click', () => {
+      stopMockClock();
       $('#quizCard').hidden = true;
       $('#quizSetup').hidden = false;
     });
-    $('#rAgain').addEventListener('click', () => { $('#quizResult').hidden = true; startQuiz(); });
+    $('#rAgain').addEventListener('click', () => {
+      $('#quizResult').hidden = true;
+      startQuiz(quiz.lastOpts || { mode: 'practice' });
+    });
     $('#rHome').addEventListener('click', () => { $('#quizResult').hidden = true; $('#quizSetup').hidden = false; });
+
+    /* theme */
+    $('#themeToggle').addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+      db.settings.theme = next;
+      save();
+      applyTheme();
+    });
 
     /* custom question */
     $('#questionForm').addEventListener('submit', (e) => {
@@ -1153,15 +1274,39 @@
 
   /* ---------------- Init ---------------- */
 
+  function applyTheme() {
+    const theme = db.settings.theme === 'light' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    const btn = $('#themeToggle');
+    if (btn) {
+      btn.textContent = theme === 'light' ? '☾' : '☀';
+      btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+    }
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f2f5fa' : '#0a0c11');
+  }
+
+  /* Offline support: network-first so an update is never stuck behind
+     the cache, cache-first only when the network is gone. */
+  function registerSW() {
+    if (!('serviceWorker' in navigator)) return;
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+    navigator.serviceWorker.register('sw.js').catch(function () { /* offline support unavailable */ });
+  }
+
   function renderAll() {
     fillSubjectSelects();
+    applyTheme();
     renderStats();
     renderToday();
     renderChart();
     renderProgress();
+    renderWeak();
+    renderHeat();
     renderWeekGrid();
     renderSubjects();
     renderHistory();
+    renderReview();
     paintTimer();
   }
 
@@ -1169,6 +1314,7 @@
     $('#year').textContent = new Date().getFullYear();
     wire();
     renderAll();
+    registerSW();
 
     const hash = (location.hash || '#dashboard').slice(1);
     const valid = ['dashboard', 'timetable', 'subjects', 'practice'];

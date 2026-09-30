@@ -3,6 +3,21 @@
 A study app for UTME candidates: weekly timetable, per-subject targets, focus
 timer, progress charts and a scored past-question bank.
 
+**What's in it**
+
+- **230 past questions across 14 subjects** (English, Maths, Physics, Chemistry,
+  Biology, Economics, Government, Geography, Literature, History, Commerce,
+  Further Mathematics, Agricultural Science, Principles of Accounts)
+- Practice quizzes, **mixed-subject quizzes**, and a **timed mock exam**
+  (60 seconds per question, auto-submits when the clock runs out)
+- **Mistake queue** — every wrong answer is saved for review; getting it right
+  in review removes it
+- **Needs-work report** — your lowest-accuracy subjects, recalculated after
+  every quiz
+- Weekly timetable with tick-off sessions, focus timer, streak, weekly bar
+  chart, subject progress bars and a **month study calendar**
+- Light/dark themes, installable as a PWA, works offline
+
 Vanilla HTML/CSS/JS — no build step, no framework, no npm.
 
 **Live:** https://nifemi-lab.github.io/portfolio/jamb-study/
@@ -32,25 +47,34 @@ The header chip always tells you which one you're in:
 ```
 jamb-study/
 ├── index.html            app shell — 4 tabs (Dashboard, Timetable, Subjects, Practice)
-├── css/app.css           design system (same tokens as the portfolio)
+├── css/app.css           design system (same tokens as the portfolio) + light theme
+├── js/questions.js       230 past questions → window.QUESTION_BANK
 ├── js/config.js          ← the only file you edit to enable cloud sync
 ├── js/app.js             all logic + the data layer
+├── manifest.webmanifest  makes the app installable (PWA)
+├── sw.js                 service worker — network-first, cache fallback
+├── icon.svg              + icon-192.png / icon-512.png
 ├── supabase-schema.sql   table + row-level security, run once
 └── README.md             this file
 ```
 
+To add or correct questions, edit **`js/questions.js`** only — it is plain data
+(`{ s: subject, q: question, o: [four options], a: correct index }`) and is
+loaded before `app.js`.
+
 ### Data model
 
-Five tables (localStorage keys, and JSONB in Supabase):
+Seven tables (localStorage keys, and JSONB in Supabase):
 
 | Table | Holds |
 |---|---|
 | `subjects` | name, weekly minute target, UTME flag |
 | `sessions` | timetable slots: day, start time, minutes, topic |
 | `logs` | one row per completed session or timed study block |
-| `quiz_results` | one row per finished quiz: subject, correct, total |
+| `quiz_results` | one row per finished quiz: subject, correct, total, mode |
 | `questions` | past questions you authored yourself |
-| `settings` | daily goal, exam date, `updatedAt` (used for sync conflicts) |
+| `missed` | the mistake queue: question, how many times you missed it |
+| `settings` | daily goal, exam date, theme, `updatedAt` (sync conflicts) |
 
 ---
 

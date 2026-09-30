@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="JAMB Study Tracker">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7b9cff"/>
+      <stop offset="1" stop-color="#64f0c7"/>
+    </linearGradient>
+    <linearGradient id="p" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#dfe6ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="128" height="128" rx="28" fill="#0a0c11"/>
+  <rect x="4" y="4" width="120" height="120" rx="25" fill="none" stroke="url(#g)" stroke-width="2" opacity=".55"/>
+
+  <!-- open book -->
+  <path d="M18 42c16-8 32-8 43-2v54c-11-6-27-6-43 2z" fill="url(#p)"/>
+  <path d="M110 42c-16-8-32-8-43-2v54c11-6 27-6 43 2z" fill="url(#g)"/>
+  <path d="M61 40h6v56h-6z" fill="#0a0c11" opacity=".45"/>
+
+  <!-- progress bars -->
+  <rect x="27" y="54" width="26" height="4" rx="2" fill="#7b9cff" opacity=".65"/>
+  <rect x="27" y="64" width="18" height="4" rx="2" fill="#7b9cff" opacity=".45"/>
+  <rect x="75" y="54" width="26" height="4" rx="2" fill="#0a0c11" opacity=".5"/>
+  <rect x="75" y="64" width="18" height="4" rx="2" fill="#0a0c11" opacity=".35"/>
+</svg>
