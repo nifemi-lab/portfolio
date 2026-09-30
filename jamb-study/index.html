@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JAMB Study Tracker — plan, track, practise</title>
+  <meta name="description" content="Plan your JAMB/UTME study week, log minutes per subject and practise past questions. Everything stays in your browser." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📘</text></svg>" />
+</head>
+<body>
+
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="app-header">
+    <div class="container header-inner">
+      <a href="#dashboard" class="logo"><span class="logo-text">jamb_study</span></a>
+
+      <nav class="tabs" id="tabs" aria-label="App sections">
+        <button class="tab is-active" data-tab="dashboard" aria-selected="true">Dashboard</button>
+        <button class="tab" data-tab="timetable" aria-selected="false">Timetable</button>
+        <button class="tab" data-tab="subjects" aria-selected="false">Subjects</button>
+        <button class="tab" data-tab="practice" aria-selected="false">Practice</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+
+    <!-- ================= DASHBOARD ================= -->
+    <section class="panel is-active" id="dashboard" aria-labelledby="dash-title">
+      <div class="panel-head">
+        <p class="eyebrow">Dashboard</p>
+        <h1 id="dash-title" class="panel-title">Your study week <span class="grad" id="greeting">at a glance</span></h1>
+        <p class="panel-sub">Minutes logged, days to exam, and what's scheduled for today.</p>
+      </div>
+
+      <div class="stats" id="stats"></div>
+
+      <div class="grid-2">
+        <!-- Focus timer -->
+        <section class="card" aria-labelledby="timer-title">
+          <div class="card-head">
+            <h2 id="timer-title">Focus timer</h2>
+            <span class="chip" id="timerMode">25 min</span>
+          </div>
+
+          <div class="timer">
+            <p class="timer-clock" id="timerClock" role="timer" aria-live="off">25:00</p>
+            <div class="timer-row">
+              <label class="field">
+                <span>Subject</span>
+                <select id="timerSubject"></select>
+              </label>
+              <label class="field field-sm">
+                <span>Length</span>
+                <select id="timerLength">
+                  <option value="25">25 min</option>
+                  <option value="45">45 min</option>
+                  <option value="60">60 min</option>
+                  <option value="90">90 min</option>
+                </select>
+              </label>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" id="timerToggle">Start</button>
+              <button class="btn btn-ghost" id="timerReset">Reset</button>
+              <button class="btn btn-ghost" id="timerLog">Log time</button>
+            </div>
+            <p class="hint" id="timerHint">Start a session and it lands in this subject's total when you log it.</p>
+          </div>
+        </section>
+
+        <!-- Today -->
+        <section class="card" aria-labelledby="today-title">
+          <div class="card-head">
+            <h2 id="today-title">Today's plan</h2>
+            <span class="chip chip-quiet" id="todayCount">0 sessions</span>
+          </div>
+          <ul class="plan" id="todayPlan"></ul>
+          <p class="empty" id="todayEmpty" hidden>Nothing scheduled today. Add a session in the <button class="linklike" data-goto="timetable">Timetable</button>.</p>
+        </section>
+      </div>
+
+      <!-- Weekly chart -->
+      <section class="card" aria-labelledby="chart-title">
+        <div class="card-head">
+          <h2 id="chart-title">Minutes studied — this week</h2>
+          <span class="chip chip-quiet" id="weekTotal">0 min</span>
+        </div>
+        <div class="chart" id="weekChart" role="img" aria-label="Bar chart of minutes studied each day this week"></div>
+      </section>
+
+      <!-- Subject progress -->
+      <section class="card" aria-labelledby="prog-title">
+        <div class="card-head">
+          <h2 id="prog-title">Subject progress</h2>
+          <span class="chip chip-quiet">against weekly target</span>
+        </div>
+        <ul class="progress-list" id="progressList"></ul>
+      </section>
+    </section>
+
+    <!-- ================= TIMETABLE ================= -->
+    <section class="panel" id="timetable" aria-labelledby="tt-title" hidden>
+      <div class="panel-head">
+        <p class="eyebrow">Timetable</p>
+        <h1 id="tt-title" class="panel-title">Build your <span class="grad">study week</span></h1>
+        <p class="panel-sub">Add a slot for each subject, then tick it off when you actually study.</p>
+      </div>
+
+      <form class="card form" id="sessionForm">
+        <div class="form-row">
+          <label class="field">
+            <span>Subject</span>
+            <select id="sSubject" required></select>
+          </label>
+          <label class="field">
+            <span>Day</span>
+            <select id="sDay" required></select>
+          </label>
+          <label class="field">
+            <span>Start</span>
+            <input type="time" id="sTime" value="16:00" required />
+          </label>
+          <label class="field">
+            <span>Minutes</span>
+            <input type="number" id="sMinutes" min="10" max="360" step="5" value="60" required />
+          </label>
+        </div>
+        <div class="form-row">
+          <label class="field field-grow">
+            <span>Topic <em>(optional)</em></span>
+            <input type="text" id="sTopic" placeholder="e.g. Algebra — simultaneous equations" maxlength="70" />
+          </label>
+          <button class="btn btn-primary" type="submit">Add session</button>
+        </div>
+      </form>
+
+      <div class="week" id="weekGrid"></div>
+    </section>
+
+    <!-- ================= SUBJECTS ================= -->
+    <section class="panel" id="subjects" aria-labelledby="sub-title" hidden>
+      <div class="panel-head">
+        <p class="eyebrow">Subjects</p>
+        <h1 id="sub-title" class="panel-title">The subjects <span class="grad">you study</span></h1>
+        <p class="panel-sub">Add every subject you're reading. Tick the four that make up your UTME combination.</p>
+      </div>
+
+      <form class="card form" id="subjectForm">
+        <div class="form-row">
+          <label class="field field-grow">
+            <span>Add a subject</span>
+            <input type="text" id="subName" list="subjectPresets" placeholder="e.g. Further Mathematics" maxlength="40" required autocomplete="off" />
+            <datalist id="subjectPresets"></datalist>
+          </label>
+          <label class="field">
+            <span>Minutes / week</span>
+            <input type="number" id="subTarget" min="30" max="3000" step="30" value="300" />
+          </label>
+          <button class="btn btn-primary" type="submit">Add subject</button>
+        </div>
+        <p class="hint">Tip: English is compulsory in UTME — keep it in your four.</p>
+      </form>
+
+      <section class="card" aria-labelledby="list-title">
+        <div class="card-head">
+          <h2 id="list-title">Your subjects</h2>
+          <span class="chip" id="examCount">0 / 4 UTME</span>
+        </div>
+        <ul class="subject-list" id="subjectList"></ul>
+        <p class="empty" id="subjectEmpty" hidden>Add your first subject above.</p>
+      </section>
+
+      <div class="grid-2">
+        <section class="card" aria-labelledby="goal-title">
+          <div class="card-head"><h2 id="goal-title">Daily goal</h2></div>
+          <label class="field">
+            <span>Minutes you aim to study every day</span>
+            <input type="number" id="dailyGoal" min="15" max="720" step="15" value="120" />
+          </label>
+        </section>
+
+        <section class="card" aria-labelledby="exam-title">
+          <div class="card-head"><h2 id="exam-title">Exam date</h2></div>
+          <label class="field">
+            <span>UTME exam date — used for the countdown</span>
+            <input type="date" id="examDate" />
+          </label>
+        </section>
+      </div>
+
+      <section class="card" aria-labelledby="db-title">
+        <div class="card-head"><h2 id="db-title">Your data</h2></div>
+        <p class="hint">Everything lives in your browser as five tables — <code>subjects</code>, <code>sessions</code>, <code>logs</code>, <code>quiz_results</code> and <code>questions</code> — so it works offline. Export a JSON copy to back it up.</p>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="exportBtn">Export JSON</button>
+          <button class="btn btn-ghost" id="resetBtn">Reset everything</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- ================= PRACTICE ================= -->
+    <section class="panel" id="practice" aria-labelledby="prac-title" hidden>
+      <div class="panel-head">
+        <p class="eyebrow">Practice</p>
+        <h1 id="prac-title" class="panel-title">Past questions, <span class="grad">timed and scored</span></h1>
+        <p class="panel-sub">Pick a subject, answer, and your score feeds straight into the dashboard.</p>
+      </div>
+
+      <div class="card" id="quizSetup">
+        <div class="form-row">
+          <label class="field field-grow">
+            <span>Subject</span>
+            <select id="qSubject"></select>
+          </label>
+          <label class="field">
+            <span>Questions</span>
+            <select id="qCount">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="20">20</option>
+            </select>
+          </label>
+          <button class="btn btn-primary" id="startQuiz">Start quiz</button>
+        </div>
+      </div>
+
+      <section class="card quiz" id="quizCard" hidden>
+        <div class="quiz-top">
+          <span class="chip" id="qProgress">1 / 10</span>
+          <div class="quiz-bar" aria-hidden="true"><span id="qBar"></span></div>
+          <span class="chip chip-quiet" id="qScore">0 correct</span>
+        </div>
+        <p class="quiz-subject" id="qSubjectLabel"></p>
+        <h2 class="quiz-question" id="qText"></h2>
+        <ul class="quiz-options" id="qOptions"></ul>
+        <div class="btn-row quiz-actions">
+          <button class="btn btn-primary" id="qNext" disabled>Next question</button>
+          <button class="btn btn-ghost" id="qQuit">Quit</button>
+        </div>
+      </section>
+
+      <section class="card" id="quizResult" hidden>
+        <div class="result">
+          <p class="result-score" id="rScore">0%</p>
+          <p class="result-text" id="rText"></p>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="rAgain">Try again</button>
+            <button class="btn btn-ghost" id="rHome">Back to setup</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid-2">
+        <section class="card" aria-labelledby="hist-title">
+          <div class="card-head">
+            <h2 id="hist-title">Recent quizzes</h2>
+            <span class="chip chip-quiet" id="accChip">—</span>
+          </div>
+          <ul class="history" id="history"></ul>
+          <p class="empty" id="historyEmpty" hidden>No quizzes yet. Start one above.</p>
+        </section>
+
+        <section class="card" aria-labelledby="addq-title">
+          <div class="card-head"><h2 id="addq-title">Add your own question</h2></div>
+          <form class="form" id="questionForm">
+            <label class="field">
+              <span>Subject</span>
+              <select id="cSubject" required></select>
+            </label>
+            <label class="field">
+              <span>Question</span>
+              <input type="text" id="cText" placeholder="e.g. What is the SI unit of pressure?" maxlength="160" required />
+            </label>
+            <div class="form-row four">
+              <label class="field"><span>Option A</span><input type="text" id="cO0" required maxlength="80" /></label>
+              <label class="field"><span>Option B</span><input type="text" id="cO1" required maxlength="80" /></label>
+              <label class="field"><span>Option C</span><input type="text" id="cO2" required maxlength="80" /></label>
+              <label class="field"><span>Option D</span><input type="text" id="cO3" required maxlength="80" /></label>
+            </div>
+            <label class="field field-sm">
+              <span>Correct option</span>
+              <select id="cAnswer">
+                <option value="0">A</option><option value="1">B</option>
+                <option value="2">C</option><option value="3">D</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" type="submit">Save question</button>
+            <p class="hint" id="cMsg" hidden></p>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container footer-inner">
+      <p>Built with HTML, CSS &amp; JS · data stored locally · <a class="link" href="../index.html">← back to portfolio</a></p>
+      <p id="year"></p>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
