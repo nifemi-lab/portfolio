@@ -30,6 +30,7 @@
 
       <div class="header-right">
         <select id="whoPick" class="who-pick" aria-label="Who is studying on this device"></select>
+        <button class="who-pick" id="authBtn" type="button" title="Sign in to sync across devices">Sign in</button>
         <span class="sync-chip" id="syncChip" title="Where your data is saved">saved locally</span>
 
         <button class="theme-btn" id="themeToggle" type="button" aria-label="Switch to light theme" title="Switch theme">☀</button>
@@ -378,7 +379,35 @@
     </div>
   </footer>
 
+  <dialog class="auth-dialog" id="authDialog" aria-labelledby="authTitle">
+    <form class="auth-form" id="authForm" novalidate>
+      <h2 id="authTitle">Sign in</h2>
+      <p class="hint" id="authIntro">
+        Sign in and your progress follows you to any device. Staying anonymous
+        keeps everything on this browser only — nothing is ever shared between students.
+      </p>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com" maxlength="120" required />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" id="authPass" autocomplete="current-password" placeholder="At least 6 characters" maxlength="72" minlength="6" required />
+      </label>
+      <p class="hint auth-err" id="authMsg" hidden></p>
+      <div class="btn-row">
+        <button class="btn btn-primary" type="submit" id="authGo">Sign in</button>
+        <button class="btn btn-ghost" type="button" id="authSwitch">Create an account</button>
+        <button class="btn btn-ghost" type="button" id="authCancel">Cancel</button>
+      </div>
+      <div class="btn-row" id="authOutRow" hidden>
+        <button class="btn btn-ghost" type="button" id="authSignOut">Sign out of email sync</button>
+      </div>
+    </form>
+  </dialog>
+
   <script src="js/questions.js"></script>
+  <script src="js/q-biology.js"></script>
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 </body>

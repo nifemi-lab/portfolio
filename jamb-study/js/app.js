@@ -196,6 +196,7 @@
       access_token: r.access_token,
       refresh_token: r.refresh_token,
       user_id: (r.user && r.user.id) || r.user_id,
+      email: (r.user && r.user.email) || '',
       expires_at: r.expires_at || Math.floor(Date.now() / 1000) + (r.expires_in || 3600)
     };
   }
@@ -265,6 +266,116 @@
           updated_at: new Date().toISOString()
         })
       });
+    }
+  };
+
+  /* =========================================================
+     Email sign-in — optional on purpose. Anonymous sync stays
+     the default so the app works with no account at all, and
+     nothing is ever visible to another student.
+     ========================================================= */
+
+  const AUTH_HINTS = {
+    'Invalid login credentials': 'That email and password do not match an account yet.',
+    'User already registered': 'That email already has an account — use Sign in instead.',
+    'Password should be at least 6 characters': 'Password must be at least 6 characters.',
+    'Unable to validate email address': 'That email address does not look valid.',
+    'Email not confirmed': 'Confirm the link we emailed you, then sign in.',
+    'Signup requires a valid password': 'Password must be at least 6 characters.'
+  };
+
+  function authError(e) {
+    const raw = (e && e.message) || 'unknown error';
+    return AUTH_HINTS[raw] || raw;
+  }
+
+  function paintAuth() {
+    const b = document.getElementById('authBtn');
+    if (!b) return;
+    const email = (session && session.email) || '';
+    b.textContent = email ? (email.length > 20 ? email.slice(0, 19) + '…' : email) : 'Sign in';
+    b.title = email
+      ? 'Signed in as ' + email + ' — click to switch account or sign out'
+      : 'Sign in to sync your progress across devices';
+  }
+
+  const Auth = {
+    mode: 'signin',
+
+    open: function () {
+      const dlg = document.getElementById('authDialog');
+      if (!dlg) return;
+      Auth.mode = 'signin';
+      document.getElementById('authMsg').hidden = true;
+      document.getElementById('authEmail').value = (session && session.email) || '';
+      document.getElementById('authPass').value = '';
+      Auth.paintMode();
+      if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+      document.getElementById('authEmail').focus();
+    },
+
+    close: function () {
+      const dlg = document.getElementById('authDialog');
+      if (!dlg) return;
+      if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open');
+    },
+
+    paintMode: function () {
+      const signup = Auth.mode === 'signup';
+      document.getElementById('authTitle').textContent = signup ? 'Create your account' : 'Sign in';
+      document.getElementById('authGo').textContent = signup ? 'Create account' : 'Sign in';
+      document.getElementById('authSwitch').textContent = signup ? 'I already have an account' : 'Create an account';
+      document.getElementById('authPass').autocomplete = signup ? 'new-password' : 'current-password';
+      document.getElementById('authOutRow').hidden = !(session && session.email);
+    },
+
+    fail: function (msg) {
+      const el = document.getElementById('authMsg');
+      el.textContent = msg;
+      el.hidden = false;
+    },
+
+    submit: async function (email, password) {
+      const btn = document.getElementById('authGo');
+      btn.disabled = true;
+      setStatus('connecting…', 'busy');
+      try {
+        const r = await api(
+          Auth.mode === 'signup'
+            ? '/auth/v1/signup'
+            : '/auth/v1/token?grant_type=password',
+          { method: 'POST', body: JSON.stringify({ email: email, password: password }) }
+        );
+
+        /* No token means the project still wants email confirmation. */
+        if (!r || !r.access_token) {
+          Auth.mode = 'signin';
+          Auth.paintMode();
+          Auth.fail('Account created. Open the confirmation link we emailed you, then sign in.');
+          setStatus('saved locally', 'ok');
+          return;
+        }
+
+        session = buildSession(r);
+        persistSession();
+        Auth.close();
+        paintAuth();
+        queuePush();
+      } catch (e) {
+        Auth.fail(authError(e));
+        setStatus('local only', 'warn');
+      } finally {
+        btn.disabled = false;
+      }
+    },
+
+    signOut: async function () {
+      try { await api('/auth/v1/logout', { method: 'POST' }); } catch (e) { /* already gone */ }
+      session = null;
+      persistSession();
+      Auth.close();
+      paintAuth();
+      setStatus('saved locally', 'ok');
     }
   };
 
@@ -445,6 +556,7 @@
     applyTheme();
     renderAll();
     paintProfiles();
+    paintAuth();
 
     if (cloudEnabled) {
       setStatus('connecting…', 'busy');
@@ -1434,6 +1546,7 @@
         save();
         renderSubjects();
         renderProgress();
+        renderExamWho();
       }
 
       if (targetInput) {
@@ -1457,6 +1570,7 @@
       renderWeekGrid();
       renderToday();
       fillSubjectSelects();
+      renderExamWho();
     });
 
     /* settings */
@@ -1526,6 +1640,29 @@
       $('#answerWrap').hidden = true;
       $('#quizSetup').hidden = false;
     });
+
+    /* sign-in dialog */
+    document.getElementById('authBtn').addEventListener('click', function () { Auth.open(); });
+    document.getElementById('authCancel').addEventListener('click', function () { Auth.close(); });
+    document.getElementById('authSignOut').addEventListener('click', function () { Auth.signOut(); });
+    document.getElementById('authSwitch').addEventListener('click', function () {
+      Auth.mode = Auth.mode === 'signin' ? 'signup' : 'signin';
+      document.getElementById('authMsg').hidden = true;
+      Auth.paintMode();
+    });
+    document.getElementById('authForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value.trim();
+      const pass = document.getElementById('authPass').value;
+      if (!email) { Auth.fail('Enter your email address.'); return; }
+      if (pass.length < 6) { Auth.fail('Password must be at least 6 characters.'); return; }
+      if (!cloudEnabled) {
+        Auth.fail('Cloud sync is switched off in this build — everything stays on this device.');
+        return;
+      }
+      Auth.submit(email, pass);
+    });
+    paintAuth();
 
     /* who is studying on this device */
     $('#whoPick').addEventListener('change', (e) => {
