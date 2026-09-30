@@ -30,8 +30,13 @@ There are two modes, and the app picks automatically:
 
 | Mode | What happens | When |
 |---|---|---|
-| **Local (default)** | Data is written to this browser's `localStorage` | `js/config.js` keys are empty — which is the shipped state |
-| **Cloud sync** | Data is written locally *first*, then pushed to a Supabase (Postgres) table | You fill in the two keys and run the schema SQL |
+| **Cloud sync** ← *this deployment* | Data is written to this browser first, then pushed to a Supabase (Postgres) table | `js/config.js` has a URL + anon key — **shipped state** |
+| **Local fallback** | Data stays in this browser's `localStorage` only | Keys are empty, `syncEnabled` is false, or the network is down |
+
+The live project: `https://mhfxmjaxexgwcyhkoyhz.supabase.co` (region: West EU / Ireland),
+table `public.study_data`, protected by row-level security so a browser can only ever
+read or write its own row. Sign-in is anonymous — no password, no email, just a
+per-browser identity stored in `localStorage`.
 
 Local-first is deliberate: the UI never waits on a network request, the app
 works with no internet, and there is no server to keep alive. Cloud sync is a
@@ -49,7 +54,7 @@ jamb-study/
 ├── index.html            app shell — 4 tabs (Dashboard, Timetable, Subjects, Practice)
 ├── css/app.css           design system (same tokens as the portfolio) + light theme
 ├── js/questions.js       230 past questions → window.QUESTION_BANK
-├── js/config.js          ← the only file you edit to enable cloud sync
+├── js/config.js          Supabase credentials (already filled in here)
 ├── js/app.js             all logic + the data layer
 ├── manifest.webmanifest  makes the app installable (PWA)
 ├── sw.js                 service worker — network-first, cache fallback
@@ -78,15 +83,20 @@ Seven tables (localStorage keys, and JSONB in Supabase):
 
 ---
 
-## Turning on cloud sync (5 steps, ~3 minutes)
+## Turning on cloud sync — already done for this deployment
+
+The live instance ships with sync switched on (credentials in `js/config.js`).
+These are the steps, kept for anyone forking the repo or wanting their own
+database:
 
 1. **Create the project** — [supabase.com](https://supabase.com) → *New project*
    (free tier is plenty).
 2. **Run the schema** — Studio → **SQL Editor** → paste
    [`supabase-schema.sql`](./supabase-schema.sql) → **Run**.
-3. **Allow anonymous sign-ins** — **Authentication → Providers → Anonymous →
-   Enable**. This gives each browser its own hidden account, so nobody has to
-   make a password and nobody can see anyone else's row.
+3. **Allow anonymous sign-ins** — **Authentication → Sign In / Providers →
+   “Allow anonymous sign-ins”** → toggle on → **Save changes**. This gives each
+   browser its own hidden account, so nobody has to make a password and nobody
+   can see anyone else's row.
 4. **Copy your credentials** — **Project Settings → API** → copy the
    *Project URL* and the *anon public* key.
 5. **Paste them into** [`js/config.js`](./js/config.js):

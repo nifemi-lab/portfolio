@@ -1,23 +1,23 @@
 /* =========================================================
    JAMB Study Tracker — configuration
    ---------------------------------------------------------
-   The app runs fully offline with NO back-end by default:
-   your data is saved in this browser (localStorage).
+   Cloud sync is switched ON for this deployment.
 
-   To switch on cloud sync, create a free Supabase project
-   and paste the two values below, then run the SQL in
-   supabase-schema.sql. See README.md — it's 5 steps.
+   Both values below are the *public* pair: the anon key is
+   safe to expose in a browser because row-level security in
+   the database only ever lets a signed-in student read or
+   write their own row.
 
-   Nothing else in the app needs to change; if these are
-   empty the app simply stays local-only.
+   Empty them (or set syncEnabled: false) and the app falls
+   back to running fully offline on localStorage, with no
+   errors — the header chip will read "saved locally".
    ========================================================= */
 
 window.STUDY_CONFIG = {
-  /* e.g. "https://abcdefghijklmn.supabase.co" */
-  supabaseUrl: '',
+  supabaseUrl: 'https://mhfxmjaxexgwcyhkoyhz.supabase.co',
 
   /* the "anon public" key — safe to expose in a browser */
-  supabaseAnonKey: '',
+  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZnhtamF4ZXhnd2N5aGtveWh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MDA5MjksImV4cCI6MjEwNjM3NjkyOX0.svtoSR3EUQyW0Du2RPsA6h7eiHNSb6mbub1dYEtbB3A',
 
   /* set to false to force local-only, even if the keys are set */
   syncEnabled: true
