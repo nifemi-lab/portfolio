@@ -675,6 +675,7 @@
     qSelect.value = keepQ && (keepQ === MIXED || names.indexOf(keepQ) !== -1)
       ? keepQ
       : (names.indexOf('Use of English') !== -1 ? 'Use of English' : MIXED);
+    updateQAvail();
 
     $('#subjectPresets').innerHTML = PRESETS.map((p) => '<option value="' + esc(p) + '">').join('');
 
@@ -696,6 +697,15 @@
     const all = BANK.concat(db.questions);
     const chosen = subject === MIXED ? all : all.filter((q) => q.s === subject);
     return chosen.map((q) => ({ s: q.s, q: q.q, o: q.o, a: q.a }));
+  }
+
+  /* Live count of what the chosen subject can actually serve, so the
+     length menu is never a surprise. */
+  function updateQAvail() {
+    const el = $('#qAvail'), sel = $('#qSubject');
+    if (!el || !sel) return;
+    const total = BANK.concat(db.questions).length;
+    el.textContent = '(' + poolFor(sel.value).length + ' of ' + total + ' in bank)';
   }
 
   /* Mistake queue — a wrong answer saves the whole question here. */
@@ -725,9 +735,11 @@
     const subject = options.mode === 'review'
       ? null
       : (options.subject !== undefined ? options.subject : $('#qSubject').value);
-    const count = parseInt(
-      options.count !== undefined ? options.count : $('#qCount').value, 10
-    );
+    /* `all` (and any non-numeric value) means "everything in the pool". */
+    const rawCount = options.count !== undefined ? options.count : $('#qCount').value;
+    const count = String(rawCount).toLowerCase() === 'all'
+      ? Infinity
+      : (parseInt(rawCount, 10) || 0);
 
     if (options.mode === 'practice' && !subject) return;
 
@@ -1172,6 +1184,7 @@
     /* quiz */
     $('#startQuiz').addEventListener('click', () => startQuiz({ mode: 'practice' }));
     $('#startMock').addEventListener('click', () => startQuiz({ mode: 'mock' }));
+    $('#qSubject').addEventListener('change', updateQAvail);
     $('#reviewStart').addEventListener('click', () => startQuiz({ mode: 'review' }));
     $('#reviewClear').addEventListener('click', () => {
       if (!db.missed.length) return;
