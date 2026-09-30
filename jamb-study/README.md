@@ -1,13 +1,13 @@
 # JAMB Study Tracker
 
 A study app for UTME candidates: weekly timetable, per-subject targets, focus
-timer, progress charts and a scored past-question bank.
+timer, progress charts and a scored practice-question bank.
 
 **What's in it**
 
-- **230 past questions across 14 subjects** (English, Maths, Physics, Chemistry,
-  Biology, Economics, Government, Geography, Literature, History, Commerce,
-  Further Mathematics, Agricultural Science, Principles of Accounts)
+- **2,750 practice questions across 14 subjects** (English, Maths, Physics,
+  Chemistry, Biology, Economics, Government, Geography, Literature, History,
+  Commerce, Further Mathematics, Agricultural Science, Principles of Accounts)
 - Practice quizzes, **mixed-subject quizzes**, and a **timed mock exam**
   (60 seconds per question, auto-submits when the clock runs out)
 - **Mistake queue** — every wrong answer is saved for review; getting it right
@@ -17,6 +17,13 @@ timer, progress charts and a scored past-question bank.
 - Weekly timetable with tick-off sessions, focus timer, streak, weekly bar
   chart, subject progress bars and a **month study calendar**
 - Light/dark themes, installable as a PWA, works offline
+
+> **About the questions.** Every question in this bank was written against the
+> UTME syllabus for revision and drill purposes. They are *not* verbatim JAMB
+> past questions and are not presented as such — no item here should be treated
+> as an official or leaked UTME paper. Answer keys are plain data (`a` = index
+> of the correct option), so any of them can be checked and corrected directly
+> in the file.
 
 Vanilla HTML/CSS/JS — no build step, no framework, no npm.
 
@@ -35,8 +42,15 @@ There are two modes, and the app picks automatically:
 
 The live project: `https://mhfxmjaxexgwcyhkoyhz.supabase.co` (region: West EU / Ireland),
 table `public.study_data`, protected by row-level security so a browser can only ever
-read or write its own row. Sign-in is anonymous — no password, no email, just a
-per-browser identity stored in `localStorage`.
+read or write its own row. Sign-in is anonymous by default — no password, no email,
+just a per-browser identity stored in `localStorage`. You can optionally sign in with
+an **email + password** (header → **Sign in**) so your progress follows you to another
+device. Either way, nobody else can read or write your row.
+
+**Several students can share one device.** The picker in the header
+(*Who is studying*) switches between named profiles; each one has its own data key
+and its own Supabase identity, so nothing bleeds between them. No passwords needed —
+switching is instant.
 
 Local-first is deliberate: the UI never waits on a network request, the app
 works with no internet, and there is no server to keep alive. Cloud sync is a
@@ -53,7 +67,8 @@ The header chip always tells you which one you're in:
 jamb-study/
 ├── index.html            app shell — 4 tabs (Dashboard, Timetable, Subjects, Practice)
 ├── css/app.css           design system (same tokens as the portfolio) + light theme
-├── js/questions.js       230 past questions → window.QUESTION_BANK
+├── js/questions.js       230 questions → window.QUESTION_BANK (loaded first)
+├── js/q-*.js             14 subject files × 180 questions → appended to the same bank
 ├── js/config.js          Supabase credentials (already filled in here)
 ├── js/app.js             all logic + the data layer
 ├── manifest.webmanifest  makes the app installable (PWA)
@@ -63,9 +78,17 @@ jamb-study/
 └── README.md             this file
 ```
 
-To add or correct questions, edit **`js/questions.js`** only — it is plain data
-(`{ s: subject, q: question, o: [four options], a: correct index }`) and is
-loaded before `app.js`.
+To add or correct questions, edit **`js/questions.js`** or the relevant
+**`js/q-<subject>.js`** file. They are plain data, loaded before `app.js`:
+
+```js
+{ s: 'Physics', q: 'The SI unit of force is the:', o: ['Joule', 'Newton', 'Watt', 'Pascal'], a: 1 }
+```
+
+`s` must match the subject name **exactly**, `o` holds four options, and `a` is
+the index of the correct one (an optional `e` gives the explanation shown after
+you answer). Any new file needs a `<script>` tag in `index.html` after
+`questions.js`, and a line in the `ASSETS` list in `sw.js`.
 
 ### Data model
 
@@ -77,7 +100,7 @@ Seven tables (localStorage keys, and JSONB in Supabase):
 | `sessions` | timetable slots: day, start time, minutes, topic |
 | `logs` | one row per completed session or timed study block |
 | `quiz_results` | one row per finished quiz: subject, correct, total, mode |
-| `questions` | past questions you authored yourself |
+| `questions` | practice questions you authored yourself |
 | `missed` | the mistake queue: question, how many times you missed it |
 | `settings` | daily goal, exam date, theme, `updatedAt` (sync conflicts) |
 
@@ -136,10 +159,31 @@ up Supabase at all.
 
 ---
 
+## Signing in with email (optional)
+
+The **Sign in** button in the header opens a small dialog. Anonymous sync stays
+the default, so an account is never required — this is only for people who want
+their progress on more than one device.
+
+Two things to know about your Supabase project:
+
+1. **Authentication → Sign In / Providers → Email** must be **on** (keep
+   **Anonymous** on as well — step 3 above).
+2. **Authentication → Providers → Email → Confirm email** — Supabase ships this
+   **on**. If you leave it on, an account is created but no session is returned
+   until the link in the confirmation email is clicked, and the dialog will say
+   *"Confirm the link we emailed you, then sign in."* That email only arrives
+   if the project's SMTP is working. Turn confirmation **off** if you would
+   rather sign in straight away.
+
+Signing in swaps this browser's identity for the email account's. Your data
+stays exactly where it is locally and is pushed to the new row on the next
+save. **Sign out of email sync** (in the same dialog) drops back to anonymous.
+
+---
+
 ## Not included (and why)
 
-- **Passwords / email login** — anonymous auth keeps it frictionless. Adding
-  `supabase.auth` email login is a small change if you ever need it.
 - **Multi-user features** (class groups, leaderboards) — needs a schema
   redesign, not just a new column.
 - **Server-side quiz anti-cheat** — pointless for self-study.

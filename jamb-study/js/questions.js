@@ -1,5 +1,5 @@
 /* =========================================================
-   JAMB Study Tracker — past question bank
+   JAMB Study Tracker — practice question bank
    Loaded before app.js as window.QUESTION_BANK
    { s: subject, q: question, o: [four options], a: correct index, e: why a is correct }
    ========================================================= */

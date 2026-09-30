@@ -21,7 +21,7 @@
   ];
 
   /* Built-in question bank: { s: subject, q: question, o: options, a: answer index } */
-  /* Past questions live in js/questions.js, loaded first as window.QUESTION_BANK. */
+  /* Question files (js/questions.js + js/q-*.js) load first as window.QUESTION_BANK. */
   const BANK = window.QUESTION_BANK || [];
 
   /* ---------------- Storage ---------------- */
@@ -103,7 +103,7 @@
         { id: uid('sess'), subject: 'Mathematics',    day: 2, time: '17:15', minutes: 75, topic: 'Geometry practice' },
         { id: uid('sess'), subject: 'Physics',        day: 3, time: '16:00', minutes: 60, topic: 'Waves and sound' },
         { id: uid('sess'), subject: 'Chemistry',      day: 4, time: '16:00', minutes: 60, topic: 'Periodic table' },
-        { id: uid('sess'), subject: 'Use of English', day: 4, time: '17:15', minutes: 45, topic: 'Past questions drill' },
+        { id: uid('sess'), subject: 'Use of English', day: 4, time: '17:15', minutes: 45, topic: 'Practice drill' },
         { id: uid('sess'), subject: 'Mathematics',    day: 5, time: '10:00', minutes: 90, topic: 'Full mock — 50 questions' },
         { id: uid('sess'), subject: 'Mixed practice', day: 6, time: '17:00', minutes: 60, topic: 'Weekly review + wrong answers' }
       ],
