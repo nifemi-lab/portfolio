@@ -13,6 +13,7 @@ const ASSETS = [
   './css/app.css',
   './js/app.js',
   './js/questions.js',
+  './js/q-biology.js',
   './js/config.js',
   './manifest.webmanifest',
   './icon.svg'
