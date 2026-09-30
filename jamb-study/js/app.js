@@ -26,7 +26,51 @@
 
   /* ---------------- Storage ---------------- */
 
-  const STORE_KEY = 'jamb_study_db_v1';
+  const STORE_BASE = 'jamb_study_db_v1';
+  const SESSION_BASE = 'jamb_study_session_v1';
+  const PROFILES_KEY = 'jamb_study_profiles_v1';
+
+  /* One device can hold several students. Each gets its own data key and
+     its own Supabase identity, so nothing leaks between them. This runs
+     before load() so the very first read already uses the right key. */
+  const Profiles = { list: [], active: 'me' };
+
+  (function bootstrapProfiles() {
+    let p = null;
+    try {
+      p = JSON.parse(window.localStorage.getItem(PROFILES_KEY) || 'null');
+    } catch (e) { p = null; }
+
+    if (!p || !Array.isArray(p.list) || !p.list.length) {
+      p = { active: 'me', list: [{ id: 'me', name: 'Me' }] };
+      try {
+        /* adopt whatever this browser already had, so no data is lost */
+        const oldDb = window.localStorage.getItem(STORE_BASE);
+        if (oldDb) window.localStorage.setItem(STORE_BASE + '::me', oldDb);
+        const oldSess = window.localStorage.getItem(SESSION_BASE);
+        if (oldSess) window.localStorage.setItem(SESSION_BASE + '::me', oldSess);
+        window.localStorage.setItem(PROFILES_KEY, JSON.stringify(p));
+      } catch (e) { /* storage blocked */ }
+    }
+
+    Profiles.list = p.list;
+    Profiles.active = p.active || p.list[0].id;
+    if (!Profiles.list.some(function (x) { return x.id === Profiles.active; })) {
+      Profiles.active = Profiles.list[0].id;
+    }
+  })();
+
+  function profileKey(base) { return base + '::' + Profiles.active; }
+
+  function persistProfiles() {
+    try {
+      window.localStorage.setItem(PROFILES_KEY, JSON.stringify({
+        active: Profiles.active, list: Profiles.list
+      }));
+    } catch (e) { /* storage blocked */ }
+  }
+
+  let STORE_KEY = profileKey(STORE_BASE);
   let memoryOnly = false;
 
   function uid(prefix) {
@@ -67,7 +111,8 @@
       quiz_results: [],
       questions: [],
       missed: [],
-      settings: { dailyGoal: 120, examDate: '', theme: '' }
+      recentQ: [],
+      settings: { dailyGoal: 120, examDate: '', theme: '', retake: null }
     };
   }
 
@@ -80,6 +125,7 @@
       quiz_results: Array.isArray(parsed.quiz_results) ? parsed.quiz_results : [],
       questions: Array.isArray(parsed.questions) ? parsed.questions : [],
       missed: Array.isArray(parsed.missed) ? parsed.missed : [],
+      recentQ: Array.isArray(parsed.recentQ) ? parsed.recentQ : [],
       settings: Object.assign({}, base.settings, parsed.settings || {})
     };
   }
@@ -122,7 +168,7 @@
   const CLOUD_KEY = CFG.supabaseAnonKey || '';
   const cloudEnabled = CFG.syncEnabled !== false && !!CLOUD_URL && !!CLOUD_KEY;
 
-  const SESSION_KEY = 'jamb_study_session_v1';
+  let SESSION_KEY = profileKey(SESSION_BASE);
   let session = null;
   try {
     session = JSON.parse(window.localStorage.getItem(SESSION_KEY) || 'null');
@@ -371,6 +417,50 @@
     return f(start) + ' – ' + f(end);
   }
 
+  /* ---------------- Profiles (who is studying) ---------------- */
+
+  function paintProfiles() {
+    const sel = document.getElementById('whoPick');
+    if (!sel) return;
+    sel.innerHTML = Profiles.list.map(function (p) {
+      return '<option value="' + esc(p.id) + '"' +
+        (p.id === Profiles.active ? ' selected' : '') + '>' + esc(p.name) + '</option>';
+    }).join('') + '<option value="__new__">+ New student</option>';
+  }
+
+  function switchProfile(id) {
+    if (!id || id === Profiles.active) return;
+
+    persistLocal();                       /* flush the current student first */
+    Profiles.active = id;
+    persistProfiles();
+
+    STORE_KEY = profileKey(STORE_BASE);
+    SESSION_KEY = profileKey(SESSION_BASE);
+    db = load();
+    try {
+      session = JSON.parse(window.localStorage.getItem(SESSION_KEY) || 'null');
+    } catch (e) { session = null; }
+
+    applyTheme();
+    renderAll();
+    paintProfiles();
+
+    if (cloudEnabled) {
+      setStatus('connecting…', 'busy');
+      cloudStart();
+    } else {
+      setStatus('saved locally', 'ok');
+    }
+  }
+
+  function addProfile(name) {
+    const p = { id: uid('p'), name: name };
+    Profiles.list.push(p);
+    persistProfiles();
+    switchProfile(p.id);
+  }
+
   /* ---------------- Tabs ---------------- */
 
   function showTab(name) {
@@ -385,6 +475,7 @@
       if (on) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
     });
     if (history.replaceState) history.replaceState(null, '', '#' + name);
+    stopRetakeTick();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -690,13 +781,42 @@
 
   const quiz = {
     pool: [], idx: 0, score: 0, answered: false, subject: '',
-    mode: 'practice', lastOpts: null, deadline: 0, timerId: null
+    mode: 'practice', lastOpts: null, deadline: 0, timerId: null, answers: []
   };
 
   function poolFor(subject) {
     const all = BANK.concat(db.questions);
     const chosen = subject === MIXED ? all : all.filter((q) => q.s === subject);
-    return chosen.map((q) => ({ s: q.s, q: q.q, o: q.o, a: q.a }));
+    return chosen.map((q) => ({ s: q.s, q: q.q, o: q.o, a: q.a, e: q.e }));
+  }
+
+  /* The paper for exam mode: Use of English first (it is compulsory in
+     UTME), then whatever else is ticked as UTME — four subjects max. */
+  function examPaper() {
+    const names = db.subjects.filter((s) => s.exam).map((s) => s.name);
+    if (!names.length) return [];
+    const english = db.subjects
+      .filter((s) => /use of english/i.test(s.name))
+      .map((s) => s.name);
+    const rest = names.filter((n) => english.indexOf(n) === -1);
+    return english.slice(0, 1).concat(rest).slice(0, 4);
+  }
+
+  /* Explanations live on the bank entry; the mistake queue only stores
+     the question itself, so look it up when it is missing. */
+  function explanationFor(text) {
+    const hit = BANK.concat(db.questions).filter((q) => q.q === text)[0];
+    return hit && hit.e ? hit.e : '';
+  }
+
+  function renderExamWho() {
+    const el = $('#examWho');
+    if (!el) return;
+    const paper = examPaper();
+    el.textContent = paper.length
+      ? 'Paper: ' + paper.join(' · ') +
+        ' — retick them in the Subjects tab to change it. One clock for the whole paper, 60s per question.'
+      : 'Tick at least one subject as UTME in the Subjects tab to build your paper.';
   }
 
   /* Live count of what the chosen subject can actually serve, so the
@@ -706,6 +826,81 @@
     if (!el || !sel) return;
     const total = BANK.concat(db.questions).length;
     el.textContent = '(' + poolFor(sel.value).length + ' of ' + total + ' in bank)';
+  }
+
+  /* ---------------- Different questions each round ---------------- */
+
+  const RECENT_MAX = 400;
+
+  /* Questions already shown recently sink to the back of the pool, so a
+     re-run hands out a different set rather than the same ten again. */
+  function freshFirst(list) {
+    const seen = {};
+    for (let i = 0; i < db.recentQ.length; i++) seen[db.recentQ[i]] = 1;
+    const fresh = [], rest = [];
+    for (let i = 0; i < list.length; i++) (seen[list[i].q] ? rest : fresh).push(list[i]);
+    return fresh.concat(rest);
+  }
+
+  function rememberShown(items) {
+    const shown = [];
+    for (let i = 0; i < items.length; i++) {
+      if (shown.indexOf(items[i].q) === -1) shown.push(items[i].q);
+    }
+    const older = db.recentQ.filter((q) => shown.indexOf(q) === -1);
+    db.recentQ = shown.concat(older).slice(0, RECENT_MAX);
+  }
+
+  /* ---------------- One-hour gap before a re-run ---------------- */
+
+  const RETAKE_MS = 60 * 60 * 1000;
+  let retakeTick = null;
+
+  function retakeKey() { return quiz.subject + '|' + quiz.mode; }
+
+  function retakeLeft() {
+    const r = db.settings.retake;
+    if (!r || r.key !== retakeKey()) return 0;
+    return Math.max(0, (r.at + RETAKE_MS) - Date.now());
+  }
+
+  function humanLeft(ms) {
+    const s = Math.ceil(ms / 1000);
+    if (s >= 3600) {
+      const h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60);
+      return m ? h + ' hr ' + m + ' min' : h + ' hr';
+    }
+    if (s >= 60) return Math.ceil(s / 60) + ' min';
+    return s + ' s';
+  }
+
+  function paintRetake() {
+    const btn = $('#rAgain'), hint = $('#rHint');
+    if (!btn) return;
+    const left = retakeLeft();
+    if (left > 0) {
+      btn.disabled = true;
+      btn.textContent = 'Practise again in ' + humanLeft(left);
+      if (hint) hint.textContent =
+        'Retaking straight away only repeats answers you just saw. ' +
+        'Give it an hour — spacing is what moves it into long-term memory.';
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Practise again';
+      if (hint) hint.textContent =
+        'Fresh pool — this round pulls questions you have not just seen.';
+    }
+  }
+
+  function startRetakeTick() {
+    stopRetakeTick();
+    paintRetake();
+    retakeTick = window.setInterval(paintRetake, 1000);
+  }
+
+  function stopRetakeTick() {
+    if (retakeTick) window.clearInterval(retakeTick);
+    retakeTick = null;
   }
 
   /* Mistake queue — a wrong answer saves the whole question here. */
@@ -730,9 +925,21 @@
     if (db.missed.length !== before) save();
   }
 
+  /* One shared "we have nothing to ask you" message. */
+  function showNoQ(msg) {
+    let hint = $('#noQ');
+    if (!hint) {
+      hint = document.createElement('p');
+      hint.id = 'noQ';
+      hint.className = 'hint';
+      $('#quizSetup').appendChild(hint);
+    }
+    hint.textContent = msg;
+  }
+
   function startQuiz(opts) {
     const options = Object.assign({ mode: 'practice' }, opts || {});
-    const subject = options.mode === 'review'
+    const subject = options.mode === 'review' || options.mode === 'exam'
       ? null
       : (options.subject !== undefined ? options.subject : $('#qSubject').value);
     /* `all` (and any non-numeric value) means "everything in the pool". */
@@ -743,35 +950,47 @@
 
     if (options.mode === 'practice' && !subject) return;
 
-    const source = options.mode === 'review' ? db.missed : shuffle(poolFor(subject));
+    let source;
+    if (options.mode === 'review') {
+      source = db.missed;
+    } else if (options.mode === 'exam') {
+      const paper = examPaper();
+      if (!paper.length) {
+        showNoQ('Tick at least one subject as UTME in the Subjects tab to build your paper.');
+        return;
+      }
+      /* English sits first, each section drawn fresh, whole paper in one go. */
+      source = paper.reduce((acc, name) => acc.concat(freshFirst(shuffle(poolFor(name)))), []);
+    } else {
+      source = freshFirst(shuffle(poolFor(subject)));
+    }
 
     if (!source.length) {
-      const msg = options.mode === 'review'
+      showNoQ(options.mode === 'review'
         ? 'No mistakes saved yet — answer a quiz first and wrong answers land here.'
-        : 'No questions for ' + esc(subject) + ' yet — add your own below.';
-      let hint = $('#noQ');
-      if (!hint) {
-        hint = document.createElement('p');
-        hint.id = 'noQ';
-        hint.className = 'hint';
-        $('#quizSetup').appendChild(hint);
-      }
-      hint.textContent = msg;
+        : options.mode === 'exam'
+          ? 'No questions for that paper yet — add your own in the Subjects tab.'
+          : 'No questions for ' + esc(subject) + ' yet — add your own below.');
       return;
     }
 
     quiz.pool = options.mode === 'review'
       ? shuffle(source).slice(0, Math.min(20, source.length))
-      : source.slice(0, Math.min(count, source.length));
+      : options.mode === 'exam'
+        ? source
+        : source.slice(0, Math.min(count, source.length));
     quiz.idx = 0;
     quiz.score = 0;
+    quiz.answers = [];
     quiz.mode = options.mode;
-    quiz.subject = options.mode === 'review' ? 'Mistake review' : (subject === MIXED ? 'Mixed subjects' : subject);
+    quiz.subject = options.mode === 'review' ? 'Mistake review'
+      : options.mode === 'exam' ? 'UTME exam'
+      : (subject === MIXED ? 'Mixed subjects' : subject);
     quiz.lastOpts = options;
 
-    /* Mock exam: a hard clock, one minute per question. */
+    /* Mock and exam: a hard clock, one minute per question. */
     stopMockClock();
-    if (options.mode === 'mock') {
+    if (options.mode === 'mock' || options.mode === 'exam') {
       quiz.deadline = Date.now() + quiz.pool.length * MOCK_SECONDS * 1000;
       $('#qClock').hidden = false;
       $('#qClock').classList.remove('urgent');
@@ -842,6 +1061,13 @@
     const byIndex = (idx) => buttons.filter((b) => parseInt(b.dataset.opt, 10) === idx)[0];
     buttons.forEach((b) => { b.disabled = true; });
 
+    /* Remember every pick so the result screen can show the full paper. */
+    quiz.answers.push({
+      s: item.s, q: item.q, o: item.o, a: item.a,
+      chosen: i, ok: i === item.a,
+      e: item.e || explanationFor(item.q)
+    });
+
     if (i === item.a) {
       quiz.score++;
       byIndex(i).classList.add('correct');
@@ -872,27 +1098,102 @@
     const total = quiz.pool.length;
     const pct = total ? Math.round((quiz.score / total) * 100) : 0;
 
-    db.quiz_results.unshift({
-      id: uid('qr'),
-      date: isoDate(new Date()),
-      subject: quiz.subject,
-      correct: quiz.score,
-      total: total,
-      mode: quiz.mode
+    /* Time ran out: everything still unanswered counts as a miss, so the
+       review screen shows the whole paper rather than just what you hit. */
+    if (timeUp) {
+      for (let i = quiz.answers.length; i < quiz.pool.length; i++) {
+        const it = quiz.pool[i];
+        quiz.answers.push({
+          s: it.s, q: it.q, o: it.o, a: it.a, chosen: -1, ok: false,
+          e: it.e || explanationFor(it.q)
+        });
+      }
+    }
+
+    /* The exam paper is scored per subject, so the dashboard's
+       weak-subject report stays per subject instead of one lump. */
+    let rows;
+    if (quiz.mode === 'exam') {
+      const bySubject = {};
+      quiz.answers.forEach((a) => {
+        if (!bySubject[a.s]) bySubject[a.s] = { correct: 0, total: 0, first: quiz.answers.indexOf(a) };
+        bySubject[a.s].total++;
+        if (a.ok) bySubject[a.s].correct++;
+      });
+      rows = Object.keys(bySubject)
+        .map((name) => ({ subject: name, correct: bySubject[name].correct, total: bySubject[name].total, first: bySubject[name].first }))
+        .sort((a, b) => a.first - b.first)
+        .map((r) => ({ subject: r.subject, correct: r.correct, total: r.total }));
+    } else {
+      rows = [{ subject: quiz.subject, correct: quiz.score, total: total }];
+    }
+
+    rows.forEach((row) => {
+      db.quiz_results.unshift({
+        id: uid('qr'),
+        date: isoDate(new Date()),
+        subject: row.subject,
+        correct: row.correct,
+        total: row.total,
+        mode: quiz.mode
+      });
     });
     db.quiz_results = db.quiz_results.slice(0, 60);
+    rememberShown(quiz.pool);
+    db.settings.retake = { key: retakeKey(), at: Date.now() };
     save();
+
+    /* Per-subject breakdown (exam papers only). */
+    const brk = $('#rBreak');
+    if (quiz.mode === 'exam') {
+      brk.hidden = false;
+      brk.innerHTML = rows.map((r) =>
+        '<li><span>' + esc(r.subject) + '</span><b>' + r.correct + ' / ' + r.total + '</b></li>'
+      ).join('');
+    } else {
+      brk.hidden = true;
+      brk.innerHTML = '';
+    }
+
+    /* Question-by-question review. */
+    $('#answerList').innerHTML = quiz.answers.map((a, i) => {
+      const verdict = a.chosen === -1 ? 'not answered' : (a.ok ? 'correct' : 'wrong');
+      const cls = a.chosen === -1 ? 'is-skip' : (a.ok ? 'is-right' : 'is-wrong');
+      const you = a.chosen === -1
+        ? ''
+        : '<p class="answer-line ' + (a.ok ? 'you ok' : 'you no') + '"><span>You</span>' + esc(a.o[a.chosen]) + '</p>';
+      const right = a.ok
+        ? ''
+        : '<p class="answer-line right"><span>Answer</span>' + esc(a.o[a.a]) + '</p>';
+      const why = a.e ? '<p class="answer-why">' + esc(a.e) + '</p>' : '';
+      return '<li class="answer-item ' + cls + '">' +
+        '<div class="answer-head">' +
+          '<span class="answer-no">' + (i + 1) + '</span>' +
+          '<span class="answer-sub">' + esc(a.s) + '</span>' +
+          '<span class="answer-flag">' + verdict + '</span>' +
+        '</div>' +
+        '<p class="answer-q">' + esc(a.q) + '</p>' +
+        you + right + why +
+      '</li>';
+    }).join('');
+    $('#answerCount').textContent = quiz.answers.length + ' answered';
+    $('#answerWrap').hidden = true;
+    $('#rReview').hidden = quiz.answers.length === 0;
+    $('#rReview').textContent = 'Review answers (' + quiz.answers.length + ')';
 
     $('#quizCard').hidden = true;
     $('#quizResult').hidden = false;
     $('#rScore').textContent = pct + '%';
     $('#rText').textContent =
       (timeUp ? 'Time up — ' : '') +
-      'You got ' + quiz.score + ' out of ' + total + ' in ' + quiz.subject + '. ' +
+      (quiz.mode === 'exam'
+        ? 'You got ' + quiz.score + ' out of ' + total + ' across your UTME paper. '
+        : 'You got ' + quiz.score + ' out of ' + total + ' in ' + quiz.subject + '. ') +
       (pct >= 80 ? 'Excellent — keep it sharp.'
         : pct >= 50 ? 'Solid base. Review the ones you missed.'
         : 'Worth another pass before you move on.');
 
+    startRetakeTick();
     renderStats();
     renderHistory();
     renderWeak();
@@ -1184,6 +1485,7 @@
     /* quiz */
     $('#startQuiz').addEventListener('click', () => startQuiz({ mode: 'practice' }));
     $('#startMock').addEventListener('click', () => startQuiz({ mode: 'mock' }));
+    $('#startExam').addEventListener('click', () => startQuiz({ mode: 'exam' }));
     $('#qSubject').addEventListener('change', updateQAvail);
     $('#reviewStart').addEventListener('click', () => startQuiz({ mode: 'review' }));
     $('#reviewClear').addEventListener('click', () => {
@@ -1205,10 +1507,39 @@
       $('#quizSetup').hidden = false;
     });
     $('#rAgain').addEventListener('click', () => {
+      if ($('#rAgain').disabled) return;
+      stopRetakeTick();
       $('#quizResult').hidden = true;
       startQuiz(quiz.lastOpts || { mode: 'practice' });
     });
-    $('#rHome').addEventListener('click', () => { $('#quizResult').hidden = true; $('#quizSetup').hidden = false; });
+    $('#rReview').addEventListener('click', () => {
+      const wrap = $('#answerWrap');
+      wrap.hidden = !wrap.hidden;
+      $('#rReview').textContent = wrap.hidden
+        ? 'Review answers (' + quiz.answers.length + ')'
+        : 'Hide review';
+      if (!wrap.hidden) wrap.scrollIntoView({ block: 'nearest' });
+    });
+    $('#rHome').addEventListener('click', () => {
+      stopRetakeTick();
+      $('#quizResult').hidden = true;
+      $('#answerWrap').hidden = true;
+      $('#quizSetup').hidden = false;
+    });
+
+    /* who is studying on this device */
+    $('#whoPick').addEventListener('change', (e) => {
+      const v = e.target.value;
+      if (v === '__new__') {
+        const name = window.prompt('Name of the new student on this device:', '');
+        if (name && name.trim()) addProfile(name.trim());
+        paintProfiles();
+        e.target.value = Profiles.active;
+        return;
+      }
+      switchProfile(v);
+    });
+    paintProfiles();
 
     /* theme */
     $('#themeToggle').addEventListener('click', () => {
@@ -1318,6 +1649,7 @@
     renderHeat();
     renderWeekGrid();
     renderSubjects();
+    renderExamWho();
     renderHistory();
     renderReview();
     paintTimer();
