@@ -10,6 +10,12 @@ timer, progress charts and a scored practice-question bank.
   Commerce, Further Mathematics, Agricultural Science, Principles of Accounts)
 - Practice quizzes, **mixed-subject quizzes**, and a **timed mock exam**
   (60 seconds per question, auto-submits when the clock runs out)
+- **Full UTME paper** — the four subjects flagged as UTME in Subjects (Use of
+  English always first), every question from each in one sitting under a single
+  countdown, then scored and broken down subject by subject
+- **Answer review** — every quiz and paper ends with a question-by-question
+  review: your answer, the correct answer, and a one-line explanation of the
+  reasoning where one has been written
 - **Mistake queue** — every wrong answer is saved for review; getting it right
   in review removes it
 - **Needs-work report** — your lowest-accuracy subjects, recalculated after
