@@ -58,6 +58,23 @@
 
       <div class="stats" id="stats"></div>
 
+      <!-- Next UTME cycle — computed from today's date, rolls forward every year -->
+      <section class="card" aria-labelledby="cycle-title">
+        <div class="card-head">
+          <h2 id="cycle-title">Next UTME cycle</h2>
+          <span class="chip" id="cycleYear">—</span>
+        </div>
+        <div class="cycle-head">
+          <p class="cycle-count" id="cycleCount">—</p>
+          <p class="hint" id="cycleNext"></p>
+        </div>
+        <ul class="timeline" id="cycleTimeline"></ul>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="cycleSetExam" type="button">📅 Use this exam date for my countdown</button>
+        </div>
+        <p class="hint">Projected from JAMB's calendar — registration opens late Jan and runs ~6 weeks, mock in late Mar, slips from mid Apr, exam from the last week of Apr into mid May, results within 24–48h. The card rolls to the next cycle on its own once this one finishes; official dates land each January.</p>
+      </section>
+
       <div class="grid-2">
         <!-- Focus timer -->
         <section class="card" aria-labelledby="timer-title">

@@ -32,6 +32,10 @@ timer, progress charts and a scored practice-question bank.
   every quiz
 - Weekly timetable with tick-off sessions, focus timer, streak, weekly bar
   chart, subject progress bars and a **month study calendar**
+- **Next UTME cycle card** — registration, mock, slips, exam and results dates
+  projected for the upcoming session. It's computed from today's date, so it
+  rolls to the next year's cycle by itself once the current one finishes, with
+  a one-click button that adopts the projected exam date for the countdown
 - Light/dark themes, installable as a PWA, works offline
 
 > **About the questions.** Every question in this bank was written against the
@@ -212,9 +216,16 @@ Two things to know about your Supabase project:
 2. **Authentication → Providers → Email → Confirm email** — Supabase ships this
    **on**. If you leave it on, an account is created but no session is returned
    until the link in the confirmation email is clicked, and the dialog will say
-   *"Confirm the link we emailed you, then sign in."* That email only arrives
-   if the project's SMTP is working. Turn confirmation **off** if you would
-   rather sign in straight away.
+   *"We emailed you a confirmation link — open it and you'll land back here,
+   already signed in."* The link redirects back to whatever page the sign-up
+   came from (`emailRedirectTo`), and the app claims the tokens from the URL
+   on load, shows *"Email confirmed ✅ — signed in as …"* and starts syncing —
+   no second sign-in needed. The project's **Authentication → URL
+   Configuration** must allow that origin: Site URL points at the deployed
+   app, and the Redirect URLs list includes `https://nifemi-lab.github.io/**`
+   plus the `localhost` dev URLs. That email only arrives if the project's
+   SMTP is working. Turn confirmation **off** if you would rather sign in
+   straight away.
 
 Signing in swaps this browser's identity for the email account's. Your data
 stays exactly where it is locally and is pushed to the new row on the next

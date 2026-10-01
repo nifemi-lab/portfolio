@@ -176,6 +176,31 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 .auth-form .field { flex: none; }
 .auth-err { color: var(--danger); }
 .auth-ok { color: var(--accent-2); }
+
+/* ---------- Next UTME cycle card ---------- */
+.cycle-head { display: flex; flex-direction: column; gap: .2rem; margin-bottom: 1rem; }
+.cycle-count { font-family: var(--font-display); font-size: var(--step-1); font-weight: 700; line-height: 1.2; letter-spacing: -.01em; }
+.cycle-count .hint, .cycle-head .hint { margin-top: .3rem; }
+.timeline { display: flex; flex-direction: column; gap: .4rem; }
+.timeline li {
+  display: grid; grid-template-columns: 1fr auto auto; gap: .8rem; align-items: baseline;
+  padding: .55rem .8rem; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg-elev-2); font-size: var(--step--1);
+}
+.timeline li.done { opacity: .5; }
+.timeline li.now { border-color: rgba(100, 240, 199, .45); background: rgba(100, 240, 199, .08); }
+.timeline li.is-next { border-color: var(--accent); }
+.tl-body { display: flex; flex-direction: column; gap: .1rem; min-width: 0; }
+.tl-label { font-weight: 600; }
+.timeline li.is-next .tl-label, .timeline li.now .tl-label { color: var(--accent-2); }
+.tl-note { color: var(--text-faint); }
+.tl-when { color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.timeline li.now .tl-when { color: var(--accent-2); font-weight: 600; }
+.tl-date { color: var(--text-faint); font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 3.6rem; text-align: right; }
+@media (max-width: 520px) {
+  .timeline li { grid-template-columns: 1fr auto; }
+  .tl-date { display: none; }
+}
 .auth-form .btn-row { margin-top: .2rem; }
 
 /* ---------- Learn tab ---------- */

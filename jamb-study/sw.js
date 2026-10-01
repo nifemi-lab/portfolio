@@ -5,7 +5,7 @@
    offline (including on a flaky campus connection).
    ========================================================= */
 
-const CACHE = 'jamb-study-v4';
+const CACHE = 'jamb-study-v5';
 
 const ASSETS = [
   './',

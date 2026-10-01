@@ -846,6 +846,96 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /* ---------------- Next UTME cycle ----------------
+     JAMB's dates shift a little every year and are announced each
+     January, so the card below works from the projected pattern:
+     registration late Jan (~6 weeks to mid Mar), mock late Mar /
+     early Apr, slips from mid Apr, main exam from the last week of
+     Apr into mid May, results within 24-48h. Everything is derived
+     from today's date, so once one cycle finishes the card rolls
+     itself onto the next year — no update needed. */
+
+  function cycleFor(year) {
+    const d = (m, day) => new Date(year, m, day);
+    return {
+      year: year,
+      marks: [
+        { key: 'reg', label: 'Registration opens', date: d(0, 26), note: 'late Jan' },
+        { key: 'regClose', label: 'Registration closes', date: d(2, 13), note: 'about 6 weeks after opening' },
+        { key: 'mock', label: 'Mock-UTME', date: d(2, 30), note: 'late Mar / early Apr' },
+        { key: 'slip', label: 'Slip printing opens', date: d(3, 14), note: 'mid Apr' },
+        { key: 'examStart', label: 'UTME exam starts', date: d(3, 26), note: 'last week of Apr' },
+        { key: 'examEnd', label: 'UTME exam ends', date: d(4, 10), note: 'mid May' },
+        { key: 'results', label: 'Results released', date: d(4, 12), note: 'within 24-48h of each paper' }
+      ]
+    };
+  }
+
+  function activeCycle() {
+    const today = startOfDay(new Date());
+    let cycle = cycleFor(today.getFullYear());
+    /* June onward the current year's cycle is history — roll to the next. */
+    if (today > cycle.marks[cycle.marks.length - 1].date) cycle = cycleFor(cycle.year + 1);
+    return { today: today, cycle: cycle };
+  }
+
+  function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function daysFrom(a, b) { return Math.round((b - a) / 86400000); }
+
+  function renderCycle() {
+    const ac = activeCycle();
+    const today = ac.today;
+    const cycle = ac.cycle;
+    const marks = cycle.marks;
+    const nextIdx = marks.findIndex((m) => m.date >= today);
+
+    /* Phases that span days rather than a single date. */
+    const spans = [
+      { label: 'Registration is open', from: marks[0].date, to: marks[1].date },
+      { label: 'UTME exam is running', from: marks[4].date, to: marks[5].date }
+    ];
+    const live = spans.find((s) => today >= s.from && today <= s.to);
+
+    let headline;
+    if (live) {
+      const left = daysFrom(today, live.to);
+      headline = live.label + ' — <span class="grad">' +
+        (left === 0 ? 'closes today' : left + ' day' + (left === 1 ? '' : 's') + ' left') + '</span>';
+    } else if (nextIdx !== -1) {
+      const n = marks[nextIdx];
+      const inDays = daysFrom(today, n.date);
+      headline = esc(n.label) + ' in <span class="grad">' +
+        (inDays === 0 ? 'today' : inDays + ' day' + (inDays === 1 ? '' : 's')) + '</span>';
+    } else {
+      headline = 'This cycle is done — <span class="grad">next one loads automatically</span>';
+    }
+
+    $('#cycleYear').textContent = cycle.year + ' cycle';
+    $('#cycleCount').innerHTML = headline;
+
+    const examStart = marks[4].date;
+    const examDays = daysFrom(today, examStart);
+    $('#cycleNext').textContent = 'Exam day: ' +
+      examStart.toLocaleDateString('en-NG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) +
+      (examDays < 0 && today <= marks[5].date ? ' — happening now' : '');
+
+    $('#cycleTimeline').innerHTML = marks.map((m) => {
+      const diff = daysFrom(today, m.date);
+      const state = diff < 0 ? 'done' : (diff === 0 ? 'now' : (m === (nextIdx === -1 ? null : marks[nextIdx]) ? 'is-next' : ''));
+      const when = diff < 0 ? 'done'
+        : diff === 0 ? 'today'
+          : diff + ' day' + (diff === 1 ? '' : 's');
+      return '<li class="' + state + '">' +
+        '<span class="tl-body">' +
+        '<span class="tl-label">' + esc(m.label) + '</span>' +
+        '<span class="tl-note">' + esc(m.note) + '</span>' +
+        '</span>' +
+        '<span class="tl-when">' + when + '</span>' +
+        '<span class="tl-date">' + m.date.toLocaleDateString('en-NG', { day: 'numeric', month: 'short' }) + '</span>' +
+        '</li>';
+    }).join('');
+  }
+
   /* ---------------- Dashboard ---------------- */
 
   function renderStats() {
@@ -1883,6 +1973,16 @@
       renderStats();
     });
 
+    /* next-cycle card: adopt the projected exam date as the countdown date */
+    $('#cycleSetExam').addEventListener('click', () => {
+      const ac = activeCycle();
+      db.settings.examDate = isoDate(ac.cycle.marks[4].date);
+      $('#examDate').value = db.settings.examDate;
+      save();
+      renderStats();
+      setStatus('countdown set to ' + db.settings.examDate, 'ok');
+    });
+
     /* timer */
     $('#timerToggle').addEventListener('click', () => { timer.running ? stopTimer() : startTimer(); });
     $('#timerReset').addEventListener('click', resetTimer);
@@ -2104,6 +2204,7 @@
     fillSubjectSelects();
     applyTheme();
     renderStats();
+    renderCycle();
     renderToday();
     renderChart();
     renderProgress();
