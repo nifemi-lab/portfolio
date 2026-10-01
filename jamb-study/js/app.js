@@ -727,12 +727,29 @@
 
   /* Plain text -> safe HTML. Blank line = paragraph break, single \n = line
      break inside the paragraph, "- " at line start = bullet list. A bullet
-     block may sit directly under an intro line with no blank line. */
+     block may sit directly under an intro line with no blank line.
+     A paragraph that opens with one of these labels becomes a styled
+     lesson box (used by the Learn notes):
+       Example:   worked problem, shown step by step
+       Watch out: the slip JAMB is hoping you'll make
+       In short:  the takeaway, in one breath */
+  const CALLOUTS = { 'Example:': 'eg', 'Watch out:': 'warn', 'In short:': 'recap' };
+
   function textBlocks(body) {
     const out = [];
     let mode = '', buf = [];
     const close = () => {
-      if (mode === 'p') out.push('<p>' + buf.join('<br>') + '</p>');
+      if (mode === 'p') {
+        const first = buf[0] || '';
+        let hit = '';
+        Object.keys(CALLOUTS).forEach((k) => { if (first.indexOf(k) === 0) hit = k; });
+        if (hit) {
+          out.push('<p class="nb nb-' + CALLOUTS[hit] + '"><b>' + esc(hit) + '</b>' +
+            first.slice(hit.length) + (buf.length > 1 ? '<br>' + buf.slice(1).join('<br>') : '') + '</p>');
+        } else {
+          out.push('<p>' + buf.join('<br>') + '</p>');
+        }
+      }
       else if (mode === 'ul') out.push('<ul>' + buf.map((li) => '<li>' + li + '</li>').join('') + '</ul>');
       buf = []; mode = '';
     };
