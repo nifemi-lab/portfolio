@@ -320,6 +320,7 @@
         <p class="quiz-subject" id="qSubjectLabel"></p>
         <h2 class="quiz-question" id="qText"></h2>
         <ul class="quiz-options" id="qOptions"></ul>
+        <div class="quiz-why" id="qWhy" hidden aria-live="polite"></div>
         <div class="btn-row quiz-actions">
           <button class="btn btn-primary" id="qNext" disabled>Next question</button>
           <button class="btn btn-ghost" id="qSkip" title="Leave it for later — goes straight to your mistakes queue (press S)">Skip</button>
@@ -437,6 +438,9 @@
         <input type="password" id="authPass" autocomplete="current-password" placeholder="At least 6 characters" maxlength="72" minlength="6" required />
       </label>
       <p class="hint auth-err" id="authMsg" hidden></p>
+      <div class="btn-row" id="authResendRow" hidden>
+        <button class="btn btn-ghost" type="button" id="authResend">✉️ Resend confirmation email</button>
+      </div>
       <div class="btn-row">
         <button class="btn btn-primary" type="submit" id="authGo">Sign in</button>
         <button class="btn btn-ghost" type="button" id="authSwitch">Create an account</button>

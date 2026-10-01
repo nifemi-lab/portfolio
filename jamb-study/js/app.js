@@ -390,6 +390,7 @@
       if (!dlg) return;
       Auth.mode = 'signin';
       document.getElementById('authMsg').hidden = true;
+      Auth.showResend(false);
       document.getElementById('authEmail').value = (session && session.email) || '';
       document.getElementById('authPass').value = '';
       Auth.paintMode();
@@ -419,6 +420,44 @@
       el.hidden = false;
     },
 
+    /* GoTrue won't issue a session until the confirmation link is
+       clicked, so give people a one-tap way to get that email again. */
+    showResend: function (on) {
+      const row = document.getElementById('authResendRow');
+      if (row) row.hidden = !on;
+    },
+
+    resend: async function () {
+      const email = document.getElementById('authEmail').value.trim();
+      const row = document.getElementById('authResendRow');
+      const btn = document.getElementById('authResend');
+      if (!email) { Auth.fail('Enter your email above first, then tap Resend.'); return; }
+      btn.disabled = true;
+      setStatus('sending…', 'busy');
+      try {
+        const body = { type: 'signup', email: email };
+        const back = authRedirectUrl();
+        if (back) body.email_redirect_to = back;
+        await api('/auth/v1/resend', { method: 'POST', body: JSON.stringify(body) });
+        Auth.showResend(false);
+        const el = document.getElementById('authMsg');
+        el.textContent = 'Confirmation email sent again — open the link and you’ll land back here, signed in.';
+        el.className = 'hint auth-ok';
+        el.hidden = false;
+        setStatus('saved locally', 'ok');
+      } catch (e) {
+        const raw = (e && e.message) || '';
+        if (raw.indexOf('rate limit') !== -1) {
+          Auth.fail('Give it a minute — Supabase limits how many emails can go out per hour, then try Resend again.');
+        } else {
+          Auth.fail(authError(e));
+        }
+        setStatus('local only', 'warn');
+      } finally {
+        btn.disabled = false;
+      }
+    },
+
     submit: async function (email, password) {
       const btn = document.getElementById('authGo');
       btn.disabled = true;
@@ -441,6 +480,7 @@
           Auth.mode = 'signin';
           Auth.paintMode();
           Auth.fail('Account created. We emailed you a confirmation link — open it and you’ll land back here, already signed in.');
+          Auth.showResend(true);
           setStatus('saved locally', 'ok');
           return;
         }
@@ -451,7 +491,9 @@
         paintAuth();
         queuePush();
       } catch (e) {
+        const raw = (e && e.message) || '';
         Auth.fail(authError(e));
+        Auth.showResend(raw === 'Email not confirmed');
         setStatus('local only', 'warn');
       } finally {
         btn.disabled = false;
@@ -1268,11 +1310,33 @@
     return english.slice(0, 1).concat(rest).slice(0, 4);
   }
 
-  /* Explanations live on the bank entry; the mistake queue only stores
-     the question itself, so look it up when it is missing. */
-  function explanationFor(text) {
-    const hit = BANK.concat(db.questions).filter((q) => q.q === text)[0];
-    return hit && hit.e ? hit.e : '';
+  /* Explanations live in the solutions files, keyed by subject then by the
+     exact question text; the mistake queue only stores the question itself,
+     so look it up when it is missing. Falls back to the bank's own e: field. */
+  function explanationFor(subject, text) {
+    const sols = window.SOLUTIONS || {};
+    const own = subject && sols[subject] && sols[subject][text];
+    if (own && own.e) return own.e;
+    const subjects = Object.keys(sols);
+    for (let i = 0; i < subjects.length; i++) {
+      const hit = sols[subjects[i]][text];
+      if (hit && hit.e) return hit.e;
+    }
+    const banked = BANK.concat(db.questions).filter((q) => q.q === text)[0];
+    return banked && banked.e ? banked.e : '';
+  }
+
+  /* Topic for a question, when the solutions file has one. */
+  function topicFor(subject, text) {
+    const sols = window.SOLUTIONS || {};
+    const own = subject && sols[subject] && sols[subject][text];
+    if (own && own.t) return own.t;
+    const subjects = Object.keys(sols);
+    for (let i = 0; i < subjects.length; i++) {
+      const hit = sols[subjects[i]][text];
+      if (hit && hit.t) return hit.t;
+    }
+    return '';
   }
 
   function renderExamWho() {
@@ -1504,6 +1568,8 @@
   function renderQuestion() {
     const item = quiz.pool[quiz.idx];
     quiz.answered = false;
+    const whyBox = document.getElementById('qWhy');
+    if (whyBox) { whyBox.hidden = true; whyBox.innerHTML = ''; }
 
     $('#qProgress').textContent = (quiz.idx + 1) + ' / ' + quiz.pool.length;
     $('#qScore').textContent = quiz.score + ' correct';
@@ -1540,7 +1606,7 @@
     quiz.answers.push({
       s: item.s, q: item.q, o: item.o, a: item.a,
       chosen: i, ok: i === item.a,
-      e: item.e || explanationFor(item.q)
+      e: item.e || explanationFor(item.s, item.q)
     });
 
     if (i === item.a) {
@@ -1551,6 +1617,26 @@
       byIndex(i).classList.add('wrong');
       byIndex(item.a).classList.add('correct');
       recordMistake(item);
+    }
+
+    /* Show the working straight away — especially when it went wrong, so
+       the method lands while the question is still in front of you. */
+    const whyBox = document.getElementById('qWhy');
+    if (whyBox) {
+      const worked = item.e || explanationFor(item.s, item.q);
+      const topic = topicFor(item.s, item.q);
+      if (worked) {
+        whyBox.innerHTML =
+          '<p class="quiz-why-head">' +
+            (i === item.a ? 'Why that is the answer' : 'How to work it out') +
+            (topic ? '<span class="quiz-why-topic">' + esc(topic) + '</span>' : '') +
+          '</p>' +
+          '<p class="quiz-why-body">' + esc(worked) + '</p>';
+        whyBox.hidden = false;
+      } else {
+        whyBox.innerHTML = '';
+        whyBox.hidden = true;
+      }
     }
 
     $('#qScore').textContent = quiz.score + ' correct';
@@ -1570,7 +1656,7 @@
     quiz.answers.push({
       s: item.s, q: item.q, o: item.o, a: item.a,
       chosen: -1, ok: false, skipped: true,
-      e: item.e || explanationFor(item.q)
+      e: item.e || explanationFor(item.s, item.q)
     });
     recordMistake(item);
     nextQuestion();
@@ -1598,7 +1684,7 @@
         const it = quiz.pool[i];
         quiz.answers.push({
           s: it.s, q: it.q, o: it.o, a: it.a, chosen: -1, ok: false,
-          e: it.e || explanationFor(it.q)
+          e: it.e || explanationFor(it.s, it.q)
         });
       }
     }
@@ -1773,21 +1859,79 @@
       $('#timerHint').textContent = 'No time elapsed yet — study a minute first.';
       return;
     }
+    /* Attribute the minutes to a session scheduled for today whenever there
+       is one. That is what makes the tick on the timetable honest: a slot
+       only lights up once real focus time has been recorded against it, so
+       nobody can claim an hour they never sat down for. */
+    const session = db.sessions.find((s) => s.subject === subject && s.day === todayIndex());
     db.logs.push({
       id: uid('log'),
       date: isoDate(new Date()),
       subject: subject,
       minutes: elapsed,
-      sessionId: null,
+      sessionId: session ? session.id : null,
       source: 'timer'
     });
     save();
     resetTimer();
-    $('#timerHint').textContent = 'Logged ' + elapsed + ' min to ' + subject + '.';
+    $('#timerHint').textContent = session
+      ? 'Logged ' + elapsed + ' min — your ' + fmtTime(session.time, session.minutes) + ' slot is now marked.'
+      : 'Logged ' + elapsed + ' min to ' + subject + '.';
     renderStats();
     renderChart();
     renderProgress();
     renderSubjects();
+    renderWeekGrid();
+    renderToday();
+  }
+
+  /* Focus minutes recorded against a session today, and whether it is
+     currently ticked off. Ticking on its own earns nothing — the focus
+     timer has to put real time against the slot first. */
+  function sessionLogs(sessionId) {
+    const today = isoDate(new Date());
+    return db.logs.filter((l) => l.sessionId === sessionId && l.date === today);
+  }
+
+  function studiedToday(sessionId) {
+    return sessionLogs(sessionId).reduce((n, l) => n + (l.minutes || 0), 0);
+  }
+
+  function isDoneToday(sessionId) {
+    return sessionLogs(sessionId).some((l) => !l.unticked);
+  }
+
+  /* Undo a tick. Self-awarded plan minutes are dropped, because they were
+     never earned; focus-timer minutes are only flagged, so real study
+     stays in the totals and the tick can be put back. */
+  function toggleSessionLog(id) {
+    const logs = sessionLogs(id);
+    if (!logs.length) return false;           /* gated: nothing real yet */
+    const anyLive = logs.some((l) => !l.unticked);
+    if (anyLive) {
+      db.logs = db.logs.filter((l) => !(l.sessionId === id && l.source === 'plan'));
+      db.logs.forEach((l) => { if (l.sessionId === id) l.unticked = true; });
+    } else {
+      db.logs.forEach((l) => { if (l.sessionId === id) l.unticked = false; });
+    }
+    save();
+    return true;
+  }
+
+  /* The slot's play button: jump to the focus timer with this subject
+     already chosen and start it, so earning the tick is one tap away. */
+  function startFocusForSession(id) {
+    const session = db.sessions.find((s) => s.id === id);
+    if (!session) return;
+    const pick = document.getElementById('timerSubject');
+    if (pick) pick.value = session.subject;
+    showTab('dashboard');
+    if (timer.left === 0 || timer.left === timer.total) resetTimer();
+    startTimer();
+    $('#timerHint').textContent = 'Focusing on ' + session.subject +
+      ' — when you stop, hit "Log time" and the slot unlocks.';
+    const card = document.querySelector('.timer');
+    if (card && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   /* ---------------- Events ---------------- */
@@ -2047,8 +2191,10 @@
     document.getElementById('authSwitch').addEventListener('click', function () {
       Auth.mode = Auth.mode === 'signin' ? 'signup' : 'signin';
       document.getElementById('authMsg').hidden = true;
+      Auth.showResend(false);
       Auth.paintMode();
     });
+    document.getElementById('authResend').addEventListener('click', function () { Auth.resend(); });
     document.getElementById('authForm').addEventListener('submit', function (e) {
       e.preventDefault();
       const email = document.getElementById('authEmail').value.trim();
