@@ -385,9 +385,17 @@ input[type="date"], input[type="time"] { color-scheme: dark; }
 }
 .plan-item.done .plan-check { background: var(--accent-2); border-color: var(--accent-2); color: var(--accent-ink); }
 .plan-body { flex: 1; min-width: 0; }
-.plan-subject { font-weight: 600; font-size: var(--step--1); }
-.plan-topic { font-size: var(--step--1); color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Block-level so the topic sits on its own line under the subject (an
+   inline span would run straight into “… min”), and so the ellipsis
+   can actually clip long topics instead of overflowing the row. */
+.plan-subject { display: block; font-weight: 600; font-size: var(--step--1); }
+.plan-topic { display: block; font-size: var(--step--1); color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .plan-time { font-size: var(--step--1); color: var(--text-faint); font-variant-numeric: tabular-nums; }
+/* The plan check is locked until the focus timer has put real minutes
+   against the session — ticking alone must not be able to award time. */
+.plan-check:disabled { cursor: not-allowed; border-style: dashed; opacity: .5; }
+.plan-check:disabled:hover { border-color: var(--border-strong); background: transparent; }
+.plan-time-earned { color: var(--accent-2); font-weight: 600; }
 
 /* ---------- Chart ---------- */
 .chart {
@@ -455,6 +463,12 @@ input[type="date"], input[type="time"] { color-scheme: dark; }
 .icon-btn:hover { color: var(--text); border-color: var(--border-strong); background: var(--bg-elev); }
 .icon-btn.check:hover { color: var(--accent-2); border-color: rgba(100,240,199,.4); }
 .slot.done .icon-btn.check { background: var(--accent-2); color: var(--accent-ink); border-color: var(--accent-2); }
+/* Unstudied slot: the tick is locked, and a play button takes its place. */
+.icon-btn:disabled { cursor: not-allowed; border-style: dashed; opacity: .5; }
+.icon-btn:disabled:hover { color: var(--text-muted); border-color: var(--border); background: transparent; }
+.icon-btn.play { color: var(--accent); border-color: rgba(77, 204, 255, .45); }
+.icon-btn.play:hover { background: rgba(77, 204, 255, .12); border-color: var(--accent); color: var(--accent); }
+.slot-mins-earned { color: var(--accent-2); }
 .day-empty { font-size: .78rem; color: var(--text-faint); font-style: italic; }
 
 /* ---------- Subject list ---------- */
@@ -500,6 +514,31 @@ input[type="date"], input[type="time"] { color-scheme: dark; }
 .opt.correct .opt-key { background: var(--accent-2); color: var(--accent-ink); border-color: var(--accent-2); }
 .opt.wrong { border-color: var(--danger); background: rgba(255, 122, 133, .1); }
 .opt.wrong .opt-key { background: var(--danger); color: #2a0709; border-color: var(--danger); }
+/* The working, shown the moment you answer — this is the "how do I
+   actually solve it" panel, and it is the reason students stay on a
+   question instead of guessing and moving on. */
+.quiz-why {
+  margin-top: .9rem; padding: .8rem .9rem;
+  background: var(--bg-elev-2); border: 1px solid var(--border);
+  border-left: 3px solid var(--accent); border-radius: var(--radius-sm);
+  animation: whyIn .3s var(--ease);
+}
+@keyframes whyIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.quiz-why-head {
+  display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  margin: 0 0 .45rem; font-size: .72rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
+}
+.quiz-why-topic {
+  font-size: .66rem; letter-spacing: .04em; text-transform: none;
+  font-weight: 600; color: var(--text-muted);
+  background: var(--bg-elev); border: 1px solid var(--border);
+  border-radius: 999px; padding: .12rem .5rem;
+}
+.quiz-why-body {
+  margin: 0; font-size: var(--step-0); line-height: 1.7;
+  color: var(--text-muted);
+}
 .quiz-actions { align-items: center; }
 
 .result { text-align: center; padding: 1rem 0; }

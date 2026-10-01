@@ -281,6 +281,7 @@
     'Password should be at least 6 characters': 'Password must be at least 6 characters.',
     'Unable to validate email address': 'That email address does not look valid.',
     'Email not confirmed': 'Confirm the link we emailed you, then sign in.',
+    'email rate limit exceeded': 'Supabase is limiting how many emails can go out right now — wait a minute and try again.',
     'Signup requires a valid password': 'Password must be at least 6 characters.'
   };
 
@@ -436,9 +437,10 @@
       setStatus('sending…', 'busy');
       try {
         const body = { type: 'signup', email: email };
+        /* Same rule as signup: the return URL rides in the query string. */
         const back = authRedirectUrl();
-        if (back) body.email_redirect_to = back;
-        await api('/auth/v1/resend', { method: 'POST', body: JSON.stringify(body) });
+        const url = '/auth/v1/resend' + (back ? '?redirect_to=' + encodeURIComponent(back) : '');
+        await api(url, { method: 'POST', body: JSON.stringify(body) });
         Auth.showResend(false);
         const el = document.getElementById('authMsg');
         el.textContent = 'Confirmation email sent again — open the link and you’ll land back here, signed in.';
@@ -464,16 +466,14 @@
       setStatus('connecting…', 'busy');
       try {
         const body = { email: email, password: password };
-        if (Auth.mode === 'signup') {
-          const back = authRedirectUrl();
-          if (back) body.emailRedirectTo = back;
-        }
-        const r = await api(
-          Auth.mode === 'signup'
-            ? '/auth/v1/signup'
-            : '/auth/v1/token?grant_type=password',
-          { method: 'POST', body: JSON.stringify(body) }
-        );
+        /* GoTrue reads the return URL from ?redirect_to=… on the request
+           itself — a body field is ignored, and it silently falls back
+           to the project Site URL (so the email would skip this app). */
+        const back = Auth.mode === 'signup' ? authRedirectUrl() : null;
+        const url = Auth.mode === 'signup'
+          ? '/auth/v1/signup' + (back ? '?redirect_to=' + encodeURIComponent(back) : '')
+          : '/auth/v1/token?grant_type=password';
+        const r = await api(url, { method: 'POST', body: JSON.stringify(body) });
 
         /* No token means the project still wants email confirmation. */
         if (!r || !r.access_token) {
@@ -1022,19 +1022,20 @@
       .filter((s) => s.day === idx)
       .sort((a, b) => a.time.localeCompare(b.time));
 
-    const doneIds = db.logs
-      .filter((l) => l.date === today && l.sessionId)
-      .map((l) => l.sessionId);
-
     $('#todayCount').textContent = list.length + (list.length === 1 ? ' session' : ' sessions');
     $('#todayEmpty').hidden = list.length > 0;
 
     $('#todayPlan').innerHTML = list.map((s) => {
-      const done = doneIds.indexOf(s.id) !== -1;
+      const real = studiedToday(s.id);
+      const done = isDoneToday(s.id);
+      const canTick = real > 0;
       return '<li class="plan-item' + (done ? ' done' : '') + '">' +
-        '<button class="plan-check" data-toggle="' + s.id + '" aria-pressed="' + done + '" aria-label="Mark ' + esc(s.subject) + ' as done">✓</button>' +
+        '<button class="plan-check" data-toggle="' + s.id + '" aria-pressed="' + done + '"' +
+          (canTick ? '' : ' disabled title="No focus time yet — run the focus timer first, so the minutes are real"') +
+          ' aria-label="Mark ' + esc(s.subject) + ' as done">✓</button>' +
         '<span class="plan-body">' +
-          '<span class="plan-subject">' + esc(s.subject) + (s.minutes ? ' <span class="plan-time">· ' + s.minutes + ' min</span>' : '') + '</span>' +
+          '<span class="plan-subject">' + esc(s.subject) +
+            ' <span class="plan-time' + (canTick ? ' plan-time-earned' : '') + '">· ' + real + ' / ' + s.minutes + ' min</span></span>' +
           (s.topic ? '<span class="plan-topic">' + esc(s.topic) + '</span>' : '') +
         '</span>' +
         '<span class="plan-time">' + esc(fmtTime(s.time, s.minutes).split(' – ')[0]) + '</span>' +
@@ -1192,18 +1193,31 @@
         .sort((a, b) => a.time.localeCompare(b.time));
 
       const body = slots.length ? slots.map((s) => {
-        const done = db.logs.some((l) => l.sessionId === s.id && l.date === today);
+        const dateStr = isoDate(d);
+        const real = studiedOn(s.id, dateStr);
+        const done = isDoneOn(s.id, dateStr);
+        const isTodayCol = (i === tIdx);
+        /* Only today can be ticked off — a past day is history, not a task. */
+        const canTick = isTodayCol && real > 0;
+        const locked = isTodayCol
+          ? 'No focus time yet — run the timer first, so the minutes are real'
+          : 'Only today can be ticked off';
         return '<article class="slot' + (done ? ' done' : '') + '">' +
           '<div class="slot-top">' +
             '<span class="slot-time">' + esc(fmtTime(s.time, s.minutes)) + '</span>' +
             '<span class="slot-actions">' +
-              '<button class="icon-btn check" data-slot-check="' + s.id + '" title="Mark as studied" aria-label="Mark ' + esc(s.subject) + ' as studied">✓</button>' +
+              (isTodayCol && !canTick ?
+                '<button class="icon-btn play" data-slot-start="' + s.id + '" title="Start the focus timer for this session" aria-label="Start focus timer for ' + esc(s.subject) + '">▶</button>' : '') +
+              '<button class="icon-btn check" data-slot-check="' + s.id + '"' +
+                (canTick ? ' title="Mark as studied"' : ' disabled title="' + locked + '"') +
+                ' aria-label="Mark ' + esc(s.subject) + ' as studied">✓</button>' +
               '<button class="icon-btn" data-slot-del="' + s.id + '" title="Delete session" aria-label="Delete ' + esc(s.subject) + ' session">✕</button>' +
             '</span>' +
           '</div>' +
           '<p class="slot-subject">' + esc(s.subject) + '</p>' +
           (s.topic ? '<p class="slot-topic">' + esc(s.topic) + '</p>' : '') +
-          '<p class="slot-mins">' + s.minutes + ' min</p>' +
+          '<p class="slot-mins' + (real > 0 ? ' slot-mins-earned' : '') + '">' +
+            real + ' / ' + s.minutes + ' min' + (done ? ' · studied' : '') + '</p>' +
         '</article>';
       }).join('') : '<p class="day-empty">Free</p>';
 
@@ -1885,34 +1899,44 @@
     renderToday();
   }
 
-  /* Focus minutes recorded against a session today, and whether it is
-     currently ticked off. Ticking on its own earns nothing — the focus
-     timer has to put real time against the slot first. */
-  function sessionLogs(sessionId) {
-    const today = isoDate(new Date());
-    return db.logs.filter((l) => l.sessionId === sessionId && l.date === today);
+  /* Focus minutes recorded against a session on a given day, and whether it
+     was ticked off then. Ticking on its own earns nothing — the focus timer
+     has to put real time against the slot first. */
+  function sessionLogsOn(sessionId, date) {
+    return db.logs.filter((l) => l.sessionId === sessionId && l.date === date);
+  }
+
+  function studiedOn(sessionId, date) {
+    return sessionLogsOn(sessionId, date).reduce((n, l) => n + (l.minutes || 0), 0);
+  }
+
+  function isDoneOn(sessionId, date) {
+    return sessionLogsOn(sessionId, date).some((l) => !l.unticked);
   }
 
   function studiedToday(sessionId) {
-    return sessionLogs(sessionId).reduce((n, l) => n + (l.minutes || 0), 0);
+    return studiedOn(sessionId, isoDate(new Date()));
   }
 
   function isDoneToday(sessionId) {
-    return sessionLogs(sessionId).some((l) => !l.unticked);
+    return isDoneOn(sessionId, isoDate(new Date()));
   }
 
   /* Undo a tick. Self-awarded plan minutes are dropped, because they were
      never earned; focus-timer minutes are only flagged, so real study
-     stays in the totals and the tick can be put back. */
+     stays in the totals and the tick can be put back. Only today's logs
+     are touched — yesterday's study is never rewritten. */
   function toggleSessionLog(id) {
-    const logs = sessionLogs(id);
+    const today = isoDate(new Date());
+    const mine = (l) => l.sessionId === id && l.date === today;
+    const logs = sessionLogsOn(id, today);
     if (!logs.length) return false;           /* gated: nothing real yet */
     const anyLive = logs.some((l) => !l.unticked);
     if (anyLive) {
-      db.logs = db.logs.filter((l) => !(l.sessionId === id && l.source === 'plan'));
-      db.logs.forEach((l) => { if (l.sessionId === id) l.unticked = true; });
+      db.logs = db.logs.filter((l) => !(mine(l) && l.source === 'plan'));
+      db.logs.forEach((l) => { if (mine(l)) l.unticked = true; });
     } else {
-      db.logs.forEach((l) => { if (l.sessionId === id) l.unticked = false; });
+      db.logs.forEach((l) => { if (mine(l)) l.unticked = false; });
     }
     save();
     return true;
@@ -1944,25 +1968,10 @@
     /* today's plan */
     $('#todayPlan').addEventListener('click', (e) => {
       const btn = e.target.closest('[data-toggle]');
-      if (!btn) return;
-      const id = btn.dataset.toggle;
-      const session = db.sessions.find((s) => s.id === id);
-      const today = isoDate(new Date());
-      const existing = db.logs.findIndex((l) => l.sessionId === id && l.date === today);
-
-      if (existing !== -1) {
-        db.logs.splice(existing, 1);
-      } else {
-        db.logs.push({
-          id: uid('log'),
-          date: today,
-          subject: session ? session.subject : 'Study',
-          minutes: session ? session.minutes : 30,
-          sessionId: id,
-          source: 'plan'
-        });
-      }
-      save();
+      if (!btn || btn.disabled) return;
+      /* Ticking only toggles. It never mints minutes — they come from the
+         focus timer, so a plan item cannot be claimed without studying. */
+      if (!toggleSessionLog(btn.dataset.toggle)) return;
       renderToday();
       renderStats();
       renderChart();
@@ -1995,11 +2004,14 @@
     $('#weekGrid').addEventListener('click', (e) => {
       const del = e.target.closest('[data-slot-del]');
       const chk = e.target.closest('[data-slot-check]');
+      const start = e.target.closest('[data-slot-start]');
 
       if (del) {
         const id = del.dataset.slotDel;
         db.sessions = db.sessions.filter((s) => s.id !== id);
-        db.logs = db.logs.filter((l) => l.sessionId !== id);
+        /* Keep the minutes you actually studied — only the plan slot goes.
+           Detach the log so the time stays in your totals. */
+        db.logs.forEach((l) => { if (l.sessionId === id) l.sessionId = null; });
         save();
         renderWeekGrid();
         renderToday();
@@ -2010,25 +2022,16 @@
         return;
       }
 
-      if (chk) {
-        const id = chk.dataset.slotCheck;
-        const session = db.sessions.find((s) => s.id === id);
-        const today = isoDate(new Date());
-        const existing = db.logs.findIndex((l) => l.sessionId === id && l.date === today);
+      if (start) {
+        startFocusForSession(start.dataset.slotStart);
+        return;
+      }
 
-        if (existing !== -1) {
-          db.logs.splice(existing, 1);
-        } else {
-          db.logs.push({
-            id: uid('log'),
-            date: today,
-            subject: session ? session.subject : 'Study',
-            minutes: session ? session.minutes : 30,
-            sessionId: id,
-            source: 'plan'
-          });
-        }
-        save();
+      if (chk) {
+        if (chk.disabled) return;
+        /* Toggling only flips the tick. The minutes were recorded by the
+           focus timer, so nothing here can invent study time. */
+        if (!toggleSessionLog(chk.dataset.slotCheck)) return;
         renderWeekGrid();
         renderToday();
         renderStats();

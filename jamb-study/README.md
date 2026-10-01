@@ -14,8 +14,12 @@ timer, progress charts and a scored practice-question bank.
   English always first), every question from each in one sitting under a single
   countdown, then scored and broken down subject by subject
 - **Answer review** — every quiz and paper ends with a question-by-question
-  review: your answer, the correct answer, and a one-line explanation of the
-  reasoning where one has been written
+  review: your answer, the correct answer, and the reasoning underneath
+- **The working, the moment you answer** — pick an option and the solution
+  opens right under the question, headed *"How to work it out"* when you were
+  wrong and *"Why that is the answer"* when you were right, with the topic it
+  belongs to. The method lands while the question is still in front of you
+  instead of at the end of the paper, and skipped questions are left alone
 - **Skip** — not sure? Leave the question without losing a point: it goes
   straight to the mistake queue instead of being marked wrong (Skip button or
   press **S**), and the result screen says how many you skipped
@@ -32,6 +36,13 @@ timer, progress charts and a scored practice-question bank.
   every quiz
 - Weekly timetable with tick-off sessions, focus timer, streak, weekly bar
   chart, subject progress bars and a **month study calendar**
+- **Ticks have to be earned** — a session can't be marked as studied until
+  the focus timer has put real minutes against it. Each slot shows
+  `0 / 60 min` filling up as you work, and a slot you haven't started carries
+  a ▶ button that jumps to the focus timer with its subject already chosen.
+  Ticking no longer awards the planned time by itself, so a week can't be
+  ticked off without the study behind it. Only today's slots are tickable —
+  past days are history — and unticking keeps the minutes you really logged
 - **Next UTME cycle card** — registration, mock, slips, exam and results dates
   projected for the upcoming session. It's computed from today's date, so it
   rolls to the next year's cycle by itself once the current one finishes, with
@@ -46,7 +57,11 @@ timer, progress charts and a scored practice-question bank.
 > in the file. All 360 Mathematics and Further Mathematics keys have been
 > recomputed question by question and every Use of English key proof-read —
 > that pass corrected **13 keyed answers and 3 option texts** across the three
-> files.
+> files. A second pass — writing the worked solutions for Biology, Physics
+> and Government — caught **7 more wrong keys** (Mendel's pea plants and
+> *Escherichia coli*'s genus in Biology, wave speed in Physics, and four
+> items in Nigeria's legislature, fundamental rights, election body and
+> Senate age in Government), each corrected in its own file.
 
 Vanilla HTML/CSS/JS — no build step, no framework, no npm.
 

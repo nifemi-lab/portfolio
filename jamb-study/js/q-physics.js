@@ -71,7 +71,7 @@ window.QUESTION_BANK = (window.QUESTION_BANK || []).concat([
   { s: 'Physics', q: 'A gas occupies 0.50 m^3 at a pressure of 200 kPa. Its volume at 400 kPa, temperature kept constant, is:', o: ['1.00 m^3', '0.50 m^3', '0.25 m^3', '0.10 m^3'], a: 2 },
   { s: 'Physics', q: 'A gas occupies 0.30 m^3 at 27 degrees C at constant pressure. Its volume at 127 degrees C is:', o: ['0.30 m^3', '0.375 m^3', '0.40 m^3', '0.45 m^3'], a: 2 },
   /* --- Waves --- */
-  { s: 'Physics', q: 'A wave has a frequency of 50 Hz and a wavelength of 4 m. Its speed is:', o: ['5 m/s', '20 m/s', '12.5 m/s', '200 m/s'], a: 1 },
+  { s: 'Physics', q: 'A wave has a frequency of 50 Hz and a wavelength of 4 m. Its speed is:', o: ['5 m/s', '20 m/s', '12.5 m/s', '200 m/s'], a: 3 },
   { s: 'Physics', q: 'The wavelength of a sound wave of frequency 170 Hz travelling at 340 m/s is:', o: ['0.5 m', '1 m', '2 m', '170 m'], a: 2 },
   { s: 'Physics', q: 'A wave completes one vibration in 0.05 s. Its frequency is:', o: ['0.05 Hz', '5 Hz', '20 Hz', '50 Hz'], a: 2 },
   { s: 'Physics', q: 'Sound waves in air are:', o: ['Transverse waves', 'Longitudinal waves', 'Electromagnetic waves', 'Matter waves'], a: 1 },
