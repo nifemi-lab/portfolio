@@ -710,7 +710,7 @@
        window.SOLUTIONS = { subject: { questionText: { t, e } } ]
      ========================================================= */
 
-  const Learn = { subject: '', mode: 'notes' };
+  const Learn = { subject: '', mode: 'index', topic: '' };
 
   function learnSubjects() {
     const found = [];
@@ -835,6 +835,150 @@
     }).join('');
   }
 
+  /* ============================================================
+     Learn: the lesson page.
+     A topic index -> a lesson: the taught note, real questions from
+     the bank with the working already revealed, then a quiz on it.
+     Hash route: #learn/{subject}/{topic}
+     ============================================================ */
+
+  /* Which notes sit under this topic, in file order. */
+  function notesUnderTopic(subject, topic) {
+    return (window.NOTES || []).filter(
+      (n) => n.subject === subject && n.type === 'note' && n.topic === topic
+    );
+  }
+
+  function topicList(subject) {
+    const seen = [], out = [];
+    notesFor(subject, 'note').forEach((n) => {
+      if (seen.indexOf(n.topic) !== -1) return;
+      seen.push(n.topic);
+      out.push({
+        topic: n.topic,
+        title: n.title,
+        count: notesUnderTopic(subject, n.topic).length
+      });
+    });
+    return out;
+  }
+
+  /* The questions on this topic, taken from the bank, with the answer
+     and the working from window.SOLUTIONS so each one is already solved
+     on the page. Teaching happens on the read, not on a guess. */
+  function workedQuestions(subject, topic, limit) {
+    const sols = (window.SOLUTIONS || {})[subject] || {};
+    const bank = {};
+    BANK.concat(db.questions).forEach((x) => {
+      if (x.s === subject) bank[x.q] = x;
+    });
+
+    const rows = Object.keys(sols).filter((text) => (sols[text] || {}).t === topic);
+    return rows.slice(0, limit).map((text) => ({
+      text: text,
+      opts: (bank[text] || {}).o || [],
+      right: (bank[text] || {}).a,
+      why: (sols[text] || {}).e || ''
+    })).filter((r) => r.opts.length);
+  }
+
+  function learnLessonHTML(subject, topic) {
+    const notes = notesUnderTopic(subject, topic);
+    if (!notes.length) return '<p class="hint">No lesson for this topic yet.</p>';
+
+    const lesson = notes[0];
+    const worked = workedQuestions(subject, topic, 3);
+    const total = Object.keys((window.SOLUTIONS || {})[subject] || {})
+      .filter((t) => ((window.SOLUTIONS[subject][t] || {}).t) === topic).length;
+
+    /* Prev / next across this subject's topics, so you read like a book. */
+    const topics = topicList(subject);
+    const idx = topics.findIndex((t) => t.topic === topic);
+    const prev = idx > 0 ? topics[idx - 1] : null;
+    const next = idx >= 0 && idx < topics.length - 1 ? topics[idx + 1] : null;
+
+    const body = notes.map((n) => textBlocks(n.body)).join('');
+
+    const workedHTML = worked.length
+      ? '<section class="lesson-worked">' +
+        '<h3 class="lesson-h">Worked questions from this topic</h3>' +
+        worked.map((r) => solItemHTML(r.text, { e: r.why }, { o: r.opts, a: r.right })).join('') +
+        '<p class="hint">' + esc(
+          (total - worked.length) > 0
+            ? 'Plus ' + (total - worked.length) + ' more in the Solutions browser.'
+            : 'That is every question on this topic.'
+        ) + '</p>' +
+        '</section>'
+      : (total
+        ? '<p class="hint">This topic has ' + total + ' questions — open Solutions to see the working on all of them.</p>'
+        : '');
+
+    return '<article class="lesson">' +
+      '<nav class="lesson-crumbs">' +
+        '<button class="linklike" type="button" data-learn-back="1">' +
+          '\u2190 All ' + esc(subject) + ' topics</button>' +
+      '</nav>' +
+
+      '<header class="lesson-head">' +
+        '<p class="lesson-eyebrow">' + esc(subject) + '</p>' +
+        '<h2 class="lesson-title">' + esc(lesson.title || topic) + '</h2>' +
+        (notes.length > 1
+          ? '<p class="hint">' + notes.length + ' notes on this topic</p>'
+          : '') +
+      '</header>' +
+
+      '<div class="note-body lesson-body">' + body + '</div>' +
+
+      workedHTML +
+
+      '<div class="lesson-cta">' +
+        '<button class="btn btn-primary" type="button" data-try="' +
+          encodeURIComponent(topic) + '">Test me on ' + esc(topic) + ' (' + total + ')</button>' +
+        '<div class="lesson-nav">' +
+          (prev
+            ? '<button class="btn btn-ghost btn-sm" type="button" data-learn-go="' +
+              encodeURIComponent(prev.topic) + '">\u2190 ' + esc(prev.title) + '</button>'
+            : '') +
+          (next
+            ? '<button class="btn btn-ghost btn-sm" type="button" data-learn-go="' +
+              encodeURIComponent(next.topic) + '">' + esc(next.title) + ' \u2192</button>'
+            : '') +
+        '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
+  /* The topic index: a contents page, so you choose what to learn. */
+  function learnIndexHTML(subject) {
+    const topics = topicList(subject);
+    if (!topics.length) return '<p class="hint">No notes for this subject yet.</p>';
+
+    const sols = (window.SOLUTIONS || {})[subject] || {};
+    const qTotal = {};
+    Object.keys(sols).forEach((t) => {
+      const topic = (sols[t] || {}).t || 'General';
+      qTotal[topic] = (qTotal[topic] || 0) + 1;
+    });
+
+    return '<nav class="lesson-crumbs">' +
+        '<span class="lesson-eyebrow">' + esc(subject) + '</span>' +
+      '</nav>' +
+      '<h2 class="lesson-title">Pick a topic to learn</h2>' +
+      '<p class="panel-sub">Each one opens a full lesson: the idea, the steps, a worked example, the slip to avoid — then questions with the working shown.</p>' +
+      '<ol class="toc">' +
+        topics.map((t) =>
+          '<li class="toc-row">' +
+            '<button class="toc-btn" type="button" data-learn-go="' + encodeURIComponent(t.topic) + '">' +
+              '<span class="toc-title">' + esc(t.title) + '</span>' +
+              '<span class="toc-meta">' +
+                '<span class="toc-topic">' + esc(t.topic) + '</span>' +
+                (qTotal[t.topic] ? '<span class="toc-n">' + qTotal[t.topic] + ' questions</span>' : '') +
+              '</span>' +
+            '</button>' +
+          '</li>').join('') +
+      '</ol>';
+  }
+
   function solItemHTML(text, sol, item) {
     const opts = item ? item.o : [];
     const right = item ? item.a : -1;
@@ -854,6 +998,17 @@
     const subs = learnSubjects();
     if (subs.indexOf(Learn.subject) === -1) Learn.subject = subs[0] || '';
 
+    // Keep the address bar on the lesson you are reading, so Back and a
+    // pasted link both land you in the same place.
+    if (Learn.mode === 'lesson' && Learn.subject && Learn.topic) {
+      const want = '#learn/' + encodeURIComponent(Learn.subject) + '/' + encodeURIComponent(Learn.topic);
+      if (window.location.hash !== want && history.replaceState) {
+        history.replaceState(null, '', want);
+      }
+    } else if (window.location.hash.indexOf('#learn/') === 0 && history.replaceState) {
+      history.replaceState(null, '', '#learn');
+    }
+
     const seg = document.getElementById('learnSubject');
     if (seg) {
       seg.innerHTML = subs.map((s) =>
@@ -862,7 +1017,10 @@
       ).join('');
     }
     $$('#learnMode .seg-btn').forEach((b) => {
-      b.classList.toggle('is-active', b.dataset.mode === Learn.mode);
+      /* A lesson is a topic opened, so it belongs to the Topics chip. */
+      const own = b.dataset.mode === Learn.mode;
+      const underTopics = Learn.mode === 'lesson' && b.dataset.mode === 'index';
+      b.classList.toggle('is-active', own || underTopics);
     });
 
     const body = document.getElementById('learnBody');
@@ -878,7 +1036,8 @@
 
     body.innerHTML = Learn.mode === 'sheets' ? learnSheetsHTML()
       : Learn.mode === 'solutions' ? learnSolutionsHTML()
-        : learnNotesHTML();
+        : Learn.mode === 'lesson' && Learn.topic ? learnLessonHTML(Learn.subject, Learn.topic)
+          : learnIndexHTML(Learn.subject);
   }
 
   function startTopicQuiz(topic) {
@@ -2235,23 +2394,42 @@
       const b = e.target.closest('.seg-btn');
       if (!b) return;
       Learn.subject = decodeURIComponent(b.dataset.subject || '');
+      Learn.topic = '';
+      Learn.mode = 'index';
       renderLearn();
     });
     $('#learnMode').addEventListener('click', (e) => {
       const b = e.target.closest('.seg-btn');
       if (!b) return;
-      Learn.mode = b.dataset.mode || 'notes';
+      Learn.mode = b.dataset.mode || 'index';
+      Learn.topic = '';
       renderLearn();
     });
     $('#learnBody').addEventListener('click', (e) => {
+      /* Open a topic's lesson. */
+      const go = e.target.closest('[data-learn-go]');
+      if (go) {
+        Learn.topic = decodeURIComponent(go.getAttribute('data-learn-go') || '');
+        Learn.mode = 'lesson';
+        renderLearn();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      /* Back to the topic index. */
+      if (e.target.closest('[data-learn-back]')) {
+        Learn.topic = '';
+        Learn.mode = 'index';
+        renderLearn();
+        return;
+      }
+      const tryBtn = e.target.closest('[data-try]');
+      if (tryBtn) { startTopicQuiz(decodeURIComponent(tryBtn.getAttribute('data-try') || '')); return; }
+      /* Solutions browser still collapses its own topic groups. */
       const head = e.target.closest('.note-head');
       if (head && head.tagName === 'BUTTON') {
         const open = head.closest('.note').classList.toggle('is-open');
         head.setAttribute('aria-expanded', String(open));
-        return;
       }
-      const tryBtn = e.target.closest('[data-try]');
-      if (tryBtn) startTopicQuiz(decodeURIComponent(tryBtn.getAttribute('data-try') || ''));
     });
 
     /* who is studying on this device */
@@ -2396,8 +2574,19 @@
     registerSW();
 
     const hash = (location.hash || '#dashboard').slice(1);
-    const valid = ['dashboard', 'timetable', 'subjects', 'practice'];
-    showTab(valid.indexOf(hash) !== -1 ? hash : 'dashboard');
+    /* A deep link like #learn/Use%20of%20English/Synonyms opens straight into
+       one lesson. showTab rewrites the hash, so read it first and hand the
+       subject/topic over before the first render. */
+    const deep = String(location.hash || '').match(/^#learn\/([^/]+)(?:\/(.+))?$/);
+    if (deep) {
+      Learn.subject = decodeURIComponent(deep[1]);
+      Learn.topic = deep[2] ? decodeURIComponent(deep[2]) : '';
+      Learn.mode = Learn.topic ? 'lesson' : 'index';
+      showTab('learn');
+    } else {
+      const valid = ['dashboard', 'timetable', 'subjects', 'practice', 'learn'];
+      showTab(valid.indexOf(hash) !== -1 ? hash : 'dashboard');
+    }
 
     if (redirect && redirect.ok) {
       setStatus('confirming…', 'busy');

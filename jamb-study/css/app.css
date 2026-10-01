@@ -749,6 +749,54 @@ html[data-theme="light"] .card { box-shadow: 0 1px 2px rgba(11, 16, 28, .05), 0 
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 }
 
+/* ---------- Learn: the lesson page ----------
+   A contents page, then one topic at a time: the taught note, real
+   questions with the working already shown, then the quiz. */
+.lesson { display: block; }
+
+.lesson-crumbs { margin-bottom: .9rem; }
+.lesson-head { margin-bottom: 1.1rem; }
+.lesson-eyebrow {
+  font-size: .72rem; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent-2); margin-bottom: .3rem;
+}
+.lesson-title {
+  font-family: var(--font-display);
+  font-size: var(--step-2); font-weight: 700;
+  line-height: 1.15; letter-spacing: -.02em;
+}
+.lesson-body { color: var(--text-muted); }
+.lesson-body > p:first-child { color: var(--text); }
+
+/* Contents page */
+.toc { list-style: none; padding: 0; margin: 1.2rem 0 0; display: grid; gap: .55rem; }
+.toc-row { display: block; }
+.toc-btn {
+  width: 100%; text-align: left; font: inherit; cursor: pointer;
+  display: flex; flex-direction: column; gap: .3rem;
+  background: var(--bg-elev-2); border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm); padding: .8rem .95rem; color: var(--text);
+  transition: border-color .2s var(--ease), background .2s var(--ease), transform .15s var(--ease);
+}
+.toc-btn:hover { background: var(--bg-elev); transform: translateX(3px); border-left-color: var(--accent-2); }
+.toc-title { font-weight: 600; font-size: var(--step-0); line-height: 1.35; }
+.toc-meta { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; }
+.toc-topic { font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--accent); }
+.toc-n { font-size: .72rem; color: var(--text-faint); }
+
+/* Worked questions inside the lesson */
+.lesson-worked { margin-top: 1.6rem; padding-top: 1.3rem; border-top: 1px solid var(--border); }
+.lesson-h {
+  font-family: var(--font-display); font-size: var(--step-1);
+  margin-bottom: .3rem; letter-spacing: -.015em;
+}
+.lesson-worked .sol-item:first-of-type { border-top: 0; padding-top: .8rem; }
+
+.lesson-cta { margin-top: 1.6rem; padding-top: 1.3rem; border-top: 1px solid var(--border); }
+.lesson-nav { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .9rem; }
+.lesson-nav .btn { max-width: 100%; overflow-wrap: anywhere; text-align: left; }
+
 /* ---------- Learn: teaching callouts ----------
    A note paragraph that opens with "Example:", "Watch out:" or
    "In short:" is rendered as a lesson box with its label on top —
