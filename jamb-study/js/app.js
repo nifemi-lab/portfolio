@@ -289,6 +289,89 @@
     return AUTH_HINTS[raw] || raw;
   }
 
+  /* Where the confirmation email should send the student back to:
+     this exact page, on whatever origin it is running (localhost
+     now, the live site later). GoTrue falls back to the project's
+     Site URL if this isn't on the allow list. */
+  function authRedirectUrl() {
+    try {
+      if (location.protocol === 'http:' || location.protocol === 'https:') {
+        return location.origin + location.pathname;
+      }
+    } catch (e) { /* no usable origin (file://) */ }
+    return undefined;
+  }
+
+  /* Read auth results out of the URL. The confirmation link lands
+     as #access_token=…&refresh_token=… (implicit flow) or ?code=…
+     (PKCE), or with #error=… when the link expired. Returns null
+     when there is nothing auth-shaped in the address bar. */
+  function consumeAuthRedirect() {
+    let params;
+    try {
+      params = new URLSearchParams(
+        (location.hash || '').replace(/^#/, '') + '&' + (location.search || '').replace(/^\?/, '')
+      );
+    } catch (e) { return null; }
+
+    const access = params.get('access_token');
+    const refresh = params.get('refresh_token');
+    const err = params.get('error_description') || params.get('error');
+    const code = params.get('code');
+    if (!access && !err && !code) return null;
+
+    /* strip the one-shot tokens from the address bar */
+    try { history.replaceState(null, '', location.pathname); } catch (e) { /* ignore */ }
+
+    if (access && refresh) {
+      session = {
+        access_token: access,
+        refresh_token: refresh,
+        user_id: '',
+        email: '',
+        expires_at: Math.floor(Date.now() / 1000) + (parseInt(params.get('expires_in') || '3600', 10) || 3600)
+      };
+      return { ok: true };
+    }
+    if (err) {
+      const code = (params.get('error_code') || '').toLowerCase();
+      const expired = code.indexOf('expired') !== -1 || /expired/i.test(err);
+      return {
+        ok: false,
+        msg: expired
+          ? 'That confirmation link has expired. Sign in with your email and password and we’ll send you a fresh one.'
+          : 'We couldn’t confirm that link. Try signing in with your email and password.'
+      };
+    }
+    /* PKCE ?code= — the account is confirmed by now, but without a
+       code_verifier stored at signup we can't claim a session from it. */
+    return { ok: false, msg: 'Email confirmed ✅ — sign in with your email and password to finish.' };
+  }
+
+  /* Fill in who the confirmed session belongs to, then celebrate. */
+  async function finishEmailConfirm() {
+    try {
+      const u = await api('/auth/v1/user');
+      session.user_id = u.id;
+      session.email = u.email || '';
+    } catch (e) { /* Cloud.auth() retries this via /user later */ }
+    persistSession();
+    paintAuth();
+
+    const el = document.getElementById('authMsg');
+    el.textContent = 'Email confirmed ✅ — signed in as ' + (session.email || 'your account') +
+      '. Your progress now syncs across devices.';
+    el.className = 'hint auth-ok';
+    el.hidden = false;
+    document.getElementById('authEmail').value = session.email || '';
+    const dlg = document.getElementById('authDialog');
+    Auth.mode = 'signin';
+    Auth.paintMode();
+    if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+
+    queuePush();
+  }
+
   function paintAuth() {
     const b = document.getElementById('authBtn');
     if (!b) return;
@@ -332,6 +415,7 @@
     fail: function (msg) {
       const el = document.getElementById('authMsg');
       el.textContent = msg;
+      el.className = 'hint auth-err';
       el.hidden = false;
     },
 
@@ -340,18 +424,23 @@
       btn.disabled = true;
       setStatus('connecting…', 'busy');
       try {
+        const body = { email: email, password: password };
+        if (Auth.mode === 'signup') {
+          const back = authRedirectUrl();
+          if (back) body.emailRedirectTo = back;
+        }
         const r = await api(
           Auth.mode === 'signup'
             ? '/auth/v1/signup'
             : '/auth/v1/token?grant_type=password',
-          { method: 'POST', body: JSON.stringify({ email: email, password: password }) }
+          { method: 'POST', body: JSON.stringify(body) }
         );
 
         /* No token means the project still wants email confirmation. */
         if (!r || !r.access_token) {
           Auth.mode = 'signin';
           Auth.paintMode();
-          Auth.fail('Account created. Open the confirmation link we emailed you, then sign in.');
+          Auth.fail('Account created. We emailed you a confirmation link — open it and you’ll land back here, already signed in.');
           setStatus('saved locally', 'ok');
           return;
         }
@@ -892,7 +981,7 @@
   const MOCK_SECONDS = 60;
 
   const quiz = {
-    pool: [], idx: 0, score: 0, answered: false, subject: '',
+    pool: [], idx: 0, score: 0, skipped: 0, answered: false, subject: '',
     mode: 'practice', lastOpts: null, deadline: 0, timerId: null, answers: []
   };
 
@@ -1093,6 +1182,7 @@
         : source.slice(0, Math.min(count, source.length));
     quiz.idx = 0;
     quiz.score = 0;
+    quiz.skipped = 0;
     quiz.answers = [];
     quiz.mode = options.mode;
     quiz.subject = options.mode === 'review' ? 'Mistake review'
@@ -1153,6 +1243,8 @@
     $('#qBar').style.width = ((quiz.idx) / quiz.pool.length * 100) + '%';
     $('#qNext').disabled = true;
     $('#qNext').textContent = quiz.idx === quiz.pool.length - 1 ? 'See result' : 'Next question';
+    const sk = document.getElementById('qSkip');
+    if (sk) sk.disabled = false;
 
     /* Options are reshuffled every question so the answer position
        never gives the pattern away. data-opt keeps the real index. */
@@ -1172,6 +1264,8 @@
     const buttons = $$('#qOptions .opt');
     const byIndex = (idx) => buttons.filter((b) => parseInt(b.dataset.opt, 10) === idx)[0];
     buttons.forEach((b) => { b.disabled = true; });
+    const sk = document.getElementById('qSkip');
+    if (sk) sk.disabled = true;
 
     /* Remember every pick so the result screen can show the full paper. */
     quiz.answers.push({
@@ -1193,6 +1287,24 @@
     $('#qScore').textContent = quiz.score + ' correct';
     $('#qNext').disabled = false;
     $('#qNext').focus();
+  }
+
+  /* Skip: you're not sure, so don't spend a point on it right now.
+     It is NOT marked wrong — it goes straight to the mistakes queue
+     and comes back on review instead. */
+  function skipQuestion() {
+    if (quiz.answered) return;
+    quiz.answered = true;
+
+    const item = quiz.pool[quiz.idx];
+    quiz.skipped++;
+    quiz.answers.push({
+      s: item.s, q: item.q, o: item.o, a: item.a,
+      chosen: -1, ok: false, skipped: true,
+      e: item.e || explanationFor(item.q)
+    });
+    recordMistake(item);
+    nextQuestion();
   }
 
   function nextQuestion() {
@@ -1269,8 +1381,11 @@
 
     /* Question-by-question review. */
     $('#answerList').innerHTML = quiz.answers.map((a, i) => {
-      const verdict = a.chosen === -1 ? 'not answered' : (a.ok ? 'correct' : 'wrong');
-      const cls = a.chosen === -1 ? 'is-skip' : (a.ok ? 'is-right' : 'is-wrong');
+      const unanswered = a.chosen === -1;
+      const verdict = a.skipped ? 'skipped'
+        : unanswered ? 'not answered'
+          : (a.ok ? 'correct' : 'wrong');
+      const cls = unanswered ? 'is-skip' : (a.ok ? 'is-right' : 'is-wrong');
       const you = a.chosen === -1
         ? ''
         : '<p class="answer-line ' + (a.ok ? 'you ok' : 'you no') + '"><span>You</span>' + esc(a.o[a.chosen]) + '</p>';
@@ -1301,6 +1416,10 @@
       (quiz.mode === 'exam'
         ? 'You got ' + quiz.score + ' out of ' + total + ' across your UTME paper. '
         : 'You got ' + quiz.score + ' out of ' + total + ' in ' + quiz.subject + '. ') +
+      (quiz.skipped
+        ? 'Skipped ' + quiz.skipped + (quiz.skipped === 1 ? ' question' : ' questions') +
+          ' — waiting in your mistakes queue. '
+        : '') +
       (pct >= 80 ? 'Excellent — keep it sharp.'
         : pct >= 50 ? 'Solid base. Review the ones you missed.'
         : 'Worth another pass before you move on.');
@@ -1620,6 +1739,7 @@
       $('#quizCard').hidden = true;
       $('#quizSetup').hidden = false;
     });
+    $('#qSkip').addEventListener('click', skipQuestion);
     $('#rAgain').addEventListener('click', () => {
       if ($('#rAgain').disabled) return;
       stopRetakeTick();
@@ -1744,12 +1864,13 @@
       $('#progressBar').style.width = pct + '%';
     }, { passive: true });
 
-    /* keyboard: 1-4 to answer in quiz */
+    /* keyboard: 1-4 to answer, Enter to advance, S to skip */
     document.addEventListener('keydown', (e) => {
       if ($('#quizCard').hidden) return;
       const n = parseInt(e.key, 10);
       if (n >= 1 && n <= 4) answer(n - 1);
       if (e.key === 'Enter' && quiz.answered) nextQuestion();
+      if ((e.key === 's' || e.key === 'S') && !quiz.answered) skipQuestion();
     });
   }
 
@@ -1794,6 +1915,11 @@
 
   function init() {
     $('#year').textContent = new Date().getFullYear();
+
+    /* Confirmation links land here with tokens in the URL — claim
+       them before anything else reads or writes the session. */
+    const redirect = cloudEnabled ? consumeAuthRedirect() : null;
+
     wire();
     renderAll();
     registerSW();
@@ -1802,7 +1928,17 @@
     const valid = ['dashboard', 'timetable', 'subjects', 'practice'];
     showTab(valid.indexOf(hash) !== -1 ? hash : 'dashboard');
 
-    if (cloudEnabled) {
+    if (redirect && redirect.ok) {
+      setStatus('confirming…', 'busy');
+      finishEmailConfirm().then(function () {
+        if (cloudEnabled) cloudStart();
+      });
+    } else if (redirect && redirect.msg) {
+      Auth.fail(redirect.msg);
+      const dlg = document.getElementById('authDialog');
+      if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+      if (cloudEnabled) cloudStart();
+    } else if (cloudEnabled) {
       cloudStart();
     } else {
       setStatus('saved locally', '');
