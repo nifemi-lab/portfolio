@@ -849,6 +849,32 @@
     );
   }
 
+  /* A note's questions may sit under different solution topics than the
+     note's own name. Each note may carry a `qt` array naming the solution
+     topic(s) to pull questions from; otherwise we fall back to the note's
+     own topic string. This keeps the prose heading readable without
+     forcing it to match the bank exactly. */
+  function noteQuestionTopics(subject, topic) {
+    const notes = notesUnderTopic(subject, topic);
+    const out = [];
+    notes.forEach((n) => {
+      const list = (n.qt && n.qt.length) ? n.qt : [n.topic];
+      list.forEach((t) => { if (out.indexOf(t) === -1) out.push(t); });
+    });
+    return out;
+  }
+
+  /* How many questions sit behind a topic, across all its solution topics. */
+  function topicQuestionCount(subject, topic) {
+    const sols = (window.SOLUTIONS || {})[subject] || {};
+    let n = 0;
+    Object.keys(sols).forEach((text) => {
+      const t = (sols[text] || {}).t;
+      if (noteQuestionTopics(subject, topic).indexOf(t) !== -1) n++;
+    });
+    return n;
+  }
+
   function topicList(subject) {
     const seen = [], out = [];
     notesFor(subject, 'note').forEach((n) => {
@@ -873,7 +899,8 @@
       if (x.s === subject) bank[x.q] = x;
     });
 
-    const rows = Object.keys(sols).filter((text) => (sols[text] || {}).t === topic);
+    const wanted = noteQuestionTopics(subject, topic);
+    const rows = Object.keys(sols).filter((text) => wanted.indexOf((sols[text] || {}).t) !== -1);
     return rows.slice(0, limit).map((text) => ({
       text: text,
       opts: (bank[text] || {}).o || [],
@@ -888,8 +915,7 @@
 
     const lesson = notes[0];
     const worked = workedQuestions(subject, topic, 3);
-    const total = Object.keys((window.SOLUTIONS || {})[subject] || {})
-      .filter((t) => ((window.SOLUTIONS[subject][t] || {}).t) === topic).length;
+    const total = topicQuestionCount(subject, topic);
 
     /* Prev / next across this subject's topics, so you read like a book. */
     const topics = topicList(subject);
@@ -953,12 +979,8 @@
     const topics = topicList(subject);
     if (!topics.length) return '<p class="hint">No notes for this subject yet.</p>';
 
-    const sols = (window.SOLUTIONS || {})[subject] || {};
-    const qTotal = {};
-    Object.keys(sols).forEach((t) => {
-      const topic = (sols[t] || {}).t || 'General';
-      qTotal[topic] = (qTotal[topic] || 0) + 1;
-    });
+    const counts = {};
+    topics.forEach((t) => { counts[t.topic] = topicQuestionCount(subject, t.topic); });
 
     return '<nav class="lesson-crumbs">' +
         '<span class="lesson-eyebrow">' + esc(subject) + '</span>' +
@@ -972,7 +994,7 @@
               '<span class="toc-title">' + esc(t.title) + '</span>' +
               '<span class="toc-meta">' +
                 '<span class="toc-topic">' + esc(t.topic) + '</span>' +
-                (qTotal[t.topic] ? '<span class="toc-n">' + qTotal[t.topic] + ' questions</span>' : '') +
+                (counts[t.topic] ? '<span class="toc-n">' + counts[t.topic] + ' question' + (counts[t.topic] === 1 ? '' : 's') + '</span>' : '') +
               '</span>' +
             '</button>' +
           '</li>').join('') +
@@ -1483,8 +1505,12 @@
      keyed by the exact question text. */
   function poolForTopic(subject, topic) {
     const sols = (window.SOLUTIONS || {})[subject] || {};
+    /* Honour a note's `qt` aliases so a lesson's "Test me" quiz is never
+       empty just because the prose heading and the bank use different
+       words for the same topic. */
+    const wanted = noteQuestionTopics(subject, topic);
     return BANK.concat(db.questions)
-      .filter((q) => q.s === subject && sols[q.q] && sols[q.q].t === topic)
+      .filter((q) => q.s === subject && sols[q.q] && wanted.indexOf(sols[q.q].t) !== -1)
       .map((q) => ({ s: q.s, q: q.q, o: q.o, a: q.a, e: q.e }));
   }
 
