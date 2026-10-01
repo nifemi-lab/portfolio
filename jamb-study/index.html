@@ -40,6 +40,7 @@
           <button class="tab" data-tab="timetable" aria-selected="false">Timetable</button>
           <button class="tab" data-tab="subjects" aria-selected="false">Subjects</button>
           <button class="tab" data-tab="practice" aria-selected="false">Practice</button>
+          <button class="tab" data-tab="learn" aria-selected="false">Learn</button>
         </nav>
       </div>
     </div>
@@ -371,6 +372,29 @@
         </section>
       </div>
     </section>
+
+    <!-- ================= LEARN ================= -->
+    <section class="panel" id="learn" aria-labelledby="learn-title" hidden>
+      <div class="panel-head">
+        <p class="eyebrow">Learn</p>
+        <h1 id="learn-title" class="panel-title">Read it first, <span class="grad">then prove it</span></h1>
+        <p class="panel-sub">Short notes and formula sheets to study from, plus worked solutions for
+          every question — grouped by topic, the way a past-question book is.</p>
+      </div>
+
+      <div class="card">
+        <div class="learn-bar">
+          <div class="seg" id="learnSubject" role="group" aria-label="Subject"></div>
+          <div class="seg seg-quiet" id="learnMode" role="group" aria-label="What to show">
+            <button class="seg-btn is-active" data-mode="notes" type="button">Notes</button>
+            <button class="seg-btn" data-mode="sheets" type="button">Formula sheets</button>
+            <button class="seg-btn" data-mode="solutions" type="button">Solutions</button>
+          </div>
+        </div>
+        <p class="hint" id="learnEmpty" hidden></p>
+        <div id="learnBody"></div>
+      </div>
+    </section>
   </main>
 
   <footer class="app-footer">
@@ -422,6 +446,14 @@
   <script src="js/q-further-maths.js"></script>
   <script src="js/q-agricultural-science.js"></script>
   <script src="js/q-principles-of-accounts.js"></script>
+  <script src="js/sol-mathematics.js"></script>
+  <script src="js/sol-use-of-english.js"></script>
+  <script src="js/sol-further-maths.js"></script>
+  <script src="js/sol-chemistry.js"></script>
+  <script src="js/notes-mathematics.js"></script>
+  <script src="js/notes-further-maths.js"></script>
+  <script src="js/notes-use-of-english.js"></script>
+  <script src="js/notes-chemistry.js"></script>
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 </body>

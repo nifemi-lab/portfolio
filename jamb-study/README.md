@@ -16,6 +16,16 @@ timer, progress charts and a scored practice-question bank.
 - **Answer review** — every quiz and paper ends with a question-by-question
   review: your answer, the correct answer, and a one-line explanation of the
   reasoning where one has been written
+- **Skip** — not sure? Leave the question without losing a point: it goes
+  straight to the mistake queue instead of being marked wrong (Skip button or
+  press **S**), and the result screen says how many you skipped
+- **Learn tab** — study before you test. Short revision notes plus formula
+  sheets for Mathematics, Use of English, Further Mathematics and Chemistry
+  (12 notes and 3 sheets each), each note with a one-tap quiz on its topic
+- **Worked solutions** — the same four subjects have all 720 of their questions
+  with the correct option highlighted and the working underneath, grouped by
+  topic the way a printed past-question book is, and each topic group starts a
+  quiz on its own questions
 - **Mistake queue** — every wrong answer is saved for review; getting it right
   in review removes it
 - **Needs-work report** — your lowest-accuracy subjects, recalculated after
@@ -29,7 +39,10 @@ timer, progress charts and a scored practice-question bank.
 > past questions and are not presented as such — no item here should be treated
 > as an official or leaked UTME paper. Answer keys are plain data (`a` = index
 > of the correct option), so any of them can be checked and corrected directly
-> in the file.
+> in the file. All 360 Mathematics and Further Mathematics keys have been
+> recomputed question by question and every Use of English key proof-read —
+> that pass corrected **13 keyed answers and 3 option texts** across the three
+> files.
 
 Vanilla HTML/CSS/JS — no build step, no framework, no npm.
 
@@ -71,10 +84,12 @@ The header chip always tells you which one you're in:
 
 ```
 jamb-study/
-├── index.html            app shell — 4 tabs (Dashboard, Timetable, Subjects, Practice)
+├── index.html            app shell — 5 tabs (Dashboard, Timetable, Subjects, Practice, Learn)
 ├── css/app.css           design system (same tokens as the portfolio) + light theme
 ├── js/questions.js       230 questions → window.QUESTION_BANK (loaded first)
 ├── js/q-*.js             14 subject files × 180 questions → appended to the same bank
+├── js/sol-*.js           4 solution files × 180 entries → window.SOLUTIONS, keyed by question text
+├── js/notes-*.js         4 Learn files × (12 notes + 3 formula sheets) → window.NOTES
 ├── js/config.js          Supabase credentials (already filled in here)
 ├── js/app.js             all logic + the data layer
 ├── manifest.webmanifest  makes the app installable (PWA)
@@ -95,6 +110,25 @@ To add or correct questions, edit **`js/questions.js`** or the relevant
 the index of the correct one (an optional `e` gives the explanation shown after
 you answer). Any new file needs a `<script>` tag in `index.html` after
 `questions.js`, and a line in the `ASSETS` list in `sw.js`.
+
+Solutions and revision notes live in their own plain-data files, so the question
+bank never has to be edited to study from it:
+
+```js
+// js/sol-mathematics.js — window.SOLUTIONS[<subject>][<exact question text>]
+{ t: 'Percentages', e: '15/100 x 200 = 30.' }
+
+// js/notes-mathematics.js — pushed onto window.NOTES
+{ subject: 'Mathematics', type: 'note', topic: 'Number bases',
+  title: 'Converting between number bases', body: 'Paragraph...\n\n- bullet' }
+{ subject: 'Mathematics', type: 'sheet', topic: 'Formula sheet',
+  title: 'Formulas to know cold', body: '- Circumference = 2 x pi x r\n...' }
+```
+
+`t` is both the topic a solutions group is built under and the topic the
+"Quiz me on…" button scopes a quiz to; `type` decides whether an entry shows
+under Notes or Formula sheets. Bodies are plain text — a blank line starts a new
+paragraph and any line beginning with `- ` becomes a bullet.
 
 ### Data model
 

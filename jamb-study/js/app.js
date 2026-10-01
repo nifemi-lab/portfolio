@@ -334,8 +334,8 @@
       return { ok: true };
     }
     if (err) {
-      const code = (params.get('error_code') || '').toLowerCase();
-      const expired = code.indexOf('expired') !== -1 || /expired/i.test(err);
+      const errCode = (params.get('error_code') || '').toLowerCase();
+      const expired = errCode.indexOf('expired') !== -1 || /expired/i.test(err);
       return {
         ok: false,
         msg: expired
@@ -662,6 +662,171 @@
     switchProfile(p.id);
   }
 
+  /* =========================================================
+     Learn — revision notes, formula sheets, worked solutions
+       window.NOTES     = [ { subject, type, topic, title, body } ]
+       window.SOLUTIONS = { subject: { questionText: { t, e } } ]
+     ========================================================= */
+
+  const Learn = { subject: '', mode: 'notes' };
+
+  function learnSubjects() {
+    const found = [];
+    const add = (s) => { if (s && found.indexOf(s) === -1) found.push(s); };
+    (window.NOTES || []).forEach((n) => add(n.subject));
+    Object.keys(window.SOLUTIONS || {}).forEach(add);
+    return PRESETS.filter((p) => found.indexOf(p) !== -1)
+      .concat(found.filter((p) => PRESETS.indexOf(p) === -1));
+  }
+
+  function notesFor(subject, type) {
+    return (window.NOTES || []).filter((n) => n.subject === subject && n.type === type);
+  }
+
+  /* Plain text -> safe HTML. Blank line = paragraph break, single \n = line
+     break inside the paragraph, "- " at line start = bullet list. A bullet
+     block may sit directly under an intro line with no blank line. */
+  function textBlocks(body) {
+    const out = [];
+    let mode = '', buf = [];
+    const close = () => {
+      if (mode === 'p') out.push('<p>' + buf.join('<br>') + '</p>');
+      else if (mode === 'ul') out.push('<ul>' + buf.map((li) => '<li>' + li + '</li>').join('') + '</ul>');
+      buf = []; mode = '';
+    };
+    String(body || '').split('\n').forEach((raw) => {
+      const line = raw.replace(/\s+$/, '');
+      if (!line.trim()) { close(); return; }
+      if (/^\s*-\s+/.test(line)) {
+        if (mode !== 'ul') close();
+        mode = 'ul';
+        buf.push(esc(line.replace(/^\s*-\s+/, '')));
+        return;
+      }
+      if (mode !== 'p') close();
+      mode = 'p';
+      buf.push(esc(line));
+    });
+    close();
+    return out.join('');
+  }
+
+  function learnNotesHTML() {
+    const notes = notesFor(Learn.subject, 'note');
+    if (!notes.length) {
+      return '<p class="hint">No notes for this subject yet — try the formula sheets or solutions.</p>';
+    }
+    return notes.map((n) =>
+      '<article class="note">' +
+        '<button class="note-head" type="button" aria-expanded="false">' +
+          '<span class="note-topic">' + esc(n.topic) + '</span>' +
+          '<span class="note-title">' + esc(n.title) + '</span>' +
+          '<span class="note-caret" aria-hidden="true">&#8250;</span>' +
+        '</button>' +
+        '<div class="note-body">' + textBlocks(n.body) +
+          '<div class="note-actions">' +
+            '<button class="btn btn-ghost" type="button" data-try="' + encodeURIComponent(n.topic) + '">' +
+              'Try ' + esc(n.topic) + ' questions</button>' +
+          '</div>' +
+        '</div>' +
+      '</article>').join('');
+  }
+
+  function learnSheetsHTML() {
+    const sheets = notesFor(Learn.subject, 'sheet');
+    if (!sheets.length) return '<p class="hint">No formula sheet for this subject yet.</p>';
+    return sheets.map((n) =>
+      '<article class="note is-open">' +
+        '<div class="note-head note-fixed">' +
+          '<span class="note-topic">' + esc(n.topic) + '</span>' +
+          '<span class="note-title">' + esc(n.title) + '</span>' +
+        '</div>' +
+        '<div class="note-body">' + textBlocks(n.body) + '</div>' +
+      '</article>').join('');
+  }
+
+  function learnSolutionsHTML() {
+    const sols = (window.SOLUTIONS || {})[Learn.subject] || {};
+    const texts = Object.keys(sols);
+    if (!texts.length) return '<p class="hint">No solutions for this subject yet.</p>';
+
+    const groups = {}, order = [];
+    texts.forEach((t) => {
+      const topic = (sols[t] && sols[t].t) || 'General';
+      if (!groups[topic]) { groups[topic] = []; order.push(topic); }
+      groups[topic].push(t);
+    });
+
+    const bank = {};
+    BANK.concat(db.questions).forEach((x) => { if (x.s === Learn.subject) bank[x.q] = x; });
+
+    return order.map((topic) => {
+      const items = groups[topic];
+      return '<section class="sol-group">' +
+        '<div class="sol-head">' +
+          '<h3>' + esc(topic) + '</h3>' +
+          '<span class="sol-count">' + items.length + ' question' + (items.length === 1 ? '' : 's') + '</span>' +
+        '</div>' +
+        items.map((text) => solItemHTML(text, sols[text], bank[text])).join('') +
+        '<div class="note-actions">' +
+          '<button class="btn btn-ghost" type="button" data-try="' + encodeURIComponent(topic) + '">' +
+            'Quiz me on ' + esc(topic) + '</button>' +
+        '</div>' +
+      '</section>';
+    }).join('');
+  }
+
+  function solItemHTML(text, sol, item) {
+    const opts = item ? item.o : [];
+    const right = item ? item.a : -1;
+    return '<div class="sol-item">' +
+      '<p class="sol-q">' + esc(text) + '</p>' +
+      opts.map((o, i) =>
+        '<div class="sol-opt' + (i === right ? ' is-right' : '') + '">' +
+          '<b>' + KEYS[i] + '.</b><span>' + esc(o) + '</span></div>'
+      ).join('') +
+      (sol && sol.e
+        ? '<p class="sol-why">' + esc(sol.e) + '</p>'
+        : '<p class="sol-note">Explanation not written for this one yet.</p>') +
+    '</div>';
+  }
+
+  function renderLearn() {
+    const subs = learnSubjects();
+    if (subs.indexOf(Learn.subject) === -1) Learn.subject = subs[0] || '';
+
+    const seg = document.getElementById('learnSubject');
+    if (seg) {
+      seg.innerHTML = subs.map((s) =>
+        '<button type="button" class="seg-btn' + (s === Learn.subject ? ' is-active' : '') +
+          '" data-subject="' + encodeURIComponent(s) + '">' + esc(s) + '</button>'
+      ).join('');
+    }
+    $$('#learnMode .seg-btn').forEach((b) => {
+      b.classList.toggle('is-active', b.dataset.mode === Learn.mode);
+    });
+
+    const body = document.getElementById('learnBody');
+    const empty = document.getElementById('learnEmpty');
+    if (!body) return;
+
+    if (!Learn.subject) {
+      body.innerHTML = '';
+      if (empty) { empty.hidden = false; empty.textContent = 'No notes in this build yet.'; }
+      return;
+    }
+    if (empty) empty.hidden = true;
+
+    body.innerHTML = Learn.mode === 'sheets' ? learnSheetsHTML()
+      : Learn.mode === 'solutions' ? learnSolutionsHTML()
+        : learnNotesHTML();
+  }
+
+  function startTopicQuiz(topic) {
+    showTab('practice');
+    startQuiz({ mode: 'practice', subject: Learn.subject, topic: topic, count: 'all' });
+  }
+
   /* ---------------- Tabs ---------------- */
 
   function showTab(name) {
@@ -677,6 +842,7 @@
     });
     if (history.replaceState) history.replaceState(null, '', '#' + name);
     stopRetakeTick();
+    if (name === 'learn') renderLearn();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -982,13 +1148,22 @@
 
   const quiz = {
     pool: [], idx: 0, score: 0, skipped: 0, answered: false, subject: '',
-    mode: 'practice', lastOpts: null, deadline: 0, timerId: null, answers: []
+    topic: '', mode: 'practice', lastOpts: null, deadline: 0, timerId: null, answers: []
   };
 
   function poolFor(subject) {
     const all = BANK.concat(db.questions);
     const chosen = subject === MIXED ? all : all.filter((q) => q.s === subject);
     return chosen.map((q) => ({ s: q.s, q: q.q, o: q.o, a: q.a, e: q.e }));
+  }
+
+  /* One syllabus topic. Topics come from the solutions files, which are
+     keyed by the exact question text. */
+  function poolForTopic(subject, topic) {
+    const sols = (window.SOLUTIONS || {})[subject] || {};
+    return BANK.concat(db.questions)
+      .filter((q) => q.s === subject && sols[q.q] && sols[q.q].t === topic)
+      .map((q) => ({ s: q.s, q: q.q, o: q.o, a: q.a, e: q.e }));
   }
 
   /* The paper for exam mode: Use of English first (it is compulsory in
@@ -1057,7 +1232,7 @@
   const RETAKE_MS = 60 * 60 * 1000;
   let retakeTick = null;
 
-  function retakeKey() { return quiz.subject + '|' + quiz.mode; }
+  function retakeKey() { return quiz.subject + '|' + quiz.mode + '|' + (quiz.topic || ''); }
 
   function retakeLeft() {
     const r = db.settings.retake;
@@ -1162,6 +1337,9 @@
       }
       /* English sits first, each section drawn fresh, whole paper in one go. */
       source = paper.reduce((acc, name) => acc.concat(freshFirst(shuffle(poolFor(name)))), []);
+    } else if (options.topic) {
+      /* Learn tab: a quiz scoped to one syllabus topic. */
+      source = freshFirst(shuffle(poolForTopic(subject, options.topic)));
     } else {
       source = freshFirst(shuffle(poolFor(subject)));
     }
@@ -1185,6 +1363,7 @@
     quiz.skipped = 0;
     quiz.answers = [];
     quiz.mode = options.mode;
+    quiz.topic = options.topic || '';
     quiz.subject = options.mode === 'review' ? 'Mistake review'
       : options.mode === 'exam' ? 'UTME exam'
       : (subject === MIXED ? 'Mixed subjects' : subject);
@@ -1783,6 +1962,31 @@
       Auth.submit(email, pass);
     });
     paintAuth();
+
+    /* Learn tab: pick a subject, pick what to show, open a note, or jump
+       straight into a quiz on one topic. */
+    $('#learnSubject').addEventListener('click', (e) => {
+      const b = e.target.closest('.seg-btn');
+      if (!b) return;
+      Learn.subject = decodeURIComponent(b.dataset.subject || '');
+      renderLearn();
+    });
+    $('#learnMode').addEventListener('click', (e) => {
+      const b = e.target.closest('.seg-btn');
+      if (!b) return;
+      Learn.mode = b.dataset.mode || 'notes';
+      renderLearn();
+    });
+    $('#learnBody').addEventListener('click', (e) => {
+      const head = e.target.closest('.note-head');
+      if (head && head.tagName === 'BUTTON') {
+        const open = head.closest('.note').classList.toggle('is-open');
+        head.setAttribute('aria-expanded', String(open));
+        return;
+      }
+      const tryBtn = e.target.closest('[data-try]');
+      if (tryBtn) startTopicQuiz(decodeURIComponent(tryBtn.getAttribute('data-try') || ''));
+    });
 
     /* who is studying on this device */
     $('#whoPick').addEventListener('change', (e) => {

@@ -5,7 +5,7 @@
    offline (including on a flaky campus connection).
    ========================================================= */
 
-const CACHE = 'jamb-study-v2';
+const CACHE = 'jamb-study-v4';
 
 const ASSETS = [
   './',
@@ -27,6 +27,14 @@ const ASSETS = [
   './js/q-further-maths.js',
   './js/q-agricultural-science.js',
   './js/q-principles-of-accounts.js',
+  './js/sol-mathematics.js',
+  './js/sol-use-of-english.js',
+  './js/sol-further-maths.js',
+  './js/sol-chemistry.js',
+  './js/notes-mathematics.js',
+  './js/notes-further-maths.js',
+  './js/notes-use-of-english.js',
+  './js/notes-chemistry.js',
   './js/config.js',
   './manifest.webmanifest',
   './icon.svg'
