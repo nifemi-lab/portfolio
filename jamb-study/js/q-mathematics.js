@@ -163,7 +163,7 @@ window.QUESTION_BANK = (window.QUESTION_BANK || []).concat([
   { s: 'Mathematics', q: 'An angle inscribed in a semicircle measures:', o: ['45 degrees', '60 degrees', '180 degrees', '90 degrees'], a: 3 },
   { s: 'Mathematics', q: 'The angle between a tangent to a circle and the radius drawn to the point of contact is:', o: ['0 degrees', '45 degrees', '180 degrees', '90 degrees'], a: 3 },
   { s: 'Mathematics', q: 'Find the area of a trapezium with parallel sides 8 cm and 12 cm and height 5 cm.', o: ['40 cm^2', '50 cm^2', '60 cm^2', '100 cm^2'], a: 1 },
-  { s: 'Mathematics', q: 'A wheel of diameter 70 cm rolls over a distance of 1.1 km. How many revolutions does it make? Take pi = 22/7.', o: ['500', '1100', '2000', '1000'], a: 3 },
+  { s: 'Mathematics', q: 'A wheel of diameter 70 cm rolls over a distance of 1.1 km. How many revolutions does it make? Take pi = 22/7.', o: ['500', '1100', '2000', '1000'], a: 0 },
   { s: 'Mathematics', q: 'A ladder 13 m long rests with its foot 5 m from a vertical wall. How high up the wall does the ladder reach?', o: ['12 m', '10 m', '14 m', '11 m'], a: 0 },
   { s: 'Mathematics', q: 'In triangle PQR, angle P = 50 degrees and angle Q = 60 degrees. Find angle R.', o: ['70', '60', '80', '90'], a: 0 },
   { s: 'Mathematics', q: 'Find the diagonal of a rectangle of length 12 cm and breadth 5 cm.', o: ['12 cm', '13 cm', '15 cm', '17 cm'], a: 1 },
