@@ -749,9 +749,12 @@ html[data-theme="light"] .card { box-shadow: 0 1px 2px rgba(11, 16, 28, .05), 0 
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 }
 
+/* The accordion rule hides .note-body until its article carries .is-open.
+   A lesson always wants its body showing, and it has no .note ancestor, so
+   the rule never reached it and the whole lesson rendered blank. */
+.lesson .note-body { display: block; }
+
 /* ---------- Learn: the lesson page ----------
-   A contents page, then one topic at a time: the taught note, real
-   questions with the working already shown, then the quiz. */
 
 /* Reading mode. Once a lesson is open the chip menus and the panel
    headline step aside, so the page begins with the lesson itself
@@ -770,7 +773,10 @@ html[data-theme="light"] .card { box-shadow: 0 1px 2px rgba(11, 16, 28, .05), 0 
 .lesson-cta,
 .lesson-crumbs { max-width: 68ch; }
 
+/* A lesson is a page, not a collapsed accordion, so its body must always
+   show - without this it inherits .note-body's display: none. */
 .lesson-body {
+  display: block;
   color: var(--text-muted);
   font-size: 1.04rem;
   line-height: 1.75;
