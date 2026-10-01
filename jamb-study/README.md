@@ -24,11 +24,11 @@ timer, progress charts and a scored practice-question bank.
   straight to the mistake queue instead of being marked wrong (Skip button or
   press **S**), and the result screen says how many you skipped
 - **Learn tab** — study before you test. Short revision notes plus formula
-  sheets for Mathematics, Use of English, Further Mathematics and Chemistry
-  (12 notes and 3 sheets each), each note with a one-tap quiz on its topic
-- **Worked solutions** — the same four subjects have all 720 of their questions
-  with the correct option highlighted and the working underneath, grouped by
-  topic the way a printed past-question book is, and each topic group starts a
+  sheets for **all 14 subjects** (12 notes and 3 sheets each — 168 notes, 42
+  sheets), each note with a one-tap quiz on its topic
+- **Worked solutions** — **all 14 subjects**, carrying 2,520 questions with
+  the correct option highlighted and the working underneath, grouped by topic
+  the way a printed past-question book is, and each topic group starts a
   quiz on its own questions
 - **Mistake queue** — every wrong answer is saved for review; getting it right
   in review removes it
@@ -57,11 +57,23 @@ timer, progress charts and a scored practice-question bank.
 > in the file. All 360 Mathematics and Further Mathematics keys have been
 > recomputed question by question and every Use of English key proof-read —
 > that pass corrected **13 keyed answers and 3 option texts** across the three
-> files. A second pass — writing the worked solutions for Biology, Physics
-> and Government — caught **7 more wrong keys** (Mendel's pea plants and
-> *Escherichia coli*'s genus in Biology, wave speed in Physics, and four
-> items in Nigeria's legislature, fundamental rights, election body and
-> Senate age in Government), each corrected in its own file.
+> files. A second pass — writing the worked solutions for all 14 subjects —
+> caught **14 more wrong keys** across six files: 2 in Biology (Mendel used
+> pea plants; *Escherichia* is the genus), 1 in Physics (wave speed = 50 x 4
+> = 200 m/s, not 20), 3 in Government (the National Assembly, the Section 45
+> grounds for limiting rights, and INEC), 4 in Principles of Accounts (all four
+> bank-reconciliation items had their signs inverted), 3 in Commerce (hire
+> purchase, monopoly, and the stock exchange's function) and 1 in History (the
+> Asiento arrived with the Treaty of Utrecht in 1713, not 1807).
+>
+> A third pass checked those keys against the enacted Constitution itself
+> (PLAC's consolidated edition, as amended through 2023). It reverted one of
+> the second pass's changes — Section 65(1)(a) sets the Senate minimum at
+> **35 years**, so the original key was right all along and the "30 years"
+> edit was the error. That same pass found a genuinely broken item: the
+> residuary-powers question offered no correct option, because Section
+> 4(7)(a) vests those powers in **State Houses of Assembly**, not the National
+> Assembly as its solution claimed. Its options and key now say so.
 
 Vanilla HTML/CSS/JS — no build step, no framework, no npm.
 
@@ -107,8 +119,8 @@ jamb-study/
 ├── css/app.css           design system (same tokens as the portfolio) + light theme
 ├── js/questions.js       230 questions → window.QUESTION_BANK (loaded first)
 ├── js/q-*.js             14 subject files × 180 questions → appended to the same bank
-├── js/sol-*.js           4 solution files × 180 entries → window.SOLUTIONS, keyed by question text
-├── js/notes-*.js         4 Learn files × (12 notes + 3 formula sheets) → window.NOTES
+├── js/sol-*.js           14 solution files × 180 entries → window.SOLUTIONS, keyed by question text
+├── js/notes-*.js         14 Learn files × (12 notes + 3 formula sheets) → window.NOTES
 ├── js/config.js          Supabase credentials (already filled in here)
 ├── js/app.js             all logic + the data layer
 ├── manifest.webmanifest  makes the app installable (PWA)

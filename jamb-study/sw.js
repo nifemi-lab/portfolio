@@ -5,7 +5,7 @@
    offline (including on a flaky campus connection).
    ========================================================= */
 
-const CACHE = 'jamb-study-v5';
+const CACHE = 'jamb-study-v6';
 
 const ASSETS = [
   './',
@@ -31,10 +31,30 @@ const ASSETS = [
   './js/sol-use-of-english.js',
   './js/sol-further-maths.js',
   './js/sol-chemistry.js',
+  './js/sol-physics.js',
+  './js/sol-biology.js',
+  './js/sol-economics.js',
+  './js/sol-government.js',
+  './js/sol-geography.js',
+  './js/sol-literature.js',
+  './js/sol-history.js',
+  './js/sol-commerce.js',
+  './js/sol-agricultural-science.js',
+  './js/sol-principles-of-accounts.js',
   './js/notes-mathematics.js',
   './js/notes-further-maths.js',
   './js/notes-use-of-english.js',
   './js/notes-chemistry.js',
+  './js/notes-physics.js',
+  './js/notes-biology.js',
+  './js/notes-economics.js',
+  './js/notes-government.js',
+  './js/notes-geography.js',
+  './js/notes-literature.js',
+  './js/notes-history.js',
+  './js/notes-commerce.js',
+  './js/notes-agricultural-science.js',
+  './js/notes-principles-of-accounts.js',
   './js/config.js',
   './manifest.webmanifest',
   './icon.svg'

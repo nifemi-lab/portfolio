@@ -47,7 +47,7 @@ window.QUESTION_BANK = (window.QUESTION_BANK || []).concat([
   { s: 'History', q: 'The British Parliament passed the law abolishing the Atlantic slave trade in:', o: ['1807', '1787', '1833', '1865'], a: 0 },
   { s: 'History', q: 'The first European nation to transport enslaved Africans across the Atlantic was:', o: ['Britain', 'Spain', 'Portugal', 'France'], a: 2 },
   { s: 'History', q: 'The Portuguese slave-trading fort of Sao Jorge da Mina was built in present-day:', o: ['Senegal', 'Ghana', 'Togo', 'Nigeria'], a: 1 },
-  { s: 'History', q: 'The Asiento contract, which gave Britain the right to supply slaves to Spanish colonies, was granted in:', o: ['1600', '1713', '1807', '1885'], a: 2 },
+  { s: 'History', q: 'The Asiento contract, which gave Britain the right to supply slaves to Spanish colonies, was granted in:', o: ['1600', '1713', '1807', '1885'], a: 1 },
   { s: 'History', q: 'The inhumane ocean crossing from Africa to the Americas, on which many captives died, is known as:', o: ['The Triangular Trade', 'The Middle Passage', 'The Scramble', 'The Passage of Lagos'], a: 1 },
   { s: 'History', q: 'The triangular trade linked Europe, Africa and:', o: ['Europe', 'Africa', 'The Americas', 'Asia'], a: 2 },
   { s: 'History', q: 'The author of The Interesting Narrative of the Life of Olaudah Equiano, used by abolitionists, was:', o: ['Thomas Clarkson', 'William Wilberforce', 'Robert Bristow', 'Olaudah Equiano'], a: 3 },

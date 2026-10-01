@@ -447,17 +447,20 @@ input[type="date"], input[type="time"] { color-scheme: dark; }
   transition: border-color .2s var(--ease), opacity .2s;
 }
 .slot.done { border-left-color: var(--accent-2); opacity: .55; }
-.slot-top { display: flex; justify-content: space-between; gap: .4rem; align-items: center; }
+/* Wrapping matters: the grid lets columns drop to 150px, and a slot now
+   carries three buttons. Wrapping beats squashing them below tap size. */
+.slot-top { display: flex; justify-content: space-between; gap: .4rem; align-items: center; flex-wrap: wrap; }
 .slot-time { font-size: .72rem; color: var(--text-faint); font-variant-numeric: tabular-nums; }
 .slot-subject { font-size: .85rem; font-weight: 600; margin-top: .15rem; }
 .slot-topic { font-size: .75rem; color: var(--text-muted); line-height: 1.4; margin-top: .1rem; overflow-wrap: anywhere; }
 .slot-mins { font-size: .7rem; color: var(--accent); font-weight: 600; }
 
-.slot-actions { display: flex; gap: .3rem; }
+.slot-actions { display: flex; gap: .3rem; flex: 0 0 auto; }
 .icon-btn {
   background: transparent; border: 1px solid var(--border); border-radius: 6px;
   width: 22px; height: 22px; display: grid; place-items: center; cursor: pointer;
   font-size: .7rem; color: var(--text-muted); line-height: 1; padding: 0;
+  flex: none; /* keep the tap target — let .slot-top wrap instead */
   transition: color .2s, border-color .2s, background .2s;
 }
 .icon-btn:hover { color: var(--text); border-color: var(--border-strong); background: var(--bg-elev); }
@@ -526,6 +529,7 @@ input[type="date"], input[type="time"] { color-scheme: dark; }
 @keyframes whyIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .quiz-why-head {
   display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  flex-wrap: wrap; min-width: 0;
   margin: 0 0 .45rem; font-size: .72rem; font-weight: 700;
   letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
 }
@@ -534,6 +538,7 @@ input[type="date"], input[type="time"] { color-scheme: dark; }
   font-weight: 600; color: var(--text-muted);
   background: var(--bg-elev); border: 1px solid var(--border);
   border-radius: 999px; padding: .12rem .5rem;
+  max-width: 100%; overflow-wrap: anywhere;
 }
 .quiz-why-body {
   margin: 0; font-size: var(--step-0); line-height: 1.7;
@@ -743,3 +748,28 @@ html[data-theme="light"] .card { box-shadow: 0 1px 2px rgba(11, 16, 28, .05), 0 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- Learn: teaching callouts ----------
+   A note paragraph that opens with "Example:", "Watch out:" or
+   "In short:" is rendered as a lesson box with its label on top —
+   the three beats a teacher uses at the board. */
+.note-body p.nb {
+  margin: .8rem 0; padding: .65rem .85rem;
+  border-left: 3px solid var(--accent);
+  background: rgba(77, 204, 255, .08);
+  border-radius: var(--radius-sm);
+}
+.note-body p.nb > b {
+  display: block; margin-bottom: .25rem;
+  font-size: var(--step--2); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--accent);
+}
+.note-body p.nb-eg { border-left-color: var(--accent); background: rgba(77, 204, 255, .08); }
+.note-body p.nb-eg > b { color: var(--accent); }
+.note-body p.nb-warn { border-left-color: var(--warn); background: rgba(165, 98, 10, .12); }
+.note-body p.nb-warn > b { color: var(--warn); }
+.note-body p.nb-recap { border-left-color: var(--accent-2); background: rgba(100, 240, 199, .08); }
+.note-body p.nb-recap > b { color: var(--accent-2); }
+html[data-theme="light"] .note-body p.nb { background: rgba(77, 204, 255, .10); }
+html[data-theme="light"] .note-body p.nb-warn { background: rgba(165, 98, 10, .10); }
+html[data-theme="light"] .note-body p.nb-recap { background: rgba(14, 143, 112, .10); }
