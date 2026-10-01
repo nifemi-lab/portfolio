@@ -953,6 +953,7 @@
           : '') +
       '</header>' +
 
+      '<h3 class="lesson-h lesson-h-teach">The lesson</h3>' +
       '<div class="note-body lesson-body">' + body + '</div>' +
 
       workedHTML +
