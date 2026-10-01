@@ -752,7 +752,30 @@ html[data-theme="light"] .card { box-shadow: 0 1px 2px rgba(11, 16, 28, .05), 0 
 /* ---------- Learn: the lesson page ----------
    A contents page, then one topic at a time: the taught note, real
    questions with the working already shown, then the quiz. */
+
+/* Reading mode. Once a lesson is open the chip menus and the panel
+   headline step aside, so the page begins with the lesson itself
+   instead of seventeen buttons. Same job as turning to a chapter. */
+#learn.is-reading .panel-head,
+#learn.is-reading .learn-bar { display: none; }
+#learn.is-reading .card { padding-top: 1.1rem; }
+
 .lesson { display: block; }
+
+/* A measured column: long lines are hard to read, so cap the measure
+   the way a printed page does. */
+.lesson-head,
+.lesson-body,
+.lesson-worked,
+.lesson-cta,
+.lesson-crumbs { max-width: 68ch; }
+
+.lesson-body {
+  color: var(--text-muted);
+  font-size: 1.04rem;
+  line-height: 1.75;
+}
+.lesson-body > p:first-child { color: var(--text); }
 
 .lesson-crumbs { margin-bottom: .9rem; }
 .lesson-head { margin-bottom: 1.1rem; }
@@ -765,7 +788,6 @@ html[data-theme="light"] .card { box-shadow: 0 1px 2px rgba(11, 16, 28, .05), 0 
   font-size: var(--step-2); font-weight: 700;
   line-height: 1.15; letter-spacing: -.02em;
 }
-.lesson-body { color: var(--text-muted); }
 .lesson-body > p:first-child { color: var(--text); }
 
 /* Contents page */

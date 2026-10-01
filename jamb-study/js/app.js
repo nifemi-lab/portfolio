@@ -1039,6 +1039,13 @@
           '" data-subject="' + encodeURIComponent(s) + '">' + esc(s) + '</button>'
       ).join('');
     }
+
+    /* Inside a lesson the 14 subject buttons and the Learn headline are just
+       chrome between the reader and the page. Hide them so the lesson starts
+       at the top of the screen and reads like a page of a book; the back
+       link returns to the contents, where the menus live. */
+    const learnPanel = document.getElementById('learn');
+    if (learnPanel) learnPanel.classList.toggle('is-reading', Learn.mode === 'lesson');
     $$('#learnMode .seg-btn').forEach((b) => {
       /* A lesson is a topic opened, so it belongs to the Topics chip. */
       const own = b.dataset.mode === Learn.mode;
