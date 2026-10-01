@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Loading demo dashboard…</title>
+  <style>body{font:16px/1.5 system-ui,sans-serif;background:#0a0c11;color:#e9ecf4;padding:40px;max-width:640px} a{color:#7b9cff}</style>
+</head>
+<body>
+<script src="seed-data.js"></script>
+<script>
+/* ---------------------------------------------------------
+   Screenshot helper (fiverr-images).
+   Writes the demo study history into THIS origin's
+   localStorage, then lands on the real app so the dashboard
+   renders with it.
+
+   Safety guard: if this origin already holds study data,
+   do nothing unless you explicitly add ?demo — so opening
+   this file from the live site can never wipe real data.
+   --------------------------------------------------------- */
+(function () {
+  var KEY = 'jamb_study_db_v1::me';
+  var hasData = false;
+  try { hasData = !!window.localStorage.getItem(KEY); } catch (e) { hasData = false; }
+  var forced = /[?&]demo(=1|&|$)/.test(location.search);
+
+  if (hasData && !forced) {
+    document.body.innerHTML =
+      '<h1>Demo data not applied</h1>' +
+      '<p>This origin already has study data, so nothing was overwritten. ' +
+      'Re-run with <code>?demo</code> to replace it with the screenshot dataset, ' +
+      'or open the app directly: <a href="../jamb-study/index.html">jamb-study/index.html</a>.</p>';
+    return;
+  }
+
+  try {
+    localStorage.setItem('jamb_study_profiles_v1', JSON.stringify(window.__SEED__.profiles));
+    localStorage.setItem(KEY, JSON.stringify(window.__SEED__.db));
+    localStorage.removeItem('jamb_study_db_v1');
+  } catch (e) { /* storage blocked — app will fall back to defaults */ }
+
+  location.replace('../jamb-study/index.html');
+})();
+</script>
+<p>Loading dashboard…</p>
+</body>
+</html>
