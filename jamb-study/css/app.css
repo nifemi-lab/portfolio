@@ -254,19 +254,66 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 .sol-group { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-elev-2); padding: .9rem; }
 .sol-head { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-bottom: .6rem; }
 .sol-head h3 { font-size: var(--step-0); margin: 0; }
-.sol-item { padding: .75rem 0; border-top: 1px solid var(--border); }
-.sol-item:first-of-type { border-top: 0; padding-top: .1rem; }
-.sol-q { font-weight: 600; margin: 0 0 .5rem; line-height: 1.55; }
-.sol-opt { display: flex; gap: .55rem; padding: .26rem .5rem; border-radius: 8px; font-size: var(--step--1); color: var(--text-muted); line-height: 1.5; }
-.sol-opt b { color: var(--text-faint); font-weight: 700; }
-.sol-opt.is-right { background: rgba(100, 240, 199, .12); color: var(--accent-2); font-weight: 600; }
-.sol-opt.is-right b { color: var(--accent-2); }
-.sol-why {
-  margin: .5rem 0 0; padding: .5rem .7rem; border-left: 2px solid var(--accent);
-  background: rgba(123, 156, 255, .09); border-radius: 0 8px 8px 0;
-  font-size: var(--step--1); color: var(--text-muted); line-height: 1.6;
+/* ---------- Worked questions, set like a past-question book ----------
+   Item number in the margin, question in a serif face, options beneath,
+   the answer stated plainly, then the working. */
+.sol-item {
+  display: grid; grid-template-columns: auto 1fr; gap: 0 .85rem;
+  padding: .95rem 0; border-top: 1px solid var(--border);
 }
-.sol-note { color: var(--text-faint); font-size: var(--step--1); }
+.sol-item:first-of-type { border-top: 0; padding-top: .4rem; }
+.sol-no {
+  grid-row: 1 / -1;
+  min-width: 1.6rem; height: 1.6rem; padding: 0 .3rem;
+  display: grid; place-items: center;
+  background: var(--bg-elev); border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-display); font-size: .8rem; font-weight: 700;
+  color: var(--text-muted); font-variant-numeric: tabular-nums;
+}
+.sol-main { min-width: 0; }
+.sol-q {
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-size: 1.02rem; line-height: 1.55; color: var(--text);
+  margin: 0 0 .55rem;
+}
+.sol-opts { list-style: none; padding: 0; margin: 0 0 .1rem; display: grid; gap: .18rem; }
+.sol-opt {
+  display: flex; gap: .5rem; align-items: baseline;
+  padding: .22rem .5rem; border-radius: 6px;
+  font-size: var(--step--1); color: var(--text-muted); line-height: 1.5;
+}
+.sol-letter { font-weight: 700; color: var(--text-faint); flex: 0 0 auto; }
+.sol-opt.is-right {
+  background: rgba(100, 240, 199, .13); color: var(--accent-2); font-weight: 600;
+}
+.sol-opt.is-right .sol-letter { color: var(--accent-2); }
+
+/* The answer, stated the way a book states it: plainly, under the options. */
+.sol-ans {
+  margin: .6rem 0 0; font-family: var(--font-display);
+  font-size: var(--step--1); color: var(--text);
+}
+.sol-ans-label { color: var(--accent-2); font-weight: 700; letter-spacing: .04em; }
+
+/* The working sits under a hairline so it reads as a separate beat. */
+.sol-work {
+  margin-top: .7rem; padding-top: .6rem;
+  border-top: 1px dashed var(--border);
+  font-size: var(--step--1); color: var(--text-muted); line-height: 1.65;
+}
+.sol-work-label {
+  display: block; margin-bottom: .25rem;
+  font-size: .64rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--accent);
+}
+.sol-work p { margin: 0; }
+.sol-note { color: var(--text-faint); font-size: var(--step--1); margin: .5rem 0 0; }
+
+@media (max-width: 520px) {
+  .sol-item { gap: 0 .6rem; }
+  .sol-no { min-width: 1.4rem; height: 1.4rem; font-size: .74rem; }
+}
 
 /* ---------- Panels ---------- */
 main.container { padding-block: clamp(1.75rem, 5vw, 3.25rem) 4rem; }

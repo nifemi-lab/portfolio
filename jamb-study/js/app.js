@@ -834,7 +834,7 @@
           '<h3>' + esc(topic) + '</h3>' +
           '<span class="sol-count">' + items.length + ' question' + (items.length === 1 ? '' : 's') + '</span>' +
         '</div>' +
-        items.map((text) => solItemHTML(text, sols[text], bank[text])).join('') +
+        items.map((text, i) => solItemHTML(text, sols[text], bank[text], i + 1)).join('') +
         '<div class="note-actions">' +
           '<button class="btn btn-ghost" type="button" data-try="' + encodeURIComponent(topic) + '">' +
             'Quiz me on ' + esc(topic) + '</button>' +
@@ -949,7 +949,7 @@
     const workedHTML = worked.length
       ? '<section class="lesson-worked">' +
         '<h3 class="lesson-h">Worked questions from this topic</h3>' +
-        worked.map((r) => solItemHTML(r.text, { e: r.why }, { o: r.opts, a: r.right })).join('') +
+        worked.map((r, i) => solItemHTML(r.text, { e: r.why }, { o: r.opts, a: r.right }, i + 1)).join('') +
         thin +
         (hidden.length
           ? '<div class="lesson-more">' +
@@ -957,7 +957,7 @@
                 'Show ' + hidden.length + ' more worked question' + (hidden.length === 1 ? '' : 's') +
               '</button>' +
               '<div class="lesson-more-body" hidden>' +
-                hidden.map((r) => solItemHTML(r.text, { e: r.why }, { o: r.opts, a: r.right })).join('') +
+                hidden.map((r, i) => solItemHTML(r.text, { e: r.why }, { o: r.opts, a: r.right }, SHOWN + i + 1)).join('') +
               '</div>' +
             '</div>'
           : (total > worked.length
@@ -1031,19 +1031,34 @@
       '</ol>';
   }
 
-  function solItemHTML(text, sol, item) {
+  /* A worked question, set the way a past-question book sets it: the item
+     numbered, the question in a serif face, the options beneath, the
+     answer stated plainly, then the working. `n` continues across the
+     topic so the items read as one numbered set. */
+  function solItemHTML(text, sol, item, n) {
     const opts = item ? item.o : [];
     const right = item ? item.a : -1;
-    return '<div class="sol-item">' +
-      '<p class="sol-q">' + esc(text) + '</p>' +
-      opts.map((o, i) =>
-        '<div class="sol-opt' + (i === right ? ' is-right' : '') + '">' +
-          '<b>' + KEYS[i] + '.</b><span>' + esc(o) + '</span></div>'
-      ).join('') +
-      (sol && sol.e
-        ? '<p class="sol-why">' + esc(sol.e) + '</p>'
-        : '<p class="sol-note">Explanation not written for this one yet.</p>') +
-    '</div>';
+    const answer = right >= 0 && opts[right] ? opts[right] : '';
+    return '<article class="sol-item">' +
+      (n ? '<div class="sol-no" aria-hidden="true">' + n + '</div>' : '') +
+      '<div class="sol-main">' +
+        '<p class="sol-q">' + esc(text) + '</p>' +
+        (opts.length
+          ? '<ul class="sol-opts">' + opts.map((o, i) =>
+              '<li class="sol-opt' + (i === right ? ' is-right' : '') + '">' +
+                '<span class="sol-letter">' + KEYS[i] + '.</span>' +
+                '<span>' + esc(o) + '</span></li>'
+            ).join('') + '</ul>'
+          : '') +
+        (answer
+          ? '<p class="sol-ans"><span class="sol-ans-label">Ans:</span> ' + esc(answer) + '</p>'
+          : '') +
+        (sol && sol.e
+          ? '<div class="sol-work"><span class="sol-work-label">Working</span>' +
+            '<p>' + esc(sol.e) + '</p></div>'
+          : '<p class="sol-note">The working for this one has not been written yet.</p>') +
+      '</div>' +
+    '</article>';
   }
 
   function renderLearn() {
