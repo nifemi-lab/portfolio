@@ -831,6 +831,17 @@ html[data-theme="light"] .card { box-shadow: 0 1px 2px rgba(11, 16, 28, .05), 0 
 .lesson-nav { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .9rem; }
 .lesson-nav .btn { max-width: 100%; overflow-wrap: anywhere; text-align: left; }
 
+/* "Show N more worked questions" and the thin-topic warning */
+.lesson-more { margin-top: 1rem; padding-top: .9rem; border-top: 1px dashed var(--border-strong); }
+.lesson-more-body { margin-top: .4rem; }
+.lesson-more-body .sol-item:first-of-type { border-top: 0; padding-top: .8rem; }
+.lesson-thin {
+  margin: .9rem 0 0; padding: .6rem .8rem;
+  border-left: 3px solid var(--warn); background: rgba(255, 195, 107, .1);
+  border-radius: 0 8px 8px 0;
+  font-size: var(--step--1); color: var(--text-muted); line-height: 1.6;
+}
+
 /* ---------- Learn: teaching callouts ----------
    A note paragraph that opens with "Example:", "Watch out:" or
    "In short:" is rendered as a lesson box with its label on top —

@@ -914,8 +914,13 @@
     if (!notes.length) return '<p class="hint">No lesson for this topic yet.</p>';
 
     const lesson = notes[0];
-    const worked = workedQuestions(subject, topic, 3);
+    const SHOWN = 3;
+    const worked = workedQuestions(subject, topic, SHOWN);
     const total = topicQuestionCount(subject, topic);
+    /* Every question on the topic already carries its working, so the rest
+       can be revealed on the same page rather than sent away to Solutions. */
+    const spare = workedQuestions(subject, topic, total);
+    const hidden = spare.slice(SHOWN);
 
     /* Prev / next across this subject's topics, so you read like a book. */
     const topics = topicList(subject);
@@ -925,15 +930,31 @@
 
     const body = notes.map((n) => textBlocks(n.body)).join('');
 
+    /* Say so plainly when a topic is thinly covered, rather than letting a
+       single example pass for a full treatment of the syllabus. */
+    const thin = total > 0 && total <= 5
+      ? '<p class="lesson-thin">Only ' + total + ' question' + (total === 1 ? '' : 's') +
+        ' on this topic in the bank, so this lesson shows all of them. ' +
+        'Read the note above carefully, and use the quiz to test yourself on it.</p>'
+      : '';
+
     const workedHTML = worked.length
       ? '<section class="lesson-worked">' +
         '<h3 class="lesson-h">Worked questions from this topic</h3>' +
         worked.map((r) => solItemHTML(r.text, { e: r.why }, { o: r.opts, a: r.right })).join('') +
-        '<p class="hint">' + esc(
-          (total - worked.length) > 0
-            ? 'Plus ' + (total - worked.length) + ' more in the Solutions browser.'
-            : 'That is every question on this topic.'
-        ) + '</p>' +
+        thin +
+        (hidden.length
+          ? '<div class="lesson-more">' +
+              '<button class="btn btn-ghost" type="button" data-learn-more="1">' +
+                'Show ' + hidden.length + ' more worked question' + (hidden.length === 1 ? '' : 's') +
+              '</button>' +
+              '<div class="lesson-more-body" hidden>' +
+                hidden.map((r) => solItemHTML(r.text, { e: r.why }, { o: r.opts, a: r.right })).join('') +
+              '</div>' +
+            '</div>'
+          : (total > worked.length
+            ? '<p class="hint">That is every question on this topic.</p>'
+            : '')) +
         '</section>'
       : (total
         ? '<p class="hint">This topic has ' + total + ' questions — open Solutions to see the working on all of them.</p>'
@@ -2440,6 +2461,21 @@
       renderLearn();
     });
     $('#learnBody').addEventListener('click', (e) => {
+      /* Reveal the rest of the topic's worked questions. */
+      const more = e.target.closest('[data-learn-more]');
+      if (more) {
+        const box = more.parentElement.querySelector('.lesson-more-body');
+        if (box) {
+          const showing = box.hasAttribute('hidden');
+          if (showing) { box.removeAttribute('hidden'); } else { box.setAttribute('hidden', ''); }
+          more.textContent = showing
+            ? 'Hide the extra questions'
+            : 'Show ' + box.querySelectorAll('.sol-item').length + ' more worked question' +
+              (box.querySelectorAll('.sol-item').length === 1 ? '' : 's');
+          more.setAttribute('aria-expanded', String(showing));
+        }
+        return;
+      }
       /* Open a topic's lesson. */
       const go = e.target.closest('[data-learn-go]');
       if (go) {
