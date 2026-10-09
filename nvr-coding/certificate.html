@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate — NVR Coding</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  .cert{max-width:640px;margin:60px auto;padding:40px;text-align:center;border:3px double var(--accent);border-radius:20px;background:var(--surface)}
+  .cert h1{font-size:32px;margin-bottom:10px}
+  .cert .name{font-size:24px;color:var(--accent);margin:20px 0}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="index.html">🧠 NVR<span>Coding</span></a></header>
+<main>
+  <div class="cert" id="cert"></div>
+</main>
+<script src="data/lessons.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const trackId = new URLSearchParams(location.search).get('track');
+  const t = window.LESSONS.tracks.find(x => x.id === trackId);
+  document.getElementById('cert').innerHTML = t
+    ? `<h1>🏆 Certificate of Completion</h1>
+       <p>This certifies that</p>
+       <div class="name">You (legend) 😎</div>
+       <p>have completed</p>
+       <h2 style="margin:10px 0">${t.icon} ${t.title}</h2>
+       <p class="tiny">Completed on ${new Date().toLocaleDateString()} · ${store.get('xp',0)} XP · ${store.get('streak',0)}-day streak</p>`
+    : '<h2>No track found 🤷</h2><a class="btn ghost" href="index.html">Back home</a>';
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review — NVR Coding</title>
+<meta name="description" content="NVR Coding — learn front-end, back-end, SQL and Git through psychology-backed lessons: chunked steps, active recall, spaced review, and write-it exercises.">
+<meta name="theme-color" content="#0f1420">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">🧠 NVR<span>Coding</span></a>
+  <div class="pills">
+    <a class="pill" href="about.html" style="text-decoration:none;color:inherit">ℹ️ About</a>
+    <a class="pill" href="playground.html" style="text-decoration:none;color:inherit">🧪 Playground</a>
+    <a class="pill" href="review.html" style="text-decoration:none;color:inherit">🔁 Review</a>
+    <button class="pill" id="themeBtn" style="cursor:pointer">🌙</button><span class="pill">⚡ <b id="xpPill">0</b> XP</span>
+    <span class="pill">🔥 <b id="streakPill">0</b></span>
+  </div>
+</header>
+
+<main class="lesson-shell">
+  <h1 style="margin-bottom:6px">🔁 Spaced Review</h1>
+  <p class="tiny" style="margin-bottom:20px">Concepts come back at the perfect time so they stick forever.</p>
+  <article id="reviewArea" class="lesson-card"></article>
+</main>
+
+<script src="data/lessons.js"></script>
+<script src="js/celebrate.js"></script>
+<script src="js/app.js"></script>
+<script src="js/review.js"></script>
+</body>
+</html>

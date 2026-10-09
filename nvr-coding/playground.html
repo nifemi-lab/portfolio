@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playground — NVR Coding</title>
+<meta name="description" content="NVR Coding — learn front-end, back-end, SQL and Git through psychology-backed lessons: chunked steps, active recall, spaced review, and write-it exercises.">
+<meta name="theme-color" content="#0f1420">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">🧠 NVR<span>Coding</span></a>
+  <div class="pills">
+    <a class="pill" href="about.html" style="text-decoration:none;color:inherit">ℹ️ About</a>
+    <a class="pill" href="playground.html" style="text-decoration:none;color:inherit">🧪 Playground</a>
+    <a class="pill" href="review.html" style="text-decoration:none;color:inherit">🔁 Review</a>
+    <button class="pill" id="themeBtn" style="cursor:pointer">🌙</button><span class="pill">⚡ <b id="xpPill">0</b> XP</span>
+    <span class="pill">🔥 <b id="streakPill">0</b></span>
+  </div>
+</header>
+
+<main class="lesson-shell">
+  <h1 style="margin-bottom:6px">🧪 Playground</h1>
+  <p class="tiny" style="margin-bottom:20px">Your personal sandbox. No rules, no grades — just play. Experimenting is how coders are made.</p>
+  <article class="lesson-card">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <button class="btn ghost" data-tpl="hello">👋 Hello</button>
+      <button class="btn ghost" data-tpl="loop">🔁 Loop</button>
+      <button class="btn ghost" data-tpl="math">🧮 Math</button>
+      <button class="btn ghost" data-tpl="array">📦 Arrays</button>
+      <button class="btn ghost" data-tpl="object">📄 Objects</button>
+      <button class="btn ghost" data-tpl="fetch">🌐 Fetch</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+      <button class="btn ghost" id="langJs" style="font-weight:700">🟨 JS</button>
+      <button class="btn ghost" id="langPy">🐍 Python</button>
+      <span class="tiny" id="langNote" style="margin:0"></span>
+    </div>
+    <textarea class="code-editor" id="editor" spellcheck="false" style="min-height:220px">console.log("Play with me!");</textarea>
+    <pre id="highlight" class="console" style="margin-top:12px;white-space:pre-wrap"></pre>
+    <button class="btn primary" id="runBtn">▶ Run</button>
+    <pre class="console" id="out">Output will appear here…</pre>
+  </article>
+</main>
+
+  <article class="lesson-card" style="margin-top:20px">
+    <h2>🎮 Mini game: Number Guesser</h2>
+    <p>I'm thinking of a number between 1 and 10. You have 5 tries.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <input id="guessInput" type="number" min="1" max="10" placeholder="1-10" style="width:100px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text)">
+      <button class="btn primary" id="guessBtn">Guess</button>
+      <button class="btn ghost" id="newGameBtn">↻ New game</button>
+    </div>
+    <p id="guessMsg" class="feedback" style="margin-top:12px"></p>
+  </article>
+
+  <script src="data/lessons.js"></script>
+<script src="js/celebrate.js"></script>
+<script src="js/app.js"></script>
+<script src="js/playground.js"></script>
+</body>
+</html>

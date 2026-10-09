@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — NVR Coding</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">🧠 NVR<span>Coding</span></a>
+  <div class="pills">
+    <a class="pill" href="index.html" style="text-decoration:none;color:inherit">← Home</a>
+  </div>
+</header>
+
+<main>
+  <h1>About NVR Coding 🧠</h1>
+  <p style="margin:16px 0">NVR Coding is a psychology-first coding school that runs entirely in your browser. It exists because most courses dump information at you — ours is built around how brains actually learn:</p>
+  <div class="cards">
+    <div class="card"><h3>🧩 Chunking</h3><p>Lessons are 2–4 minute micro-steps, never walls of text.</p></div>
+    <div class="card"><h3>🎯 Active recall</h3><p>Quizzes and write-it steps force you to retrieve, not just read.</p></div>
+    <div class="card"><h3>🔁 Spaced repetition</h3><p>The Review page resurfaces old ideas at the perfect intervals.</p></div>
+    <div class="card"><h3>🌱 Growth mindset</h3><p>Errors say "errors are data." Bugs are celebrated, not hidden.</p></div>
+    <div class="card"><h3>🎮 Gentle motivation</h3><p>XP, streaks, badges, confetti — rewarding mastery, not grinding.</p></div>
+    <div class="card"><h3>🍳 Dual coding</h3><p>Every concept pairs with a real-life analogy to stick faster.</p></div>
+  </div>
+  <h2 style="margin:24px 0 8px">What you can learn</h2>
+  <p>How the web works, front-end (HTML/CSS/JS), back-end (Node/Express/APIs/databases), SQL, Git, JavaScript foundations, Python, dev tools, design basics (Canva/UX-UI), web safety, career path, and React basics.</p>
+  <h2 style="margin:24px 0 8px">Send us a note 📬</h2>
+  <form id="contactForm" onsubmit="return false;" style="display:grid;gap:10px;max-width:420px">
+    <input id="cfName" placeholder="Your name" style="padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text)">
+    <textarea id="cfMsg" placeholder="What do you think?" rows="4" style="padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text)"></textarea>
+    <button class="btn primary" type="submit">Send 💌</button>
+  </form>
+  <p id="cfThanks" class="tiny" style="margin-top:8px"></p>
+
+  <p class="tiny" style="margin-top:20px">Built with 🧠 by a bro, for bros. No signup, no tracking, all progress stays in your browser.</p>
+</main>
+<script>
+  document.getElementById('contactForm').onsubmit = () => {
+    const msgs = JSON.parse(localStorage.getItem('nvr_feedback') || '[]');
+    msgs.push({ name: document.getElementById('cfName').value, msg: document.getElementById('cfMsg').value, at: new Date().toISOString() });
+    localStorage.setItem('nvr_feedback', JSON.stringify(msgs));
+    document.getElementById('cfThanks').textContent = '🙌 Thanks! Your feedback was saved locally.';
+    document.getElementById('cfName').value = ''; document.getElementById('cfMsg').value = '';
+  };
+</script>
+</body>
+</html>

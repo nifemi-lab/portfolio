@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NVR Coding — Learn web dev with your brain, not against it</title>
+<meta name="description" content="NVR Coding — learn front-end, back-end, SQL and Git through psychology-backed lessons: chunked steps, active recall, spaced review, and write-it exercises.">
+<meta name="theme-color" content="#0f1420">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">🧠 NVR<span>Coding</span></a>
+  <div class="pills">
+    <a class="pill" href="about.html" style="text-decoration:none;color:inherit">ℹ️ About</a>
+    <a class="pill" href="playground.html" style="text-decoration:none;color:inherit">🧪 Playground</a>
+    <a class="pill" href="review.html" style="text-decoration:none;color:inherit">🔁 Review</a>
+    <button class="pill" id="themeBtn" style="cursor:pointer">🌙</button><span class="pill">⚡ <b id="xpPill">0</b> XP</span>
+    <span class="pill">🔥 <b id="streakPill">0</b></span>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Learn to code<br><span class="grad">with your brain, not against it.</span></h1>
+    <p class="sub">🌌 Front-end & back-end lessons designed on proven psychology — chunked, spaced, and built so it actually feels easy.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="lesson.html?lesson=t0l1">Start now — it's free</a>
+      <a class="btn ghost" href="#tracks">Explore tracks</a>
+      <a class="btn ghost" id="randomBtn" href="#">🎲 Random lesson</a>
+    </div>
+    <p class="tiny">No signup. No walls. Just learn.</p>
+    <p id="dailyChallenge" class="pill" style="display:inline-block;margin-top:16px">🎯 Daily challenge loading…</p>
+  </section>
+
+  <section class="cards">
+    <div class="card"><h3>🧩 Chunked lessons</h3><p>2–4 minute steps. One idea per screen. Your working memory stays fresh.</p></div>
+    <div class="card"><h3>🔁 Spaced review</h3><p>Old concepts come back at just the right time so they actually stick.</p></div>
+    <div class="card"><h3>🎯 Active recall</h3><p>Every lesson ends with a quiz from memory — the strongest way to learn.</p></div>
+    <div class="card"><h3>🌱 Growth mindset</h3><p>Errors are data. We celebrate bugs — that's where the learning happens.</p></div>
+  </section>
+
+  <section class="tracks">
+    <h2>📊 Your progress</h2>
+    <div id="heatmap" style="display:flex;gap:4px;margin:0 0 12px;flex-wrap:wrap"></div>
+    <div id="progressSection" class="cards"></div>
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn ghost" id="shareBtn">🔗 Copy my stats</button>
+      <button class="btn ghost" id="printBtn">🖨️ Print / Save PDF</button>
+    </div>
+  </section>
+
+  <section class="tracks" id="badgesSection">
+    <h2>Your badges 🏅</h2>
+    <div id="badges" class="cards"></div>
+  </section>
+
+  <section class="tracks">
+    <h2>Your roadmap</h2>
+    <input id="search" placeholder="🔍 Search lessons…" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);margin-bottom:16px">
+    <div id="trackList" class="track-list"></div>
+  </section>
+</main>
+
+<footer>Built with 🧠 by NVR Coding</footer>
+<script src="data/lessons.js"></script>
+<script src="js/celebrate.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
