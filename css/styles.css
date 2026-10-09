@@ -414,6 +414,7 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.1; letter-spacing:
 .art-2 { background: radial-gradient(120% 120% at 80% 15%, #164f45 0%, #0b1a1a 70%); }
 .art-3 { background: radial-gradient(120% 120% at 30% 85%, #4a2a6b 0%, #140e1e 70%); }
 .art-4 { background: radial-gradient(120% 120% at 75% 80%, #6b3b23 0%, #1b110b 70%); }
+.art-5 { background: radial-gradient(120% 120% at 25% 20%, #5b2a6e 0%, #150d1f 70%); }
 
 .slide-art::after {
   content: "";
