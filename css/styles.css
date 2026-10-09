@@ -55,20 +55,20 @@ body {
   font-size: var(--step-0);
   line-height: 1.65;
   color: var(--text);
-  background-color: #08120c;
+  background-color: #070b16;
   background-image:
-    radial-gradient(1000px 620px at 50% 28%, rgba(22, 78, 52, .6), transparent 70%),
-    radial-gradient(820px 520px at 88% 92%, rgba(10, 45, 30, .55), transparent 70%),
-    radial-gradient(700px 480px at 6% 88%, rgba(12, 50, 34, .45), transparent 70%);
+    radial-gradient(1000px 620px at 50% 28%, rgba(32, 64, 140, .6), transparent 70%),
+    radial-gradient(820px 520px at 88% 92%, rgba(18, 38, 92, .55), transparent 70%),
+    radial-gradient(700px 480px at 6% 88%, rgba(24, 48, 110, .45), transparent 70%);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   position: relative;
 }
 
-/* Emerald terminal backdrop — deep green-teal glow with a fine grid that
-   fades out toward the middle of the viewport. The grid lives on a fixed
-   pseudo-element masked by a radial gradient; it paints above the body
-   glow and below every section. */
+/* Electric-blue grid backdrop — fine grid in the page accent colour over a
+   deep navy glow. The grid lives on a fixed pseudo-element with a soft
+   radial mask (slightly dimmer mid-page for text contrast but clearly
+   visible everywhere); it paints above the body glow and below content. */
 body::before {
   content: "";
   position: fixed;
@@ -76,11 +76,11 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(140, 230, 185, .055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(140, 230, 185, .055) 1px, transparent 1px);
-  background-size: 52px 52px;
-  -webkit-mask-image: radial-gradient(78% 68% at 50% 40%, transparent 28%, #000 82%);
-  mask-image: radial-gradient(78% 68% at 50% 40%, transparent 28%, #000 82%);
+    linear-gradient(rgba(122, 168, 255, .22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122, 168, 255, .22) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(90% 80% at 50% 40%, rgba(0, 0, 0, .55) 0%, #000 65%);
+  mask-image: radial-gradient(90% 80% at 50% 40%, rgba(0, 0, 0, .55) 0%, #000 65%);
 }
 
 img, svg { display: block; max-width: 100%; }
