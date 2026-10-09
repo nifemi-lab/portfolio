@@ -55,112 +55,32 @@ body {
   font-size: var(--step-0);
   line-height: 1.65;
   color: var(--text);
-  background: var(--bg);
+  background-color: #08120c;
+  background-image:
+    radial-gradient(1000px 620px at 50% 28%, rgba(22, 78, 52, .6), transparent 70%),
+    radial-gradient(820px 520px at 88% 92%, rgba(10, 45, 30, .55), transparent 70%),
+    radial-gradient(700px 480px at 6% 88%, rgba(12, 50, 34, .45), transparent 70%);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   position: relative;
 }
 
-/* Deep-field starfield — sharp two-layer field + diagonal dust band.
-   Palette: ice blue / white on the page accent, warm gold + rose + violet
-   galaxies (no mint). Fixed pseudo-layers, z-index:-1 keeps them above the
-   flat --bg and below every section. Portfolio has no light theme, so no
-   theme guard needed; motion is killed by the reduced-motion rule below. */
-body::before,
-body::after {
+/* Emerald terminal backdrop — deep green-teal glow with a fine grid that
+   fades out toward the middle of the viewport. The grid lives on a fixed
+   pseudo-element masked by a radial gradient; it paints above the body
+   glow and below every section. */
+body::before {
   content: "";
   position: fixed;
+  inset: 0;
   z-index: -1;
   pointer-events: none;
-  width: 2px;
-  height: 2px;
-}
-
-/* bright layer: ~95 crisp stars + 10 blurred galaxies */
-body::before {
-  box-shadow:
-    3vw 6vh 0 0 #fff, 9vw 13vh 0 0 #e6edff, 15vw 4vh 0 0 #cdd9ff,
-    21vw 17vh 0 0 #fff, 27vw 9vh 0 0 #9db4ff, 34vw 20vh 0 0 #e6edff,
-    40vw 3vh 0 0 #fff, 47vw 14vh 0 0 #b4c6ff, 54vw 7vh 0 0 #fff,
-    60vw 18vh 0 0 #cdd9ff, 67vw 5vh 0 0 #7b9cff, 74vw 15vh 0 0 #fff,
-    81vw 8vh 0 0 #e6edff, 88vw 19vh 0 0 #9db4ff, 95vw 11vh 0 0 #fff,
-    6vw 25vh 0 0 #b4c6ff, 13vw 33vh 0 0 #fff, 19vw 27vh 0 0 #e6edff,
-    26vw 38vh 0 0 #cdd9ff, 33vw 29vh 0 0 #fff, 39vw 41vh 0 0 #9db4ff,
-    46vw 31vh 0 0 #e6edff, 53vw 43vh 0 0 #fff, 59vw 34vh 0 0 #b4c6ff,
-    66vw 45vh 0 0 #fff, 73vw 36vh 0 0 #cdd9ff, 80vw 47vh 0 0 #e6edff,
-    87vw 38vh 0 0 #fff, 94vw 49vh 0 0 #9db4ff, 2vw 44vh 0 0 #e6edff,
-    10vw 55vh 0 0 #fff, 17vw 47vh 0 0 #cdd9ff, 24vw 59vh 0 0 #fff,
-    31vw 51vh 0 0 #b4c6ff, 38vw 63vh 0 0 #e6edff, 45vw 54vh 0 0 #fff,
-    52vw 66vh 0 0 #9db4ff, 58vw 57vh 0 0 #cdd9ff, 65vw 68vh 0 0 #fff,
-    72vw 60vh 0 0 #e6edff, 79vw 71vh 0 0 #b4c6ff, 86vw 62vh 0 0 #fff,
-    93vw 74vh 0 0 #cdd9ff, 5vw 79vh 0 0 #fff, 12vw 70vh 0 0 #9db4ff,
-    19vw 83vh 0 0 #e6edff, 26vw 75vh 0 0 #fff, 33vw 87vh 0 0 #cdd9ff,
-    40vw 78vh 0 0 #fff, 47vw 90vh 0 0 #b4c6ff, 54vw 81vh 0 0 #e6edff,
-    61vw 93vh 0 0 #fff, 68vw 84vh 0 0 #9db4ff, 75vw 96vh 0 0 #cdd9ff,
-    82vw 86vh 0 0 #fff, 89vw 98vh 0 0 #e6edff, 96vw 88vh 0 0 #b4c6ff,
-    8vw 96vh 0 0 #fff, 22vw 94vh 0 0 #9db4ff, 36vw 97vh 0 0 #e6edff,
-    50vw 95vh 0 0 #cdd9ff, 64vw 98vh 0 0 #fff, 78vw 94vh 0 0 #b4c6ff,
-    1vw 31vh 0 0 #cdd9ff, 43vw 24vh 0 0 #fff4de, 70vw 27vh 0 0 #cdd9ff,
-    91vw 30vh 0 0 #fff, 16vw 61vh 0 0 #fff4de, 85vw 53vh 0 0 #e6edff,
-    30vw 68vh 0 0 #fff, 57vw 74vh 0 0 #cdd9ff, 44vw 12vh 0 0 #fff,
-    76vw 82vh 0 0 #fff4de, 11vw 87vh 0 0 #b4c6ff, 62vw 2vh 0 0 #e6edff,
-    98vw 41vh 0 0 #cdd9ff, 4vw 62vh 0 0 #fff, 49vw 84vh 0 0 #9db4ff,
-    28vw 44vh 0 0 #fff, 83vw 70vh 0 0 #e6edff, 69vw 52vh 0 0 #fff,
-    8vw 40vh 1px 0 #fff, 37vw 17vh 1px 0 #fff, 63vw 40vh 1px 0 #e6edff,
-    90vw 22vh 1px 0 #fff, 21vw 72vh 1px 0 #fff, 55vw 27vh 1px 0 #cdd9ff,
-    8vw 16vh 10px 2px rgba(255, 209, 102, .5), 71vw 11vh 12px 2px rgba(126, 170, 255, .45),
-    51vw 73vh 10px 2px rgba(255, 179, 124, .42), 88vw 58vh 11px 2px rgba(179, 156, 255, .42),
-    29vw 86vh 12px 2px rgba(255, 233, 176, .4), 13vw 60vh 10px 2px rgba(255, 141, 172, .38),
-    66vw 32vh 11px 2px rgba(142, 197, 255, .42), 44vw 47vh 13px 2px rgba(255, 209, 102, .34),
-    2vw 43vh 11px 2px rgba(126, 170, 255, .38), 96vw 80vh 10px 2px rgba(255, 179, 124, .36);
-  animation: star-drift 180s linear infinite alternate;
-}
-
-/* faint layer: dim scatter + diagonal dust band, twinkles against the bright layer */
-body::after {
-  box-shadow:
-    5vw 9vh 0 0 rgba(230, 237, 255, .55), 12vw 19vh 0 0 rgba(230, 237, 255, .35),
-    18vw 12vh 0 0 rgba(159, 180, 255, .5), 25vw 22vh 0 0 rgba(230, 237, 255, .3),
-    31vw 15vh 0 0 rgba(230, 237, 255, .55), 38vw 25vh 0 0 rgba(180, 198, 255, .35),
-    44vw 10vh 0 0 rgba(230, 237, 255, .5), 51vw 21vh 0 0 rgba(230, 237, 255, .3),
-    57vw 13vh 0 0 rgba(159, 180, 255, .55), 64vw 24vh 0 0 rgba(230, 237, 255, .35),
-    70vw 9vh 0 0 rgba(230, 237, 255, .5), 77vw 20vh 0 0 rgba(180, 198, 255, .3),
-    84vw 14vh 0 0 rgba(230, 237, 255, .55), 91vw 24vh 0 0 rgba(230, 237, 255, .35),
-    2vw 30vh 0 0 rgba(159, 180, 255, .5), 9vw 41vh 0 0 rgba(230, 237, 255, .3),
-    16vw 34vh 0 0 rgba(230, 237, 255, .55), 23vw 45vh 0 0 rgba(180, 198, 255, .35),
-    30vw 37vh 0 0 rgba(230, 237, 255, .5), 37vw 48vh 0 0 rgba(230, 237, 255, .3),
-    44vw 39vh 0 0 rgba(159, 180, 255, .55), 51vw 50vh 0 0 rgba(230, 237, 255, .35),
-    58vw 42vh 0 0 rgba(230, 237, 255, .5), 65vw 53vh 0 0 rgba(180, 198, 255, .3),
-    72vw 44vh 0 0 rgba(230, 237, 255, .55), 79vw 55vh 0 0 rgba(230, 237, 255, .35),
-    86vw 47vh 0 0 rgba(159, 180, 255, .5), 93vw 58vh 0 0 rgba(230, 237, 255, .3),
-    6vw 64vh 0 0 rgba(230, 237, 255, .55), 14vw 74vh 0 0 rgba(180, 198, 255, .35),
-    21vw 67vh 0 0 rgba(230, 237, 255, .5), 28vw 78vh 0 0 rgba(230, 237, 255, .3),
-    35vw 70vh 0 0 rgba(159, 180, 255, .55), 42vw 81vh 0 0 rgba(230, 237, 255, .35),
-    49vw 73vh 0 0 rgba(230, 237, 255, .5), 56vw 84vh 0 0 rgba(180, 198, 255, .3),
-    63vw 76vh 0 0 rgba(230, 237, 255, .55), 70vw 87vh 0 0 rgba(230, 237, 255, .35),
-    77vw 79vh 0 0 rgba(159, 180, 255, .5), 84vw 90vh 0 0 rgba(230, 237, 255, .3),
-    91vw 82vh 0 0 rgba(230, 237, 255, .55), 98vw 93vh 0 0 rgba(180, 198, 255, .35),
-    4vw 90vh 0 0 rgba(230, 237, 255, .5), 17vw 98vh 0 0 rgba(230, 237, 255, .3),
-    45vw 99vh 0 0 rgba(159, 180, 255, .55),
-    10vw 5vh 0 0 rgba(230, 237, 255, .3), 14vw 12vh 0 0 rgba(230, 237, 255, .26),
-    18vw 19vh 0 0 rgba(205, 217, 255, .32), 23vw 25vh 0 0 rgba(230, 237, 255, .22),
-    27vw 31vh 0 0 rgba(230, 237, 255, .3), 33vw 36vh 0 0 rgba(205, 217, 255, .24),
-    37vw 43vh 0 0 rgba(230, 237, 255, .32), 42vw 49vh 0 0 rgba(230, 237, 255, .22),
-    46vw 55vh 0 0 rgba(205, 217, 255, .3), 52vw 61vh 0 0 rgba(230, 237, 255, .26),
-    56vw 67vh 0 0 rgba(230, 237, 255, .32), 61vw 73vh 0 0 rgba(205, 217, 255, .22),
-    65vw 79vh 0 0 rgba(230, 237, 255, .3), 71vw 85vh 0 0 rgba(230, 237, 255, .26),
-    75vw 91vh 0 0 rgba(205, 217, 255, .32), 81vw 97vh 0 0 rgba(230, 237, 255, .22);
-  animation: star-twinkle 4.2s ease-in-out infinite alternate;
-}
-
-@keyframes star-drift {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-60px, 30px, 0); }
-}
-
-@keyframes star-twinkle {
-  from { opacity: .45; }
-  to   { opacity: 1; }
+  background-image:
+    linear-gradient(rgba(140, 230, 185, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140, 230, 185, .055) 1px, transparent 1px);
+  background-size: 52px 52px;
+  -webkit-mask-image: radial-gradient(78% 68% at 50% 40%, transparent 28%, #000 82%);
+  mask-image: radial-gradient(78% 68% at 50% 40%, transparent 28%, #000 82%);
 }
 
 img, svg { display: block; max-width: 100%; }
