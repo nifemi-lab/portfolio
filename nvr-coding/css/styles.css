@@ -27,44 +27,6 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
     radial-gradient(500px 250px at 10% 110%, #0ea5e922, transparent);
   background-attachment: fixed;
 }
-
-/* Deep-field starfield */
-body{position:relative}
-body::before,body::after{content:"";position:fixed;z-index:-1;pointer-events:none;width:1px;height:1px}
-body::before{
-  box-shadow:
-    -2vw 12vh 0 0 #fff, 8vw 8vh 0 0 #ffffffd9, 15vw 23vh 0 0 #fff, 23vw 5vh 0 0 #dbeafe,
-    31vw 17vh 0 0 #fff, 40vw 10vh 0 0 #fef3c7, 48vw 24vh 0 0 #ffffffd9, 56vw 6vh 0 0 #fff,
-    64vw 19vh 0 0 #dbeafe, 72vw 4vh 0 0 #fff, 81vw 15vh 0 0 #ffffffd9, 90vw 7vh 0 0 #fff,
-    97vw 21vh 0 0 #fef3c7, 4vw 38vh 0 0 #ffffffd9, 13vw 51vh 0 0 #fff, 21vw 43vh 0 0 #dbeafe,
-    29vw 58vh 0 0 #fff, 37vw 47vh 0 0 #ffffffd9, 45vw 61vh 0 0 #fff, 54vw 50vh 0 0 #fef3c7,
-    62vw 64vh 0 0 #ffffffd9, 70vw 46vh 0 0 #fff, 79vw 58vh 0 0 #dbeafe, 88vw 42vh 0 0 #fff,
-    96vw 55vh 0 0 #ffffffd9, 6vw 71vh 0 0 #fff, 16vw 83vh 0 0 #dbeafe, 26vw 74vh 0 0 #ffffffd9,
-    35vw 89vh 0 0 #fff, 44vw 77vh 0 0 #ffffffd9, 53vw 92vh 0 0 #fef3c7, 61vw 80vh 0 0 #fff,
-    69vw 94vh 0 0 #dbeafe, 78vw 75vh 0 0 #ffffffd9, 86vw 88vh 0 0 #fff, 94vw 79vh 0 0 #dbeafe,
-    10vw 96vh 0 0 #ffffffd9, 33vw 34vh 0 0 #fff, 58vw 36vh 0 0 #ffffff66, 85vw 25vh 0 0 #fff,
-    18vw 62vh 0 0 #ffffffd9, 49vw 30vh 0 0 #dbeafe, 67vw 57vh 0 0 #fff, 2vw 55vh 0 0 #ffffffd9,
-    9vw 16vh 9px 2px #fbbf2459, 77vw 11vh 11px 2px #7dd3fc4d, 58vw 71vh 9px 2px #f472b659,
-    89vw 55vh 10px 2px #a78bfa4d, 31vw 86vh 11px 2px #fde68a4d, 14vw 60vh 9px 2px #fb71854d,
-    66vw 33vh 10px 2px #38bdf84d, 45vw 48vh 12px 2px #fbbf2440, 3vw 44vh 10px 2px #7dd3fc40;
-  animation:starDrift 140s linear infinite alternate;
-}
-body::after{
-  box-shadow:
-    6vw 15vh 0 0 #ffffff80, 19vw 31vh 0 0 #ffffff66, 27vw 12vh 0 0 #ffffff8c, 36vw 40vh 0 0 #ffffff66,
-    52vw 16vh 0 0 #ffffff80, 60vw 28vh 0 0 #ffffff59, 68vw 10vh 0 0 #ffffff8c, 76vw 37vh 0 0 #ffffff66,
-    84vw 19vh 0 0 #ffffff80, 93vw 33vh 0 0 #ffffff59, 2vw 47vh 0 0 #ffffff8c, 11vw 59vh 0 0 #ffffff66,
-    24vw 68vh 0 0 #ffffff80, 32vw 55vh 0 0 #ffffff59, 41vw 70vh 0 0 #ffffff8c, 57vw 60vh 0 0 #ffffff66,
-    65vw 73vh 0 0 #ffffff80, 74vw 52vh 0 0 #ffffff59, 83vw 68vh 0 0 #ffffff8c, 92vw 61vh 0 0 #ffffff66,
-    8vw 81vh 0 0 #ffffff80, 20vw 93vh 0 0 #ffffff59, 30vw 85vh 0 0 #ffffff8c, 47vw 88vh 0 0 #ffffff66,
-    56vw 97vh 0 0 #ffffff80, 72vw 85vh 0 0 #ffffff59, 80vw 95vh 0 0 #ffffff8c, 91vw 90vh 0 0 #ffffff66,
-    15vw 41vh 0 0 #ffffff59, 39vw 26vh 0 0 #ffffff80, 51vw 41vh 0 0 #ffffff8c, 87vw 47vh 0 0 #ffffff59,
-    43vw 97vh 0 0 #ffffff66, 98vw 70vh 0 0 #ffffff8c, 25vw 97vh 0 0 #ffffff80, 63vw 42vh 0 0 #ffffff66;
-  animation:twinkle 4.5s ease-in-out infinite alternate;
-}
-@keyframes starDrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50px,25px,0)}}
-@keyframes twinkle{from{opacity:.45}to{opacity:1}}
-[data-theme="light"] body::before,[data-theme="light"] body::after{display:none}
 .topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(15,20,32,.9);backdrop-filter:blur(8px);z-index:5}
 .brand{font-weight:800;font-size:20px;color:var(--text);text-decoration:none}
 .brand span{color:var(--accent)}
