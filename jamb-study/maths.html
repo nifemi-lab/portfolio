@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maths Dojo — jamb_study</title>
+  <meta name="description" content="Drill the JAMB Mathematics syllabus topic by topic — a mastery ring for every topic, a scientific calculator beside each question, and a step-by-step explain side. Progress saves with your tracker on this device." />
+  <meta name="theme-color" content="#0a0c11" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Maths Dojo" />
+
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/maths.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔢</text></svg>" />
+</head>
+<body>
+
+<header class="app-header">
+  <div class="container header-inner">
+    <a class="logo" href="index.html#dashboard"><span class="logo-text">jamb_study</span> <span class="sub">/ maths dojo</span></a>
+    <div class="header-right">
+      <span class="chip" id="streakChip" title="Days in a row with any study logged">🔥 <b id="streakVal">0</b> day streak</span>
+      <span class="chip chip-xp" title="XP from correct answers in the dojo">✦ <b id="xpVal">0</b> XP · Level <span id="lvlVal">1</span></span>
+      <button class="theme-btn" id="themeToggle" type="button" aria-label="Switch theme">☀</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ============ SCREEN 1: SYLLABUS MAP ============ -->
+  <section id="screen-map">
+    <div class="page-head">
+      <p class="eyebrow">JAMB Mathematics · syllabus map</p>
+      <h1>Pick a topic. <span class="grad">Turn it green.</span></h1>
+      <p>Every topic in the JAMB maths syllabus, with your mastery ring on each one. Rings fill as your accuracy rises — grey means untouched.</p>
+    </div>
+
+    <div class="card" id="weakCard" hidden>
+      <h2 style="font-size:1.05rem">Weakest topics</h2>
+      <p class="faint" style="margin:.2rem 0 .4rem">Your lowest accuracy so far — drill these first.</p>
+      <div id="weakRows"></div>
+    </div>
+
+    <div id="sections"></div>
+  </section>
+
+  <!-- ============ SCREEN 2: TOPIC PAGE (filled by maths.js) ============ -->
+  <section id="screen-topic" hidden></section>
+
+  <!-- ============ SCREEN 3: PRACTICE ============ -->
+  <section id="screen-quiz" hidden>
+    <div class="page-head">
+      <p class="eyebrow" id="quizEyebrow">Practice</p>
+      <h1>Topic drill</h1>
+    </div>
+
+    <div class="q-progress">
+      <span class="faint" id="qCount">Question 1 of 1</span>
+      <span class="bar"><span id="qBar" style="width:0%"></span></span>
+    </div>
+
+    <button class="btn btn-ghost calc-toggle" id="calcToggle" type="button">Calculator</button>
+
+    <div class="quiz-layout">
+      <div class="card">
+        <p class="q-text" id="qText"></p>
+        <div class="opts" id="qOpts"></div>
+
+        <div class="card solution" id="qSolution" hidden>
+          <h3 id="solTitle"></h3>
+          <p class="muted" id="solBody" style="font-size:var(--step--1)"></p>
+        </div>
+
+        <div class="skip-row" id="skipRow">
+          <span style="display:flex;gap:1.1rem;flex-wrap:wrap">
+            <button class="linklike" type="button" id="explainBtn">Please explain</button>
+            <button class="linklike" type="button" id="skipBtn">Skip (goes to mistake queue)</button>
+          </span>
+          <button class="btn btn-primary" id="nextBtn" type="button" hidden>Next question</button>
+        </div>
+      </div>
+
+      <!-- Scientific calculator: sits beside the question on wide screens,
+           slides over it on phones. "Show working" prints the steps. -->
+      <aside class="calc-panel" id="calcPanel" aria-label="Scientific calculator">
+        <div class="calc-head">
+          <h2>Calculator</h2>
+          <label class="work-toggle"><input type="checkbox" id="workToggle" checked> show working</label>
+        </div>
+        <div class="calc-display">
+          <div class="calc-expr" id="calcExpr">&nbsp;</div>
+          <div class="calc-ans" id="calcAns">&nbsp;</div>
+        </div>
+        <div class="calc-steps" id="calcSteps" hidden></div>
+        <div class="calc-keys" id="calcKeys"></div>
+      </aside>
+    </div>
+  </section>
+
+  <p class="faint" style="text-align:center;padding:1.2rem 0 2rem">Maths Dojo · part of jamb_study · progress saves to your device</p>
+</main>
+
+<div class="toast" id="toast">+10 XP</div>
+
+<!-- ============ EXPLAIN SIDE: slides in from the right, teaches the question ============ -->
+<div class="explain-backdrop" id="explainBackdrop" hidden></div>
+<aside class="explain-panel" id="explainPanel" role="dialog" aria-modal="true"
+       aria-label="Question explained step by step" hidden>
+  <div class="explain-head">
+    <p class="eyebrow" id="xEyebrow">Explain</p>
+    <button class="icon-btn" id="xClose" type="button" aria-label="Close explanation">✕</button>
+  </div>
+  <div class="explain-body">
+    <p class="q-text" id="xQuestion"></p>
+
+    <p class="eyebrow" style="margin-top:1.1rem">The idea</p>
+    <div class="note-body" id="xIdea"></div>
+
+    <p class="eyebrow" style="margin-top:1.1rem">Work it together</p>
+    <ol class="steps" id="xSteps"></ol>
+
+    <p class="eyebrow" id="xBoardLabel" style="margin-top:1.1rem" hidden>Worked answer</p>
+    <div class="workboard" id="xBoard" hidden></div>
+
+    <p class="trap" id="xTrap" hidden></p>
+
+    <div class="x-actions">
+      <button class="btn btn-ghost" id="xNextStep" type="button">Show next step</button>
+      <button class="btn btn-ghost" id="xBack" type="button" hidden>Back to the question</button>
+      <button class="btn btn-primary" id="xFinish" type="button">Got it — next question</button>
+    </div>
+    <p class="faint" style="text-align:center;margin-top:.9rem">Asking costs nothing — this question joins your mistake queue, and you'll move on to the next one.</p>
+  </div>
+</aside>
+
+<script src="js/questions.js"></script>
+<script src="js/q-mathematics.js"></script>
+<script src="js/sol-mathematics.js"></script>
+<script src="js/syllabus-mathematics.js"></script>
+<script src="js/lessons-mathematics.js"></script>
+<script src="js/maths.js"></script>
+</body>
+</html>
