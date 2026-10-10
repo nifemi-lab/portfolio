@@ -521,6 +521,85 @@
     }
   }
 
+  /* ---- explain side (teach-first: idea -> steps one by one -> trap check) ---- */
+  let xRevealed = 0;
+  let explainFinishing = false;
+
+  function openExplain() {
+    const item = state.qs[state.qi];
+    const L = LESSONS[item.q];
+    if (!L) return;
+    explainFinishing = false;
+    $('#xEyebrow').textContent = 'Explain · Question ' + (state.qi + 1) + ' of ' + state.qs.length;
+    $('#xQuestion').textContent = item.q;
+    $('#xIdea').innerHTML = '<p>' + L.idea + '</p>';
+    $('#xSteps').innerHTML = L.steps.map(s => '<li hidden>' + s + '</li>').join('');
+    $('#xBoard').innerHTML = L.board.map((l, i) =>
+      '<p' + (i === L.board.length - 1 ? ' class="ans"' : '') + '>' + l + '</p>').join('');
+    $('#xBoard').hidden = true;
+    $('#xBoardLabel').hidden = true;
+    $('#xTrap').innerHTML = '<b>Trap check:</b> ' + L.trap;
+    $('#xTrap').hidden = true;
+    $('#xBack').hidden = true;
+    xRevealed = 0;
+    revealStep();
+    $('#explainBackdrop').hidden = false;
+    const p = $('#explainPanel');
+    p.hidden = false;
+    requestAnimationFrame(() => {
+      $('#explainBackdrop').classList.add('open');
+      p.classList.add('open');
+    });
+    $('#xClose').focus();
+  }
+
+  function closeExplain() {
+    $('#explainBackdrop').classList.remove('open');
+    const p = $('#explainPanel');
+    p.classList.remove('open');
+    clearTimeout(closeExplain.t);
+    closeExplain.t = setTimeout(() => {
+      p.hidden = true;
+      $('#explainBackdrop').hidden = true;
+      const trig = $('#explainBtn');
+      if (trig && !trig.hidden) trig.focus();
+    }, 320);
+  }
+
+  /* Finishing an explanation moves you on: an unanswered question joins the
+     mistake queue (retry it later), then the next question loads. */
+  function finishExplain() {
+    if (explainFinishing) return;
+    explainFinishing = true;
+    const unanswered = !state.answered;
+    closeExplain();
+    if (unanswered) {
+      perTopic().total += 1;
+      recordMistake(state.qs[state.qi]);
+      bumpMastery(false);
+      showToast('Added to your mistake queue');
+    }
+    setTimeout(nextQuestion, 200);
+  }
+
+  function revealStep() {
+    const items = document.querySelectorAll('#xSteps li');
+    if (xRevealed < items.length) {
+      items[xRevealed].hidden = false;
+      xRevealed++;
+    }
+    const done = xRevealed >= items.length;
+    $('#xNextStep').hidden = done;
+    $('#xBack').hidden = !done;
+    if (done) {
+      $('#xBoard').hidden = false;
+      $('#xBoardLabel').hidden = false;
+      $('#xTrap').hidden = false;
+    }
+    const body = document.querySelector('.explain-body');
+    body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' });
+  }
+
   /* ---- init ---- */
   applyTheme();
   paintHeader();
@@ -539,6 +618,16 @@
     const panel = $('#calcPanel');
     panel.classList.toggle('open');
     $('#calcToggle').textContent = panel.classList.contains('open') ? 'Hide calculator' : 'Calculator';
+  });
+
+  $('#explainBtn').addEventListener('click', openExplain);
+  $('#xClose').addEventListener('click', closeExplain);
+  $('#explainBackdrop').addEventListener('click', closeExplain);
+  $('#xNextStep').addEventListener('click', revealStep);
+  $('#xBack').addEventListener('click', closeExplain);
+  $('#xFinish').addEventListener('click', finishExplain);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !$('#explainPanel').hidden) closeExplain();
   });
 
   window.DOJO = {
