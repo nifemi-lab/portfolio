@@ -112,6 +112,94 @@ window.LESSON_NOTES['Mathematics'] = {
         'For the same n and r, the P answer is the bigger number - order adds arrangements.'
       ]
     }
+  },
+  'Differentiation': {
+    note: '<p>The derivative measures <em>rate of change</em> - how fast y moves when x moves. For a power of x the rule is: <b>multiply by the index, then knock the index down by 1</b>. So x<sup>3</sup> becomes 3x<sup>2</sup>, and a plain constant differentiates to 0.</p><p>Everything else is that rule plus bookkeeping: a constant multiplier rides along (5x<sup>2</sup> becomes 10x), a bracket needs the chain rule (differentiate outside, then multiply by the derivative of the inside), and fractions like 1/x<sup>2</sup> are easier rewritten as x<sup>-2</sup> first.</p>',
+    example: {
+      title: 'Differentiate: y = x^3',
+      steps: [
+        'Bring the index down in front: 3x<sup>3 - 1</sup>.',
+        'Reduce the index by 1: 3x<sup>2</sup>.',
+        'So the derivative of x<sup>3</sup> is <b>3x<sup>2</sup></b>.'
+      ]
+    }
+  },
+  'Integration': {
+    note: '<p>Integration is differentiation run backwards: <b>raise the index by 1, then divide by the new index</b> - the exact opposite of the power rule. Always add <b>+ C</b> for an indefinite integral: every constant differentiates to 0, so any of them could have been hiding there.</p><p>A <em>definite</em> integral has limits: integrate, then work out (top limit) minus (bottom limit). That value is the area under the curve - and it is also how velocity turns back into distance.</p>',
+    example: {
+      title: 'Integrate x^3 with respect to x',
+      steps: [
+        'Raise the index by 1: x<sup>4</sup>.',
+        'Divide by the new index: x<sup>4</sup>/4.',
+        'Add the constant: <b>x<sup>4</sup>/4 + C</b>.'
+      ]
+    }
+  },
+  'Applications of calculus': {
+    note: '<p>Two big jobs. First, <b>rates and motion</b>: differentiating displacement gives velocity, differentiating again gives acceleration; integrating velocity brings distance back. "At rest" is calculus for v = 0 - the same condition marks the top of a throw.</p><p>Second, <b>turning points</b>: a maximum or minimum sits where dy/dx = 0. Solve it, then tell them apart with the second derivative - positive means a minimum (valley), negative means a maximum (hill). The tangent gradient at a point is just dy/dx evaluated there; the normal is perpendicular, so flip the fraction and change the sign.</p>',
+    example: {
+      title: 'Find the minimum value of y = x^2 - 4x + 7',
+      steps: [
+        'dy/dx = 2x - 4. Set it to 0: x = 2.',
+        'Second derivative is 2, which is positive - a minimum.',
+        'Substitute x = 2 back: y = 4 - 8 + 7 = <b>3</b>.'
+      ]
+    }
+  },
+  'Curves & equations': {
+    note: '<p>Curves in coordinate geometry come in two exam flavours. <b>Circles</b>: the standard form (x - a)<sup>2</sup> + (y - b)<sup>2</sup> = r<sup>2</sup> shows centre (a, b) and radius r directly - and the expanded form x<sup>2</sup> + y<sup>2</sup> + ... hides them, so complete the square to get them back.</p><p><b>Parabolas</b> y = ax<sup>2</sup> + bx + c: the line of symmetry is x = -b/(2a). To find where a line meets a curve, set the two expressions equal and solve - the solutions are the x-coordinates of the meeting points.</p>',
+    example: {
+      title: 'Find the radius of the circle x^2 + y^2 - 8x + 6y + 21 = 0',
+      steps: [
+        'Complete the square in x and y: (x - 4)<sup>2</sup> + (y + 3)<sup>2</sup> = 4.',
+        'Compare with (x - a)<sup>2</sup> + (y - b)<sup>2</sup> = r<sup>2</sup>.',
+        'r<sup>2</sup> = 4, so the radius is <b>2</b>.'
+      ]
+    }
+  },
+  'Trigonometric graphs': {
+    note: '<p>For y = sin kx or cos kx: the <b>period</b> (one full wave) is 360/k degrees, and the <b>amplitude</b> (half the total height) is the number in front. sin and cos live between -1 and 1; the graph of tan x repeats every 180 degrees and shoots off to infinity wherever cos x = 0.</p><p>To count solutions of sin x = a between 0 and 360, think quadrants: a positive sine gives two angles (x and 180 - x), and a positive cosine gives two as well (x and 360 - x).</p>',
+    example: {
+      title: 'How many solutions does sin x = 1/2 have between 0 and 360?',
+      steps: [
+        'First quadrant: x = 30 degrees.',
+        'Second quadrant: x = 180 - 30 = 150 degrees.',
+        'The wave cuts the line twice, so <b>2</b> solutions.'
+      ]
+    }
+  },
+  'Constructions & locus': {
+    note: '<p>A locus is the full path a point makes under a rule - and JAMB tests four classic ones. Equidistant from two <b>points</b>: the perpendicular bisector. Equidistant from two <b>lines</b>: the angle bisector. Fixed distance from a <b>point</b>: a circle. Fixed distance from a <b>line</b>: a pair of parallel lines, one on each side.</p><p>Constructions are compass-and-ruler recipes: arcs from the two ends of AB cross to build the perpendicular bisector, an arc from the vertex starts an angle bisector, and a regular hexagon steps around its circle with the compasses set to the radius.</p>',
+    example: {
+      title: 'The locus of a point at a constant distance d from a fixed line',
+      steps: [
+        'All points d above the line: one parallel line.',
+        'All points d below it: another parallel line.',
+        'Locus: <b>a pair of parallel lines, one on each side</b>.'
+      ]
+    }
+  },
+  'Data presentation': {
+    note: '<p>Charts are chosen by the kind of data: a <b>pie chart</b> shows parts of a whole (sector angle = value/total &times; 360), a <b>bar chart</b> compares frequencies (bar height = frequency), and a <b>histogram</b> handles grouped continuous data - class intervals on the axis and no gaps between the bars.</p><p>The <b>cumulative frequency curve</b> (ogive) adds frequencies class by class; the median is read at half the total frequency. The class mark of a group is its midpoint - average the two ends.</p>',
+    example: {
+      title: 'A 60-degree pie sector represents 120 students. The total is:',
+      steps: [
+        '60/360 = 1/6 of the chart.',
+        '120 students = 1/6 of the total.',
+        'Total = 120 &times; 6 = <b>720</b>.'
+      ]
+    }
+  },
+  'Transformations': {
+    note: '<p>Four moves change a shape: <b>translation</b> (slide by a vector), <b>reflection</b> (mirror in a line), <b>rotation</b> (turn about a point) and <b>enlargement</b> (scale by a factor). Coordinate rules worth knowing: reflection in the x-axis sends (x, y) to (x, -y); reflection in y = x swaps to (y, x); a 180-degree turn negates both. A 90-degree anticlockwise turn sends (x, y) to (-y, x).</p><p>Under an enlargement by factor k, lengths multiply by k but <b>areas multiply by k<sup>2</sup></b>.</p>',
+    example: {
+      title: 'Enlargement factor 2 turns an area of 6 cm^2 into:',
+      steps: [
+        'Area factor = k<sup>2</sup> = 2<sup>2</sup> = 4.',
+        '6 &times; 4 = 24.',
+        'New area = <b>24 cm<sup>2</sup></b>.'
+      ]
+    }
   }
 };
 
@@ -674,5 +762,410 @@ window.LESSONS['Mathematics'] = {
       '             = 24'
     ],
     trap: 'Option B (16) is 4<sup>2</sup> - squares do not count arrangements; the choices shrink as slots fill (4, then 3, then 2, then 1). If a letter repeated, you would divide by that letter\'s factorial - MATH has none.'
+  },
+
+  /* --- 2026-10-10: calculus topics --- */
+  'Differentiate: y = (2x + 3)^4.': {
+    idea: 'A bracket raised to a power needs the chain rule: differentiate the outside first, then multiply by the derivative of what is inside the bracket.',
+    steps: [
+      'Outside: a power of 4 comes down, reduced to 3: 4(2x + 3)<sup>3</sup>.',
+      'Inside: the derivative of 2x + 3 is 2.',
+      'Multiply the two: 4(2x + 3)<sup>3</sup> &times; 2 = <b>8(2x + 3)<sup>3</sup></b> - option A.'
+    ],
+    board: [
+      'y = (2x + 3)^4',
+      'outside: 4(2x + 3)^3',
+      'inside:  d/dx(2x + 3) = 2',
+      'dy/dx = 4(2x + 3)^3 x 2',
+      '      = 8(2x + 3)^3'
+    ],
+    trap: 'Option B (4(2x + 3)<sup>3</sup>) stops after the outside - it forgets to multiply by the inside derivative 2. Option C never drops the power. The chain rule always does <b>both</b> jobs.'
+  },
+  'If y = x^4 - 2x^2, find the second derivative d^2y/dx^2.': {
+    idea: 'The second derivative is just the derivative of the derivative - differentiate once, then take that result and differentiate it again.',
+    steps: [
+      'First pass: dy/dx = 4x<sup>3</sup> - 4x.',
+      'Second pass on that result: 12x<sup>2</sup> - 4.',
+      'So d<sup>2</sup>y/dx<sup>2</sup> = <b>12x<sup>2</sup> - 4</b> - option D.'
+    ],
+    board: [
+      'y = x^4 - 2x^2',
+      'dy/dx = 4x^3 - 4x',
+      'd^2y/dx^2 = 12x^2 - 4'
+    ],
+    trap: 'Option A (4x<sup>3</sup> - 4x) is only the first derivative - the question asks for the second. Do the pass twice.'
+  },
+  'Differentiate: y = 3x^2(2x - 1).': {
+    idea: 'A product of two x-expressions can be expanded first - for polynomials that is usually faster and safer than the product rule.',
+    steps: [
+      'Expand: 3x<sup>2</sup>(2x - 1) = 6x<sup>3</sup> - 3x<sup>2</sup>.',
+      'Differentiate term by term: 18x<sup>2</sup> - 6x.',
+      'So dy/dx = <b>18x<sup>2</sup> - 6x</b> - option B.'
+    ],
+    board: [
+      'y = 3x^2(2x - 1)',
+      '  = 6x^3 - 3x^2',
+      'dy/dx = 18x^2 - 6x'
+    ],
+    trap: 'Option D (12x<sup>2</sup> - 6x) comes from stopping the product rule halfway: 6x(2x - 1) = 12x<sup>2</sup> - 6x, forgetting to add 3x<sup>2</sup> &times; 2 = 6x<sup>2</sup>. Expand first and nothing gets lost.'
+  },
+  'Differentiate: y = 1/x^2.': {
+    idea: 'Rewrite the fraction as a power first - then it is the ordinary power rule, no quotient needed.',
+    steps: [
+      '1/x<sup>2</sup> is the same as x<sup>-2</sup>.',
+      'Power rule: bring -2 down, reduce the index by 1: -2x<sup>-3</sup>.',
+      'Back to fraction form: <b>-2/x<sup>3</sup></b> - option A.'
+    ],
+    board: [
+      'y = 1/x^2 = x^-2',
+      'dy/dx = -2x^(-2 - 1)',
+      '      = -2x^-3',
+      '      = -2/x^3'
+    ],
+    trap: 'Option C (-2/x<sup>2</sup>) brings the power down but forgets to reduce the index - a power always changes when you differentiate it.'
+  },
+  'Differentiate: y = 2x/(x + 1).': {
+    idea: 'A fraction with x on top and bottom is the quotient rule: (top derivative &times; bottom - top &times; bottom derivative) over bottom squared.',
+    steps: [
+      'Differentiate each part: the top 2x gives 2, the bottom x + 1 gives 1.',
+      'Quotient rule: [2(x + 1) - 2x(1)] / (x + 1)<sup>2</sup>.',
+      'Simplify the top: 2x + 2 - 2x = 2, so <b>2/(x + 1)<sup>2</sup></b> - option C.'
+    ],
+    board: [
+      'y = 2x / (x + 1)',
+      'top: 2x -> 2,  bottom: x + 1 -> 1',
+      'dy/dx = [2(x + 1) - 2x(1)] / (x + 1)^2',
+      '      = [2x + 2 - 2x] / (x + 1)^2',
+      '      = 2 / (x + 1)^2'
+    ],
+    trap: 'The numerator must fully simplify: 2(x + 1) - 2x = 2. Options A, B and D each keep something extra or flip a sign in the numerator - only C cancels down to 2.'
+  },
+  'Find the derivative of y = x^2 from first principles.': {
+    idea: 'First principles means going back to the definition: the slope of the chord between x and x + h, then shrinking h to zero.',
+    steps: [
+      'Difference quotient: [(x + h)<sup>2</sup> - x<sup>2</sup>]/h.',
+      'Expand the top: x<sup>2</sup> + 2xh + h<sup>2</sup> - x<sup>2</sup> = 2xh + h<sup>2</sup>, so the quotient is 2x + h.',
+      'Let h tend to 0: what survives is <b>2x</b> - option B.'
+    ],
+    board: [
+      '[(x + h)^2 - x^2] / h',
+      '= [2xh + h^2] / h',
+      '= 2x + h',
+      'as h -> 0:  2x'
+    ],
+    trap: 'Option D (2x + h) is the moment before the limit - correct on the way, but h must vanish to get the derivative. The answer is 2x, not 2x + h.'
+  },
+  'If y = 2x^3 - x, find the value of dy/dx at x = -1.': {
+    idea: 'Two moves: differentiate the whole expression, then substitute the x-value into the derivative - not into the original equation.',
+    steps: [
+      'Differentiate: dy/dx = 6x<sup>2</sup> - 1.',
+      'Substitute x = -1: 6(-1)<sup>2</sup> - 1 = 6 - 1.',
+      '= <b>5</b> - option A.'
+    ],
+    board: [
+      'y = 2x^3 - x',
+      'dy/dx = 6x^2 - 1',
+      'at x = -1:  6(1) - 1',
+      '            = 5'
+    ],
+    trap: 'Option C (-1) is the value of y itself at x = -1 - but the question asks for dy/dx there. Differentiate first, then substitute.'
+  },
+  'Evaluate: integral from 0 to 2 of 3x^2 dx.': {
+    idea: 'A definite integral is a two-part job: integrate the expression, then plug in the top limit minus the bottom limit.',
+    steps: [
+      'Integrate: the integral of 3x<sup>2</sup> is x<sup>3</sup>.',
+      'Top limit first: 2<sup>3</sup> = 8. Then the bottom: 0<sup>3</sup> = 0.',
+      'Subtract: 8 - 0 = <b>8</b> - option C.'
+    ],
+    board: [
+      'integral 0..2 of 3x^2 dx',
+      '= [x^3] 0..2',
+      '= 2^3 - 0^3',
+      '= 8'
+    ],
+    trap: 'Option B (12) is 3x<sup>2</sup> evaluated at x = 2 - that is still the inside of the integral, not the answer. Raise the power first, then substitute.'
+  },
+  'Evaluate: integral from 1 to 2 of x^3 dx.': {
+    idea: 'Same definite-integral recipe: integrate, then top limit minus bottom limit. Fractions just mean careful arithmetic.',
+    steps: [
+      'Integrate: x<sup>4</sup>/4.',
+      'Top: 2<sup>4</sup>/4 = 16/4 = 4. Bottom: 1<sup>4</sup>/4 = 1/4.',
+      'Subtract: 4 - 1/4 = <b>15/4</b> - option A.'
+    ],
+    board: [
+      'integral 1..2 of x^3 dx',
+      '= [x^4/4] 1..2',
+      '= 16/4 - 1/4',
+      '= 15/4'
+    ],
+    trap: 'Option B (4) drops the bottom limit - it is only the value at x = 2. A definite integral always subtracts the value at the lower limit.'
+  },
+  'Integrate 1/x^2 with respect to x.': {
+    idea: 'Same trick as differentiating it: rewrite the fraction as a power (x<sup>-2</sup>), then integrate as usual.',
+    steps: [
+      'Rewrite: 1/x<sup>2</sup> = x<sup>-2</sup>.',
+      'Raise the index by 1: x<sup>-1</sup>, then divide by the new index -1: -x<sup>-1</sup>.',
+      'Tidy up and add C: <b>-1/x + C</b> - option B.'
+    ],
+    board: [
+      'integral x^-2 dx',
+      '= x^(-1) / (-1) + C',
+      '= -x^-1 + C',
+      '= -1/x + C'
+    ],
+    trap: 'Option C (-2/x<sup>3</sup> + C) is the <em>derivative</em> of 1/x<sup>2</sup>, not the integral. Integration raises the index; differentiation lowers it.'
+  },
+  'Find the area under the curve y = x^2 from x = 0 to x = 3.': {
+    idea: 'The definite integral of a curve is exactly the area trapped between the curve and the x-axis.',
+    steps: [
+      'Area = the integral of x<sup>2</sup> from 0 to 3.',
+      'Integrate: x<sup>3</sup>/3, then evaluate: 3<sup>3</sup>/3 - 0.',
+      '= 27/3 = <b>9</b> square units - option C.'
+    ],
+    board: [
+      'area = integral 0..3 of x^2 dx',
+      '     = [x^3/3] 0..3',
+      '     = 27/3 - 0',
+      '     = 9'
+    ],
+    trap: 'Option A (27) is 3<sup>3</sup> without dividing by the new index - power up, then divide by the new power: 27/3 = 9.'
+  },
+  'Find the minimum value of y = x^2 - 4x + 7.': {
+    idea: 'A turning point is where the gradient is zero: differentiate, set dy/dx = 0, solve for x, then put that x back into the original equation for the minimum value.',
+    steps: [
+      'dy/dx = 2x - 4. Set it to 0: 2x = 4, so x = 2.',
+      'Confirm a minimum: the second derivative is 2 &gt; 0 (a valley).',
+      'Substitute: y = 4 - 8 + 7 = <b>3</b> - option C.'
+    ],
+    board: [
+      'y = x^2 - 4x + 7',
+      'dy/dx = 2x - 4 = 0 -> x = 2',
+      'y(2) = 4 - 8 + 7',
+      '     = 3'
+    ],
+    trap: 'Option A (2) is the x-value where the minimum happens - but the question asks for the minimum <em>value</em>, so do not stop until you substitute back.'
+  },
+  'Find the equation of the tangent to the curve y = x^2 - 4x at the point where x = 3.': {
+    idea: 'A tangent is a straight line, so you need a point and a gradient. The point comes from the curve; the gradient comes from dy/dx at that x.',
+    steps: [
+      'Point: at x = 3, y = 9 - 12 = -3, so the point is (3, -3).',
+      'Gradient: dy/dx = 2x - 4 = 2 at x = 3.',
+      'Straight line: y + 3 = 2(x - 3), which gives <b>y = 2x - 9</b> - option D.'
+    ],
+    board: [
+      'point:    x = 3 -> y = -3',
+      'gradient: dy/dx = 2x - 4 = 2',
+      'y - (-3) = 2(x - 3)',
+      'y = 2x - 9'
+    ],
+    trap: 'Option A (y = 2x - 3) uses the right gradient but the wrong anchor - the line must pass through the actual point (3, -3), which shifts the intercept to -9.'
+  },
+  'Use calculus to estimate the change in y = x^2 when x increases from 4 to 4.01.': {
+    idea: 'For a tiny change in x, the change in y is about dy/dx &times; the change in x: rate times step.',
+    steps: [
+      'dy/dx = 2x = 8 at x = 4.',
+      'Change in x: 4.01 - 4 = 0.01.',
+      'Change in y is about 8 &times; 0.01 = <b>0.08</b> - option A.'
+    ],
+    board: [
+      'dy/dx = 2x = 8 at x = 4',
+      'dx = 0.01',
+      'dy ~= dy/dx x dx',
+      '   ~= 8 x 0.01 = 0.08'
+    ],
+    trap: 'Option B (0.8) slips a decimal place - 8 &times; 0.01 is 0.08, not 0.8. Keep the step tiny: rate (8) times step (0.01).'
+  },
+  'A body moves with velocity v = 6t^2 m/s. Find the distance covered in the first 2 seconds.': {
+    idea: 'Distance is the area under the velocity graph - in calculus terms, integrate velocity to turn it back into distance.',
+    steps: [
+      'Integrate: s = 6t<sup>3</sup>/3 = 2t<sup>3</sup>.',
+      'Limits 0 to 2: s = 2(2)<sup>3</sup> - 0 = 16.',
+      'So the distance is <b>16 m</b> - option B.'
+    ],
+    board: [
+      's = integral 6t^2 dt',
+      '  = 2t^3',
+      't = 0..2:  2(8) - 0',
+      '        = 16 m'
+    ],
+    trap: 'Option A (24 m) is v at t = 2 (6 &times; 4) - that is the speed at one instant, not the distance travelled. Distance accumulates speed over time, so integrate.'
+  },
+  'The displacement s metres of a particle after t seconds is s = t^2 - 4t + 3. Find the time when the particle is momentarily at rest.': {
+    idea: 'Momentarily at rest is calculus for velocity zero: differentiate displacement, set it to 0, and solve for t.',
+    steps: [
+      'Velocity v = ds/dt = 2t - 4.',
+      'Set v = 0: 2t = 4, so t = 2.',
+      'At <b>2 s</b> - option C.'
+    ],
+    board: [
+      's = t^2 - 4t + 3',
+      'v = ds/dt = 2t - 4',
+      '2t - 4 = 0',
+      't = 2 s'
+    ],
+    trap: 'Options A (1 s) and D (3 s) are when s = 0 - the particle passes through the origin then - but at rest is about <em>velocity</em> zero, not position. Differentiate first.'
+  },
+  'A rectangle has a perimeter of 20 cm. Find its maximum possible area.': {
+    idea: 'Optimisation is a build-then-differentiate job: write the quantity you care about (area) in one variable, then set its derivative to zero.',
+    steps: [
+      'Length x means breadth 10 - x (the perimeter halves to 10).',
+      'Area A = x(10 - x) = 10x - x<sup>2</sup>, so dA/dx = 10 - 2x = 0 gives x = 5.',
+      'A = 5 &times; 5 = <b>25 cm<sup>2</sup></b> - option A.'
+    ],
+    board: [
+      'sides: x and 10 - x',
+      'A = x(10 - x) = 10x - x^2',
+      'dA/dx = 10 - 2x = 0 -> x = 5',
+      'A = 5 x 5 = 25 cm^2'
+    ],
+    trap: 'Option D (100 cm<sup>2</sup>) squares the 10 - treating the half-perimeter as a single side. The area peaks at the square: 5 by 5.'
+  },
+
+  /* --- 2026-10-10: curves, trig graphs, locus, data, transformations --- */
+  'Find the points where the line y = 3x - 2 meets the curve y = x^2.': {
+    idea: 'Where a line meets a curve the coordinates must satisfy both equations, so set the two expressions for y equal and solve the quadratic.',
+    steps: [
+      'Set x<sup>2</sup> = 3x - 2, giving x<sup>2</sup> - 3x + 2 = 0.',
+      'Factorise: (x - 1)(x - 2) = 0, so x = 1 or x = 2.',
+      'The y-values come from the line: y = 1 and y = 4, so the points are <b>(1, 1) and (2, 4)</b> - option A.'
+    ],
+    board: [
+      'x^2 = 3x - 2',
+      'x^2 - 3x + 2 = 0',
+      '(x - 1)(x - 2) = 0  -> x = 1, 2',
+      'y = 3(1) - 2 = 1,  y = 3(2) - 2 = 4',
+      'points: (1, 1) and (2, 4)'
+    ],
+    trap: 'Option B (1, 1) and (4, 2) swaps the second point - each pair must satisfy BOTH equations. To finish safely, take each y from the straight line y = 3x - 2.'
+  },
+  'Find the radius of the circle x^2 + y^2 - 8x + 6y + 21 = 0.': {
+    idea: 'The expanded form hides the centre and radius. Complete the square in x and in y to squeeze it back into (x - a)<sup>2</sup> + (y - b)<sup>2</sup> = r<sup>2</sup>.',
+    steps: [
+      'Group the terms: (x<sup>2</sup> - 8x) + (y<sup>2</sup> + 6y) + 21 = 0.',
+      'Complete each square: (x - 4)<sup>2</sup> - 16 + (y + 3)<sup>2</sup> - 9 + 21 = 0, so (x - 4)<sup>2</sup> + (y + 3)<sup>2</sup> = 4.',
+      'The right side is r<sup>2</sup> = 4: radius <b>2</b> - option A.'
+    ],
+    board: [
+      '(x^2 - 8x) + (y^2 + 6y) + 21 = 0',
+      '(x - 4)^2 - 16 + (y + 3)^2 - 9 + 21 = 0',
+      '(x - 4)^2 + (y + 3)^2 = 4',
+      'r = 2'
+    ],
+    trap: 'Option B (4) is r<sup>2</sup>, not r - after completing the square, take the square root. The radius is 2.'
+  },
+  'How many solutions does sin x = 1/2 have for 0 degrees <= x <= 360 degrees?': {
+    idea: 'The sine graph is positive in two quadrants, so a positive sine value usually has two angles in 0 to 360. Picture the horizontal line y = 1/2 and count where it cuts the wave.',
+    steps: [
+      'sin x = 1/2 first happens at x = 30 degrees.',
+      'In the second quadrant the angle with the same sine is 180 - 30 = 150 degrees.',
+      'The line cuts the wave twice between 0 and 360, so <b>2</b> solutions - option C.'
+    ],
+    board: [
+      'sin x = 1/2',
+      'quadrant 1: x = 30',
+      'quadrant 2: x = 180 - 30 = 150',
+      'two cuts between 0 and 360'
+    ],
+    trap: 'Option A (1) stops at the first angle. There is no third angle in 0 to 360 - in the third and fourth quadrants sine is negative, so the line does not reach there.'
+  },
+  'The maximum value of y = sin x + cos x is:': {
+    idea: 'For y = a sin x + b cos x the biggest value is sqrt(a<sup>2</sup> + b<sup>2</sup>). Here both a and b are 1.',
+    steps: [
+      'Maximum = sqrt(1<sup>2</sup> + 1<sup>2</sup>) = sqrt(2).',
+      'It is reached where the two terms agree, at x = 45 degrees: sqrt(2)/2 + sqrt(2)/2.',
+      'So the maximum is <b>sqrt(2)</b> - option C.'
+    ],
+    board: [
+      'max of a sin x + b cos x = sqrt(a^2 + b^2)',
+      '= sqrt(1 + 1)',
+      '= sqrt(2)',
+      'check x = 45: sqrt(2)/2 + sqrt(2)/2 = sqrt(2)'
+    ],
+    trap: 'Option A (2) adds the two separate maxima (1 + 1) - but sin x and cos x never hit 1 at the same angle. The true peak is sqrt(2), about 1.41.'
+  },
+  'The locus of a point at a constant distance d from a fixed straight line is:': {
+    idea: 'Distance to a line is measured perpendicularly - and a point can be that far away on either side of the line.',
+    steps: [
+      'All points distance d above the line: a straight line parallel to it.',
+      'All points distance d below it: another parallel line.',
+      'Together: <b>a pair of parallel lines, one on each side</b> - option C.'
+    ],
+    board: [
+      'fixed line  --------',
+      'locus:      ------------  (d above)',
+      '            ------------  (d below)'
+    ],
+    trap: 'Option A draws only one side and forgets the other - the locus is both tracks, above and below the line.'
+  },
+  'A point P moves so that angle APB = 90 degrees, where A and B are fixed points. The locus of P is:': {
+    idea: 'A fixed right angle standing on a fixed segment is the angle-in-a-semicircle setup: every point on the circle with AB as diameter sees AB at 90 degrees.',
+    steps: [
+      'The angle in a semicircle is 90 degrees - the circle theorem.',
+      'So P traces the circle whose diameter is AB.',
+      'Locus: <b>a circle with AB as diameter</b> - option B.'
+    ],
+    board: [
+      'A ------ B  (fixed)',
+      'angle APB = 90',
+      'P lies on the circle on AB as diameter',
+      '(angle in a semicircle = 90)'
+    ],
+    trap: 'Option D (the perpendicular bisector) answers a different question - equidistant from A and B. Here the condition is a right angle at P, which gives the circle on AB.'
+  },
+  'A sector of 60 degrees on a pie chart represents 120 students. The total number of students is:': {
+    idea: 'A pie chart runs on the full turn of 360 degrees: every sector is a fraction of 360, and the same fraction of the total.',
+    steps: [
+      'The sector is 60/360 = 1/6 of the circle.',
+      'So 120 students are 1/6 of the total.',
+      'Total = 120 &times; 6 = <b>720</b> - option C.'
+    ],
+    board: [
+      '60 / 360 = 1/6 of the chart',
+      '1/6 of total = 120',
+      'total = 120 x 6 = 720'
+    ],
+    trap: 'Option D (360) treats the full-turn angle as the answer - degrees are not people. Convert the angle to a fraction of 360 first.'
+  },
+  'In the distribution 0-9: 4 students, 10-19: 6 students, 20-29: 10 students, the class mark of 20-29 is:': {
+    idea: 'The class mark is the midpoint of the class - average the two ends of the group.',
+    steps: [
+      'Add the ends: 20 + 29 = 49.',
+      'Halve: 49/2 = 24.5.',
+      'So the class mark is <b>24.5</b> - option B.'
+    ],
+    board: [
+      'class: 20 - 29',
+      'midpoint = (20 + 29) / 2',
+      '         = 49 / 2 = 24.5'
+    ],
+    trap: 'Option A (25) rounds the midpoint off - or comes from a 20-30 class. With whole-number classes the true middle sits at 24.5.'
+  },
+  'An enlargement of scale factor 2 maps a triangle of area 6 cm^2 onto a triangle of area:': {
+    idea: 'Lengths scale by the factor k, but areas scale by k<sup>2</sup> - both the base and the height stretch.',
+    steps: [
+      'Lengths double (factor 2).',
+      'Area factor = 2<sup>2</sup> = 4.',
+      'New area = 6 &times; 4 = <b>24 cm<sup>2</sup></b> - option B.'
+    ],
+    board: [
+      'scale factor k = 2',
+      'area factor = k^2 = 4',
+      '6 x 4 = 24 cm^2'
+    ],
+    trap: 'Option A (12 cm<sup>2</sup>) doubles once like a length - but the area grows fourfold, because both dimensions stretch.'
+  },
+  'The image of the point (2, 1) under a rotation of 90 degrees anticlockwise about the origin is:': {
+    idea: 'A 90-degree anticlockwise turn about the origin has a fixed rule: (x, y) goes to (-y, x). Test the rule on an easy point like (1, 0).',
+    steps: [
+      'Rule: swap the coordinates and negate the new x: (x, y) -> (-y, x).',
+      'Apply to (2, 1): (-1, 2).',
+      'So the image is <b>(-1, 2)</b> - option A.'
+    ],
+    board: [
+      '90 anticlockwise: (x, y) -> (-y, x)',
+      '(2, 1) -> (-1, 2)',
+      'check: (1, 0) -> (0, 1) anticlockwise'
+    ],
+    trap: 'Option B (1, -2) is the 90-degree <em>clockwise</em> image (x, y) -> (y, -x). The direction of the turn decides which coordinate gets the minus sign.'
   }
 };
