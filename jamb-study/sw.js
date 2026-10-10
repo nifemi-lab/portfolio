@@ -5,11 +5,16 @@
    offline (including on a flaky campus connection).
    ========================================================= */
 
-const CACHE = 'jamb-study-v10';
+const CACHE = 'jamb-study-v11';
 
 const ASSETS = [
   './',
   './index.html',
+  './maths.html',
+  './css/maths.css',
+  './js/syllabus-mathematics.js',
+  './js/lessons-mathematics.js',
+  './js/maths.js',
   './css/app.css',
   './js/app.js',
   './js/questions.js',
