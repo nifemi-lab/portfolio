@@ -149,7 +149,10 @@
 
 /* ---- Scientific calculator ---- */
 .calc-panel { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-top: 1rem; }
-.quiz-layout .calc-panel { margin-top: 0; position: sticky; top: 84px; }
+/* Sticky sidebar only on desktop — below 900px the .open rule turns it into a fixed bottom sheet. */
+@media (min-width: 901px) {
+  .quiz-layout .calc-panel { margin-top: 0; position: sticky; top: 84px; }
+}
 .calc-head { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-bottom: .7rem; }
 .calc-head h2 { font-size: .95rem; }
 .work-toggle { display: flex; align-items: center; gap: .4rem; font-size: var(--step--1); color: var(--text-muted); cursor: pointer; user-select: none; }
