@@ -180,5 +180,25 @@ window.SOLUTIONS['Mathematics'] = {
   'Find the nth term of the sequence 4, 7, 10, 13, ...': { t: 'Sequences and series', e: 'The common difference is 3 and the first term is 4, so the nth term = 3n + 1 (when n = 1 it gives 4).' },
   'A bag contains 4 red, 5 blue and 6 green balls. Find the probability of picking a ball that is not red.': { t: 'Probability', e: 'The balls that are not red are 5 + 6 = 11 out of 4 + 5 + 6 = 15, so the probability is 11/15.' },
   'How many 3-digit numbers can be formed using the digits 1, 2, 3, 4 and 5 if no digit is repeated?': { t: 'Permutations and combinations', e: 'There are 5 choices for the hundreds digit, 4 for the tens and 3 for the units, giving 5 x 4 x 3 = 60.' },
-  'Find the number of permutations of 6 objects taken 2 at a time.': { t: 'Permutations and combinations', e: '6P2 = 6!/(6 - 2)! = 6 x 5 = 30.' }
+  'Find the number of permutations of 6 objects taken 2 at a time.': { t: 'Permutations and combinations', e: '6P2 = 6!/(6 - 2)! = 6 x 5 = 30.' },
+
+  /* --- js/questions.js Mathematics entries (unicode text kept exact) --- */
+  'Simplify: 2/3 + 3/4': { t: 'Number operations', e: 'The LCM of 3 and 4 is 12: 2/3 = 8/12 and 3/4 = 9/12, so the sum is 8/12 + 9/12 = 17/12.' },
+  'If 3x − 5 = 16, what is x?': { t: 'Algebra', e: 'Add 5 to both sides: 3x = 21. Divide by 3: x = 7.' },
+  'Find the area of a circle of radius 7 cm. (Take π = 22/7)': { t: 'Mensuration', e: 'Area = pi r^2 = 22/7 x 7 x 7 = 154 cm^2.' },
+  'What is 15% of ₦200?': { t: 'Financial arithmetic', e: '15% of 200 = 15/100 x 200 = ₦30.' },
+  'Solve: 2(x + 3) = 18': { t: 'Algebra', e: 'Expand: 2x + 6 = 18, so 2x = 12 and x = 6.' },
+  'A right-angled triangle has sides 3 cm, 4 cm and 5 cm. Its area is:': { t: 'Mensuration', e: 'The two shorter sides are the base and the height: area = 1/2 x 3 x 4 = 6 cm^2 (5 cm is the hypotenuse).' },
+  'Simplify: √144 + √25': { t: 'Number operations', e: 'sqrt(144) = 12 and sqrt(25) = 5, so the sum is 12 + 5 = 17.' },
+  'Simple interest on ₦5,000 at 10% per annum for 2 years is:': { t: 'Financial arithmetic', e: 'I = PRT/100 = 5000 x 10 x 2 / 100 = ₦1,000.' },
+  'The mean of 4, 6, 8 and x is 6. Find x.': { t: 'Statistics', e: '(4 + 6 + 8 + x)/4 = 6, so 18 + x = 24 and x = 6.' },
+  'If log₁₀ 1000 = x, find x.': { t: 'Indices and logarithms', e: 'log base 10 of 1000 asks: 10 raised to what gives 1000? Since 10^3 = 1000, x = 3.' },
+  'The median of 3, 5, 7, 9 and 11 is:': { t: 'Statistics', e: 'The values are already in order and there are five of them, so the middle (third) value, 7, is the median.' },
+  'A triangle has base 10 cm and height 5 cm. Its area is:': { t: 'Mensuration', e: 'Area = 1/2 x base x height = 1/2 x 10 x 5 = 25 cm^2.' },
+  'Solve the simultaneous equations: x + y = 10 and x − y = 4.': { t: 'Algebra', e: 'Add the two equations: 2x = 14, so x = 7. Then y = 10 - 7 = 3.' },
+  'The probability of getting a head when a fair coin is tossed once is:': { t: 'Probability', e: 'One favourable outcome out of two equally likely outcomes: 1/2.' },
+  'The sum of the first 10 natural numbers is:': { t: 'Sequences and series', e: 'n(n + 1)/2 = 10 x 11/2 = 55.' },
+  'Factorise: x² − 9': { t: 'Algebra', e: 'This is a difference of two squares: x^2 - 9 = (x - 3)(x + 3).' },
+  'The circumference of a circle is 44 cm. Find its radius. (Take π = 22/7)': { t: 'Mensuration', e: 'Circumference = 2 pi r: 44 = 2 x 22/7 x r, so r = 44 x 7 / 44 = 7 cm.' },
+  'If 30% of a number is 60, the number is:': { t: 'Financial arithmetic', e: '30% of N = 60 means 0.3N = 60, so the number = 200.' }
 };

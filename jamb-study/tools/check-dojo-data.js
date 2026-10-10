@@ -3,12 +3,14 @@
 global.window = global;
 require('../js/questions.js');
 require('../js/q-mathematics.js');
+require('../js/sol-mathematics.js');
 require('../js/syllabus-mathematics.js');
 try { require('../js/lessons-mathematics.js'); } catch (e) { /* task 2 not written yet */ }
 
 const bank = window.QUESTION_BANK.filter(q => q.s === 'Mathematics');
 const syl = window.SYLLABUS['Mathematics'];
 const map = (window.Q_TOPIC || {})['Mathematics'] || {};
+const sols = (window.SOLUTIONS || {})['Mathematics'] || {};
 const lessons = (window.LESSONS || {})['Mathematics'] || {};
 const notes = (window.LESSON_NOTES || {})['Mathematics'] || {};
 
@@ -24,6 +26,11 @@ Object.keys(map).forEach(q => {
   if (!topics.includes(map[q])) err('Q_TOPIC value not a topic: ' + map[q]);
 });
 bank.forEach(q => { if (!map[q.q]) err('bank question not assigned: ' + q.q); });
+bank.forEach(q => {
+  const s = sols[q.q];
+  if (!s) err('bank question has no solution: ' + q.q);
+  else if (!s.e) err('solution missing working text: ' + q.q);
+});
 
 Object.keys(lessons).forEach(q => {
   const L = lessons[q];
@@ -40,7 +47,8 @@ Object.keys(notes).forEach(t => {
 const counts = {};
 bank.forEach(q => { counts[map[q.q]] = (counts[map[q.q]] || 0) + 1; });
 console.log('bank: ' + bank.length + ' questions, assigned: ' +
-  bank.filter(q => map[q.q]).length);
+  bank.filter(q => map[q.q]).length + ', solutions: ' +
+  bank.filter(q => sols[q.q] && sols[q.q].e).length);
 console.log('sections: ' + syl.length + ', topics: ' + topics.length +
   ', populated: ' + Object.keys(counts).length);
 console.log('lessons: ' + Object.keys(lessons).length +

@@ -90,8 +90,10 @@
     $('#lvlVal').textContent = 1 + Math.floor(xp / 100);
   }
 
-  /* ---- quiz state (filled by the drill in part 2) ---- */
-  const state = { topic: null, qs: [], qi: 0, score: 0 };
+  /* ---- quiz state (drill on screen 3) ---- */
+  const state = { topic: null, qs: [], qi: 0, score: 0, answered: false, ended: false };
+  let session = null, written = false;
+  const runStreak = {};            // consecutive corrects per topic, this session
 
   /* ---- screens ---- */
   const SCREENS = ['screen-map', 'screen-topic', 'screen-quiz'];
@@ -230,6 +232,157 @@
     showScreen('screen-topic');
   }
 
+  /* ---- screen 3: the drill ---- */
+  function startQuiz(topic) {
+    state.topic = topic;
+    state.qs = questionsFor(topic);
+    state.qi = 0;
+    state.score = 0;
+    state.answered = false;
+    state.ended = false;
+    session = { start: Date.now(), perTopic: {} };
+    written = false;
+    Object.keys(runStreak).forEach(k => delete runStreak[k]);
+    $('#quizEyebrow').textContent = 'Practice · ' + topic;
+    showScreen('screen-quiz');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const item = state.qs[state.qi];
+    state.answered = false;
+    state.ended = false;
+    $('#qCount').textContent = 'Question ' + (state.qi + 1) + ' of ' + state.qs.length;
+    $('#qBar').style.width = (state.qi / state.qs.length) * 100 + '%';
+    $('#qText').textContent = item.q;
+    $('#qSolution').hidden = true;
+    $('#nextBtn').hidden = true;
+    $('#skipRow').hidden = false;
+    $('#skipBtn').hidden = false;
+    $('#explainBtn').hidden = !LESSONS[item.q];
+    const wrap = $('#qOpts');
+    wrap.innerHTML = '';
+    item.o.forEach((opt, i) => {
+      const b = document.createElement('button');
+      b.className = 'opt';
+      b.type = 'button';
+      b.innerHTML = '<span class="key">' + 'ABCD'[i] + '</span><span>' + esc(opt) + '</span>';
+      b.addEventListener('click', () => answer(i, b));
+      wrap.appendChild(b);
+    });
+  }
+
+  function perTopic() {
+    return session.perTopic[state.topic] || (session.perTopic[state.topic] = { correct: 0, total: 0 });
+  }
+
+  function bumpMastery(correct) {
+    const m = mastery();
+    const e = m[state.topic] || { seen: 0, correct: 0, bestStreak: 0 };
+    e.seen += 1;
+    if (correct) {
+      e.correct += 1;
+      runStreak[state.topic] = (runStreak[state.topic] || 0) + 1;
+      if (runStreak[state.topic] > e.bestStreak) e.bestStreak = runStreak[state.topic];
+    } else {
+      runStreak[state.topic] = 0;
+    }
+    e.updatedAt = new Date().toISOString();
+    m[state.topic] = e;
+    saveMastery(m);
+    paintHeader();
+  }
+
+  function recordMistake(item) {
+    const d = db(); const i = d.missed.findIndex(m => m.q === item.q);
+    if (i !== -1) { d.missed[i].hits += 1; d.missed[i].last = isoDate(new Date()); }
+    else d.missed.push({ s: item.s, q: item.q, o: item.o, a: item.a, hits: 1, last: isoDate(new Date()) });
+    d.missed = d.missed.slice(0, 60);
+    saveDB(d); paintHeader();
+  }
+
+  function showToast(msg) {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1200);
+  }
+
+  function answer(i, btn) {
+    const item = state.qs[state.qi];
+    const correct = i === item.a;
+    state.answered = true;
+    document.querySelectorAll('#qOpts .opt').forEach((b, j) => {
+      b.disabled = true;
+      if (j === item.a) b.classList.add('correct');
+    });
+    if (!correct) btn.classList.add('wrong');
+    const sol = $('#qSolution');
+    sol.className = 'card solution ' + (correct ? 'good' : 'bad');
+    $('#solTitle').textContent = correct ? '✓ Why that is the answer' : '✗ How to work it out';
+    $('#solBody').textContent = item.e || (SOLS[item.q] || {}).e;
+    sol.hidden = false;
+    $('#nextBtn').hidden = false;
+    $('#skipBtn').hidden = true;
+    perTopic().total += 1;
+    if (correct) {
+      state.score += 1;
+      perTopic().correct += 1;
+      showToast('+10 XP');
+    } else {
+      recordMistake(item);
+    }
+    bumpMastery(correct);
+  }
+
+  function skipQuestion() {
+    if (state.answered || state.ended) return;
+    const item = state.qs[state.qi];
+    state.answered = true;
+    perTopic().total += 1;
+    recordMistake(item);
+    bumpMastery(false);
+    nextQuestion();
+  }
+
+  function nextQuestion() {
+    if (state.qi < state.qs.length - 1) { state.qi += 1; renderQuestion(); return; }
+    /* end state */
+    state.ended = true;
+    $('#qBar').style.width = '100%';
+    $('#qCount').textContent = 'Done · ' + state.score + ' of ' + state.qs.length + ' correct';
+    $('#qText').textContent = state.score === state.qs.length
+      ? 'Clean sweep. This topic ring just moved.'
+      : 'Session complete — missed ones joined your mistake queue.';
+    $('#qOpts').innerHTML = '';
+    $('#qSolution').hidden = true;
+    $('#skipRow').hidden = true;
+    const nb = $('#nextBtn');
+    nb.textContent = 'Back to the map';
+    nb.hidden = false;
+  }
+
+  function finishSession() {
+    if (written) return;
+    written = true;
+    if (!Object.keys(session.perTopic).length) return;
+    const d = db(); const mins = Math.max(1, Math.round((Date.now() - session.start) / 60000));
+    Object.keys(session.perTopic).forEach(topic => {
+      const c = session.perTopic[topic];
+      d.quiz_results.unshift({ id: uid('qr'), date: isoDate(new Date()), subject: SUBJECT, topic: topic, correct: c.correct, total: c.total, mode: 'practice' });
+    });
+    d.quiz_results = d.quiz_results.slice(0, 60);
+    d.logs.push({ id: uid('log'), date: isoDate(new Date()), subject: SUBJECT, minutes: mins, sessionId: null, source: 'dojo' });
+    saveDB(d); paintHeader();
+  }
+
+  function backToMap() {
+    finishSession();
+    $('#nextBtn').textContent = 'Next question';
+    renderMap();
+    showScreen('screen-map');
+  }
+
   /* ---- init ---- */
   applyTheme();
   paintHeader();
@@ -242,10 +395,13 @@
     saveDB(d);
     applyTheme();
   });
+  $('#nextBtn').addEventListener('click', () => state.ended ? backToMap() : nextQuestion());
+  $('#skipBtn').addEventListener('click', skipQuestion);
 
   window.DOJO = {
     state: state, showScreen: showScreen, openTopic: openTopic, renderMap: renderMap,
     questionsFor: questionsFor, topicStats: topicStats, paintHeader: paintHeader,
+    startQuiz: startQuiz, nextQuestion: nextQuestion, finishSession: finishSession, showToast: showToast,
     mastery: mastery, saveMastery: saveMastery, db: db, saveDB: saveDB,
     uid: uid, isoDate: isoDate, esc: esc
   };
