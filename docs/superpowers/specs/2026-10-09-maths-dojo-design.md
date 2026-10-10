@@ -100,8 +100,10 @@ files plus one constant.
 - Hero: "Pick a topic. Turn it green." + one-line explanation of rings.
 - Weakest-topics card: top 3 seen topics with lowest accuracy (min 3 questions
   seen), warn-coloured bars. Hidden when fewer than 3 topics qualify.
-- Accordion of the 9 JAMB maths sections / 35 topics
-  (data: `js/syllabus-mathematics.js`), each topic row showing:
+- Accordion of the 9 JAMB maths sections / 34 topics
+  (the approved mockup's 32 plus `Percentages & money` and
+  `Ratio, rates & proportion`, added to cover bank questions that had no home;
+  data: `js/syllabus-mathematics.js`), each topic row showing:
   mastery ring (34px), name, "N questions drilled" or "Not practised yet", %.
 - Ring colour: unseen = grey (empty ring), accuracy < 40% = warn, otherwise
   accent-2. Ring % = accuracy for that topic.
@@ -118,8 +120,10 @@ files plus one constant.
 
 ### C. Topic drill
 
-- Progress bar + "Question N of M". Questions come from `QUESTION_BANK` filtered
-  to the topic via `topicFor('Mathematics', q)`.
+- Progress bar + "Question N of M". Questions come from `QUESTION_BANK`
+  filtered to the topic via the dojo's own `Q_TOPIC` map (exact question text →
+  syllabus topic, in `js/syllabus-mathematics.js`; the solutions file's coarser
+  `t:` labels cannot express the 34 map topics).
 - Four option buttons; on answer: disable all, mark correct/wrong, show worked
   solution immediately (from `item.e || SOLUTIONS[...].e`) in the good/bad
   solution panel — same copy as the tracker's practice tab ("Why that is the
@@ -191,8 +195,9 @@ files plus one constant.
 window.SYLLABUS = window.SYLLABUS || {};
 window.SYLLABUS['Mathematics'] = [
   { name: 'Number & Numeration', topics: ['Number bases', 'Fractions & decimals', ...] },
-  ...9 sections, 35 topics total (JAMB syllabus)...
+  ...9 sections, 34 topics total (the approved map + 2 for bank coverage)...
 ];
+window.Q_TOPIC['Mathematics'] = { '<exact question text>': '<syllabus topic>', ... };
 ```
 
 `js/lessons-mathematics.js` — two kinds of entry, keyed differently:
@@ -246,20 +251,22 @@ jamb_study_maths_mastery_v1::<profileId>   →   { '<topic>': { seen, correct, b
 - Streak: dojo sessions write `db.logs` minutes (see "Sharing with the tracker"
   above), which is exactly what `streakDays()` counts — one streak across both
   pages, no dojo-side streak logic.
-- XP: no new currency. The dojo header shows `✦ {total correct across the
-  mastery map} XP` and `Level = 1 + floor(XP / 100)`. The mastery map is the XP
+- XP: no new currency. The dojo header shows `✦ {10 × total correct across the
+  mastery map} XP` and `Level = 1 + floor(XP / 100)` (so the mockup's +10-per-
+  correct toast matches the number exactly). The mastery map is the XP
   source (not `quiz_results`, whose 60-row cap would let XP shrink when old
   rows age out). The +10 toast on a correct answer is presentation only.
 
 ## 7. Phase 1 content scope
 
-- Syllabus: all 9 sections / 35 topics in `syllabus-mathematics.js` (names only —
-  small file).
+- Syllabus: all 9 sections / 34 topics in `syllabus-mathematics.js` (names only —
+  small file) plus the `Q_TOPIC` map assigning each of the 181 bank questions to
+  one topic.
 - Lessons: write `LESSONS` + `LESSON_NOTES` entries for the 10 highest-yield
   topics first (Number bases, Fractions & decimals, Indices, Logarithms, Sets,
   Quadratic equations, Simultaneous equations, Probability, Trigonometric ratios,
-  Differentiation). Every other topic still drills fine; it just shows no
-  "Please explain" link and a "Lesson coming soon" note in place of the
+  Permutations & combinations). Every other topic still drills fine; it just shows
+  no "Please explain" link and a "Lesson coming soon" note in place of the
   topic-page teaching cards.
 - Phases after this spec (not part of the Phase 1 plan): Phase 2 = remaining 25
   topics' lessons + any new questions; Phase 3 = other subjects as data files.
