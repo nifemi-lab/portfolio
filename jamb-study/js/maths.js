@@ -383,6 +383,144 @@
     showScreen('screen-map');
   }
 
+  /* ---- scientific calculator with step log ---- */
+  const CALC_KEYS = [
+    { k: 'C', cls: 'clr', act: 'clear' }, { k: 'DEL', act: 'del' }, { k: '(', ins: '(' }, { k: ')', ins: ')' }, { k: '^', ins: '^', cls: 'op', show: '˄' },
+    { k: 'sin', ins: 'sin(', cls: 'fn' }, { k: 'cos', ins: 'cos(', cls: 'fn' }, { k: 'tan', ins: 'tan(', cls: 'fn' }, { k: 'log', ins: 'log(', cls: 'fn', show: 'log₁₀' }, { k: 'ln', ins: 'ln(', cls: 'fn' },
+    { k: '7', ins: '7' }, { k: '8', ins: '8' }, { k: '9', ins: '9' }, { k: '√', ins: 'sqrt(', cls: 'op' }, { k: 'x²', act: 'square', cls: 'op' },
+    { k: '4', ins: '4' }, { k: '5', ins: '5' }, { k: '6', ins: '6' }, { k: '×', ins: '*', cls: 'op' }, { k: '÷', ins: '/', cls: 'op' },
+    { k: '1', ins: '1' }, { k: '2', ins: '2' }, { k: '3', ins: '3' }, { k: '+', ins: '+', cls: 'op' }, { k: '−', ins: '-', cls: 'op' },
+    { k: '0', ins: '0' }, { k: '.', ins: '.' }, { k: 'π', ins: 'pi', cls: 'op' }, { k: '1/x', act: 'recip', cls: 'op' }, { k: '=', act: 'equals', cls: 'eq' }
+  ];
+  let calcExpr = '';
+
+  const calcKeysWrap = $('#calcKeys');
+  CALC_KEYS.forEach(key => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = key.show || key.k;
+    if (key.cls) b.className = key.cls;
+    b.addEventListener('click', () => calcPress(key));
+    calcKeysWrap.appendChild(b);
+  });
+
+  function calcPress(key) {
+    const ansEl = $('#calcAns');
+    if (key.act === 'clear') { calcExpr = ''; ansEl.textContent = ' '; renderCalc(); return; }
+    if (key.act === 'del') { calcExpr = calcExpr.slice(0, -1); renderCalc(); return; }
+    if (key.act === 'square') { calcExpr = '(' + calcExpr + ')^2'; renderCalc(); return; }
+    if (key.act === 'recip') { calcExpr = '1/(' + calcExpr + ')'; renderCalc(); return; }
+    if (key.act === 'equals') { calcSolve(); return; }
+    calcExpr += key.ins;
+    renderCalc();
+  }
+
+  function pretty(src) {
+    return src.replace(/\*/g, '×').replace(/\//g, '÷').replace(/sqrt/g, '√').replace(/pi/g, 'π');
+  }
+  function fmt(n) {
+    if (!isFinite(n)) throw Error('undefined');
+    return Math.abs(n - Math.round(n)) < 1e-10 ? String(Math.round(n)) : String(+n.toFixed(6));
+  }
+  function renderCalc() {
+    $('#calcExpr').textContent = pretty(calcExpr) || ' ';
+  }
+
+  function evaluate(src) {
+    let pos = 0;
+    const steps = [];
+    const peek = () => src[pos];
+    function expr() {
+      let v = term();
+      while (peek() === '+' || peek() === '-') {
+        const op = src[pos++], r = term(), res = op === '+' ? v + r : v - r;
+        steps.push(fmt(v) + ' ' + op + ' ' + fmt(r) + ' = ' + fmt(res));
+        v = res;
+      }
+      return v;
+    }
+    function term() {
+      let v = power();
+      while (peek() === '*' || peek() === '/') {
+        const op = src[pos++], r = power(), res = op === '*' ? v * r : v / r;
+        steps.push(fmt(v) + ' ' + (op === '*' ? '×' : '÷') + ' ' + fmt(r) + ' = ' + fmt(res));
+        v = res;
+      }
+      return v;
+    }
+    function power() {
+      const base = unary();
+      if (peek() === '^') {
+        pos++;
+        const ex = power(), res = Math.pow(base, ex);
+        steps.push(fmt(base) + '^' + fmt(ex) + ' = ' + fmt(res));
+        return res;
+      }
+      return base;
+    }
+    function unary() {
+      if (peek() === '-') { pos++; return -unary(); }
+      return atom();
+    }
+    function atom() {
+      if (peek() === '(') {
+        pos++;
+        const v = expr();
+        if (peek() !== ')') throw Error('missing )');
+        pos++;
+        return v;
+      }
+      const num = /^[0-9]*\.?[0-9]+/.exec(src.slice(pos));
+      if (num) { pos += num[0].length; return parseFloat(num[0]); }
+      if (src.startsWith('pi', pos)) { pos += 2; return Math.PI; }
+      const fn = /^(sin|cos|tan|log|ln|sqrt)\(/.exec(src.slice(pos));
+      if (fn) {
+        pos += fn[0].length;
+        const arg = expr();
+        if (peek() !== ')') throw Error('missing )');
+        pos++;
+        const f = fn[1];
+        let res;
+        const rad = arg * Math.PI / 180;
+        if (f === 'sin') res = Math.sin(rad);
+        else if (f === 'cos') res = Math.cos(rad);
+        else if (f === 'tan') res = Math.tan(rad);
+        else if (f === 'log') res = Math.log10(arg);
+        else if (f === 'ln') res = Math.log(arg);
+        else res = Math.sqrt(arg);
+        steps.push((f === 'sqrt' ? '√' : f) + '(' + fmt(arg) + ') = ' + fmt(res));
+        return res;
+      }
+      throw Error('bad input');
+    }
+    const value = expr();
+    if (pos < src.length) throw Error('unexpected ' + src[pos]);
+    return { value: value, steps: steps };
+  }
+
+  function calcSolve() {
+    const ansEl = $('#calcAns');
+    const stepsEl = $('#calcSteps');
+    if (!calcExpr) { ansEl.textContent = ' '; stepsEl.hidden = true; return; }
+    try {
+      const out = evaluate(calcExpr);
+      ansEl.textContent = fmt(out.value);
+      ansEl.classList.remove('err');
+      if ($('#workToggle').checked && out.steps.length) {
+        stepsEl.innerHTML = out.steps.map(s => '<p>' + s + '</p>').join('') + '<p class="final">= ' + fmt(out.value) + '</p>';
+        stepsEl.hidden = false;
+      } else {
+        stepsEl.hidden = true;
+      }
+      calcExpr = fmt(out.value);
+      renderCalc();
+    } catch (err) {
+      ansEl.textContent = 'Error';
+      ansEl.classList.add('err');
+      stepsEl.hidden = true;
+    }
+  }
+
   /* ---- init ---- */
   applyTheme();
   paintHeader();
@@ -397,6 +535,11 @@
   });
   $('#nextBtn').addEventListener('click', () => state.ended ? backToMap() : nextQuestion());
   $('#skipBtn').addEventListener('click', skipQuestion);
+  $('#calcToggle').addEventListener('click', () => {
+    const panel = $('#calcPanel');
+    panel.classList.toggle('open');
+    $('#calcToggle').textContent = panel.classList.contains('open') ? 'Hide calculator' : 'Calculator';
+  });
 
   window.DOJO = {
     state: state, showScreen: showScreen, openTopic: openTopic, renderMap: renderMap,
