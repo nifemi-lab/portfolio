@@ -259,7 +259,7 @@
     $('#nextBtn').hidden = true;
     $('#skipRow').hidden = false;
     $('#skipBtn').hidden = false;
-    $('#explainBtn').hidden = !LESSONS[item.q];
+    $('#explainBtn').hidden = false;
     const wrap = $('#qOpts');
     wrap.innerHTML = '';
     item.o.forEach((opt, i) => {
@@ -521,24 +521,33 @@
     }
   }
 
-  /* ---- explain side (teach-first: idea -> steps one by one -> trap check) ---- */
+  /* ---- explain side (teach-first: idea -> steps one by one -> trap check).
+     Questions without a full walkthrough fall back to the worked solution. ---- */
   let xRevealed = 0;
   let explainFinishing = false;
+  let explainRich = false;
 
   function openExplain() {
     const item = state.qs[state.qi];
     const L = LESSONS[item.q];
-    if (!L) return;
+    explainRich = !!L;
     explainFinishing = false;
     $('#xEyebrow').textContent = 'Explain · Question ' + (state.qi + 1) + ' of ' + state.qs.length;
     $('#xQuestion').textContent = item.q;
-    $('#xIdea').innerHTML = '<p>' + L.idea + '</p>';
-    $('#xSteps').innerHTML = L.steps.map(s => '<li hidden>' + s + '</li>').join('');
-    $('#xBoard').innerHTML = L.board.map((l, i) =>
-      '<p' + (i === L.board.length - 1 ? ' class="ans"' : '') + '>' + l + '</p>').join('');
+    if (L) {
+      $('#xIdea').innerHTML = '<p>' + L.idea + '</p>';
+      $('#xSteps').innerHTML = L.steps.map(s => '<li hidden>' + s + '</li>').join('');
+      $('#xBoard').innerHTML = L.board.map((l, i) =>
+        '<p' + (i === L.board.length - 1 ? ' class="ans"' : '') + '>' + l + '</p>').join('');
+      $('#xTrap').innerHTML = '<b>Trap check:</b> ' + L.trap;
+    } else {
+      $('#xIdea').innerHTML = '<p>Here is the full working for this question.</p>';
+      $('#xSteps').innerHTML = '<li hidden>' + (item.e || (SOLS[item.q] || {}).e || '') + '</li>';
+      $('#xBoard').innerHTML = '';
+      $('#xTrap').innerHTML = '';
+    }
     $('#xBoard').hidden = true;
     $('#xBoardLabel').hidden = true;
-    $('#xTrap').innerHTML = '<b>Trap check:</b> ' + L.trap;
     $('#xTrap').hidden = true;
     $('#xBack').hidden = true;
     xRevealed = 0;
@@ -591,7 +600,7 @@
     const done = xRevealed >= items.length;
     $('#xNextStep').hidden = done;
     $('#xBack').hidden = !done;
-    if (done) {
+    if (done && explainRich) {
       $('#xBoard').hidden = false;
       $('#xBoardLabel').hidden = false;
       $('#xTrap').hidden = false;
