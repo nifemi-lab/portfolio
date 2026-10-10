@@ -32,7 +32,7 @@ are the reference implementation for this build).
 | Scope of subjects? | Mathematics ships first. The architecture must let other subjects join later as data only (syllabus file + lessons file per subject). |
 | Questions? | Features first, bank later. Phase 1 uses the existing `js/q-mathematics.js` bank and `js/sol-mathematics.js` solutions. No new question banks in this phase. |
 | XP/streak? | Shared with the tracker — no second currency (see §6). |
-| Stuck on a question? | "Please explain" side: teach-first explanation panel (see §5E). |
+| Stuck on a question? | "Please explain" side: teach-first explanation panel — idea → steps one at a time → worked-answer board → trap check, and finishing moves you to the next question (see §5E). |
 
 ## 3. Existing context (verified against the repo)
 
@@ -152,19 +152,34 @@ files plus one constant.
 - A "Please explain" link sits under the question next to Skip. It opens a panel
   that slides in from the right (desktop: `min(480px, 100vw)` dialog over a dim
   backdrop; mobile: full width). Close via ✕, backdrop click, or Escape; focus
-  returns to the question.
+  returns to the triggering link.
 - Content, in order:
   1. Question restated.
   2. **The idea** — the concept in plain words, 2–4 sentences, before any working.
   3. **Work it together** — numbered steps revealed **one at a time** under a
-     "Show next step" button (Onion Academy pacing; each reveal scrolls into view).
-  4. **Trap check** — names the most tempting wrong option and exactly why it
-     catches people.
-  5. Actions: "Back to the question" (primary) + footer line "Asking costs
-     nothing — this is how you learn." Reading an explanation never costs XP.
+     "Show next step" button (Onion Academy pacing; each reveal scrolls into
+     view). When the last step lands, the button disappears.
+  4. **Worked answer board** — the actual calculation in a monospace "notebook"
+     style, revealed only after all steps (`.workboard`: pre-spaced lines, last
+     line accent-2 bold). Steps tease the thinking; the board shows the full
+     pen-on-paper working in one look.
+  5. **Trap check** — names the most tempting wrong option and exactly why it
+     catches people (revealed with the board).
+  6. Actions: "Back to the question" (ghost — for answering it yourself after
+     learning) and "Got it — next question" (primary). Footer line: "Asking
+     costs nothing — this question joins your mistake queue, and you'll move on
+     to the next one."
+- **Finishing moves you on.** "Got it — next question" closes the panel and
+  advances: if the question was **not yet answered**, it joins the mistake queue
+  (toast "Added to your mistake queue") — you learn from the explanation and
+  retry it later from your mistake list; if it was already answered (explanation
+  opened after answering), the drill simply advances. Reading an explanation
+  never awards XP either way.
 - Available before answering (teach-first) and after answering.
 - If no lesson exists for the current question, the "Please explain" link is
   hidden (Phase 1 ships lessons for the highest-yield topics only — see §7).
+- Lesson data for the explain side gains a `board` field:
+  `'<question>': { idea, steps[], board: ['line', 'line', '= answer'], trap }`.
 
 ## 6. Data model and storage
 
@@ -186,7 +201,8 @@ window.SYLLABUS['Mathematics'] = [
 window.LESSONS = window.LESSONS || {};
 window.LESSONS['Mathematics'] = {
   /* teach-first explanation for one specific question (Explain side) */
-  '<exact question text>': { idea: '...', steps: ['...', '...'], trap: '...' },
+  '<exact question text>': { idea: '...', steps: ['...', '...'],
+                             board: ['...line...', '...', '= answer'], trap: '...' },
   ...
 };
 window.LESSON_NOTES = window.LESSON_NOTES || {};
@@ -273,8 +289,10 @@ jamb_study_maths_mastery_v1::<profileId>   →   { '<topic>': { seen, correct, b
    `sin(30)=` → 0.5; `log(100)=` → 2; `1/0=` → Error. "Show working" off hides the log.
 4. At ≤900px width: calculator becomes toggle + bottom sheet; explain panel is
    full width; both close correctly.
-5. Explain: open, steps reveal one at a time, trap check shows, Escape/backdrop/
-   ✕ close, focus returns to "Please explain".
+5. Explain: open, steps reveal one at a time, "Show next step" disappears at the
+   last step, worked-answer board + trap check reveal together, "Got it — next
+   question" closes and advances (unanswered question → mistake-queue toast),
+   Escape/backdrop/✕ close, focus returns to "Please explain".
 6. Theme toggle on maths.html matches tracker themes; header chip in index.html
    navigates to maths.html and back.
 7. Offline: with sw registered and config absent, maths.html and all panels work
