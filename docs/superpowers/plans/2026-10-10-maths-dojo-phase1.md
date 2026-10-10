@@ -44,7 +44,7 @@
 
 **Topic count note:** the approved mockup shows 9 sections / 32 topic rows. Two topics are added (`Percentages & money`, `Ratio, rates & proportion`) because the question bank contains ~25 questions that only make sense under them — 34 topics total. 8 topics have no bank questions yet and show the spec-mandated "No questions tagged for this topic yet" card (spec §8).
 
-**Question→topic filtering note:** the spec's "via `topicFor()`" line is corrected: `Q_TOPIC` (authored in Task 1) filters the bank by syllabus-topic granularity; the solution file's coarser `t:` labels ('Algebra', 'Number operations', …) cannot express the map's topics. Drill = questions where `Q_TOPIC[q] === topic`. Unmapped questions simply never appear (future bank growth = add map lines; the checker in Task 1 enforces full coverage at 181/181 today).
+**Question→topic filtering note:** the spec's "via `topicFor()`" line is corrected: `Q_TOPIC` (authored in Task 1) filters the bank by syllabus-topic granularity; the solution file's coarser `t:` labels ('Algebra', 'Number operations', …) cannot express the map's topics. Drill = questions where `Q_TOPIC[q] === topic`. Unmapped questions simply never appear (future bank growth = add map lines; the checker in Task 1 enforces full coverage at 198/198 today (198 = 180 in `q-mathematics.js` + 18 Mathematics entries in `questions.js`, discovered during Task 1 execution)).
 
 ---
 
@@ -89,7 +89,7 @@ git commit -m "Add approved Maths Dojo mockup to repo; correct spec topic counts
 
 **Interfaces:**
 - Consumes: bank (`js/questions.js`, `js/q-mathematics.js`).
-- Produces: `window.SYLLABUS['Mathematics']` = `[{ name, topics: ['Number bases', ...] }, ...]` (9 sections, 34 topics, plain strings); `window.Q_TOPIC['Mathematics']` = `{ '<exact question text>': '<syllabus topic>', ... }` (all 181 bank questions). Later tasks do `SYLLABUS['Mathematics']`, `Q_TOPIC['Mathematics'][q]`, and topic drills filter `bank.filter(q => Q_TOPIC[q.q] === topic)`.
+- Produces: `window.SYLLABUS['Mathematics']` = `[{ name, topics: ['Number bases', ...] }, ...]` (9 sections, 34 topics, plain strings); `window.Q_TOPIC['Mathematics']` = `{ '<exact question text>': '<syllabus topic>', ... }` (all 198 bank questions). Later tasks do `SYLLABUS['Mathematics']`, `Q_TOPIC['Mathematics'][q]`, and topic drills filter `bank.filter(q => Q_TOPIC[q.q] === topic)`.
 
 - [ ] **Step 1: Write the data file**
 
@@ -120,7 +120,7 @@ window.Q_TOPIC['Mathematics'] = {
 };
 ```
 
-Author all 181 `Q_TOPIC` entries by walking `js/q-mathematics.js` in order and assigning exactly one topic per question with these rules (copy the question text character-for-character, including `N` currency and `^` notation):
+Author all 198 `Q_TOPIC` entries: walk `js/q-mathematics.js` (180 questions, file order) then the 18 Mathematics entries in `js/questions.js` (lines 28-45) and assigning exactly one topic per question with these rules (copy the question text character-for-character, including `N` currency and `^` notation):
 
 - solution `t:` = 'Financial arithmetic' → `Percentages & money`
 - 'Number operations' → sqrt/rationalise → `Surds`; fractions/decimals/HCF/LCM/standard form → `Fractions & decimals`; ratio/scale/workers/speed → `Ratio, rates & proportion`
@@ -196,16 +196,16 @@ if (fail) { console.error(fail + ' problem(s)'); process.exit(1); }
 console.log('OK');
 ```
 
-- [ ] **Step 3: Run the checker — expect OK, 181/181 assigned**
+- [ ] **Step 3: Run the checker — expect OK, 198/198 assigned**
 
 Run from `jamb-study/`: `node tools/check-dojo-data.js`
-Expected: `bank: 181 questions, assigned: 181`, `sections: 9, topics: 34, populated: 26`, `OK`.
+Expected: `bank: 198 questions, assigned: 198`, `sections: 9, topics: 34, populated: 26`, `OK`.
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add jamb-study/js/syllabus-mathematics.js jamb-study/tools/check-dojo-data.js
-git commit -m "Maths Dojo data: full JAMB syllabus map and question-to-topic map (181 questions)"
+git commit -m "Maths Dojo data: full JAMB syllabus map and question-to-topic map (198 questions)"
 ```
 
 ---
