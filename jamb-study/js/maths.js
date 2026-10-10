@@ -88,10 +88,17 @@
     const xp = xpTotal();
     $('#xpVal').textContent = xp;
     $('#lvlVal').textContent = 1 + Math.floor(xp / 100);
+    const n = drillableMissed().length;
+    $('#missedVal').textContent = n;
+    const chip = $('#mistakesChip');
+    chip.classList.toggle('has-mistakes', n > 0);
+    chip.title = n
+      ? 'Review the ' + n + ' question' + (n === 1 ? '' : 's') + ' you missed'
+      : 'No mistakes saved yet — wrong answers land here';
   }
 
   /* ---- quiz state (drill on screen 3) ---- */
-  const state = { topic: null, qs: [], qi: 0, score: 0, answered: false, ended: false };
+  const state = { topic: null, review: false, qs: [], qi: 0, score: 0, answered: false, ended: false };
   let session = null, written = false;
   const runStreak = {};            // consecutive corrects per topic, this session
 
@@ -235,6 +242,7 @@
   /* ---- screen 3: the drill ---- */
   function startQuiz(topic) {
     state.topic = topic;
+    state.review = false;
     state.qs = questionsFor(topic);
     state.qi = 0;
     state.score = 0;
@@ -244,6 +252,28 @@
     written = false;
     Object.keys(runStreak).forEach(k => delete runStreak[k]);
     $('#quizEyebrow').textContent = 'Practice · ' + topic;
+    $('#nextBtn').textContent = 'Next question';
+    showScreen('screen-quiz');
+    renderQuestion();
+  }
+
+  /* The header Mistakes chip: re-drill missed questions right here. Getting one
+     right clears it from the queue the tracker shares; wrong ones stay. */
+  function startMistakeReview() {
+    const missed = drillableMissed();
+    if (!missed.length) { showToast('No mistakes saved yet — wrong answers land here'); return; }
+    if (session) finishSession();
+    state.topic = null;
+    state.review = true;
+    state.qs = missed.map(m => ({ s: m.s, q: m.q, o: m.o, a: m.a }));
+    state.qi = 0;
+    state.score = 0;
+    state.answered = false;
+    state.ended = false;
+    session = { start: Date.now(), perTopic: {} };
+    written = false;
+    $('#quizEyebrow').textContent = 'Mistake review · ' + state.qs.length + (state.qs.length === 1 ? ' question' : ' questions');
+    $('#nextBtn').textContent = 'Next question';
     showScreen('screen-quiz');
     renderQuestion();
   }
@@ -301,6 +331,18 @@
     saveDB(d); paintHeader();
   }
 
+  /* Missed questions this page can re-drill: maths items that exist in the bank. */
+  function drillableMissed() {
+    return db().missed.filter(m => m.s === SUBJECT && BANK.some(b => b.q === m.q));
+  }
+  function clearMistake(item) {
+    const d = db();
+    const before = d.missed.length;
+    d.missed = d.missed.filter(m => m.q !== item.q);
+    if (d.missed.length !== before) saveDB(d);
+    paintHeader();
+  }
+
   function showToast(msg) {
     const t = $('#toast');
     t.textContent = msg;
@@ -324,6 +366,17 @@
     sol.hidden = false;
     $('#nextBtn').hidden = false;
     $('#skipBtn').hidden = true;
+    if (state.review) {
+      if (correct) {
+        state.score += 1;
+        clearMistake(item);
+        showToast('Cleared from your mistakes');
+      } else {
+        recordMistake(item);
+        showToast('Stays in your mistakes for another go');
+      }
+      return;
+    }
     perTopic().total += 1;
     if (correct) {
       state.score += 1;
@@ -339,6 +392,7 @@
     if (state.answered || state.ended) return;
     const item = state.qs[state.qi];
     state.answered = true;
+    if (state.review) { recordMistake(item); nextQuestion(); return; }
     perTopic().total += 1;
     recordMistake(item);
     bumpMastery(false);
@@ -351,9 +405,13 @@
     state.ended = true;
     $('#qBar').style.width = '100%';
     $('#qCount').textContent = 'Done · ' + state.score + ' of ' + state.qs.length + ' correct';
-    $('#qText').textContent = state.score === state.qs.length
-      ? 'Clean sweep. This topic ring just moved.'
-      : 'Session complete — missed ones joined your mistake queue.';
+    $('#qText').textContent = state.review
+      ? (state.score === state.qs.length
+        ? 'Clean sweep — every one cleared from your mistakes.'
+        : 'Review complete — ' + state.score + ' cleared, the rest stayed in the queue.')
+      : (state.score === state.qs.length
+        ? 'Clean sweep. This topic ring just moved.'
+        : 'Session complete — missed ones joined your mistake queue.');
     $('#qOpts').innerHTML = '';
     $('#qSolution').hidden = true;
     $('#skipRow').hidden = true;
@@ -365,12 +423,18 @@
   function finishSession() {
     if (written) return;
     written = true;
-    if (!Object.keys(session.perTopic).length) return;
+    const review = state.review;
+    const touched = Object.keys(session.perTopic).length > 0 ||
+      (review && (state.qi > 0 || state.answered));
+    if (!touched) return;
     const d = db(); const mins = Math.max(1, Math.round((Date.now() - session.start) / 60000));
     Object.keys(session.perTopic).forEach(topic => {
       const c = session.perTopic[topic];
       d.quiz_results.unshift({ id: uid('qr'), date: isoDate(new Date()), subject: SUBJECT, topic: topic, correct: c.correct, total: c.total, mode: 'practice' });
     });
+    if (review && state.qs.length) {
+      d.quiz_results.unshift({ id: uid('qr'), date: isoDate(new Date()), subject: SUBJECT, topic: 'Mistake review', correct: state.score, total: state.qs.length, mode: 'review' });
+    }
     d.quiz_results = d.quiz_results.slice(0, 60);
     d.logs.push({ id: uid('log'), date: isoDate(new Date()), subject: SUBJECT, minutes: mins, sessionId: null, source: 'dojo' });
     saveDB(d); paintHeader();
@@ -583,10 +647,15 @@
     const unanswered = !state.answered;
     closeExplain();
     if (unanswered) {
-      perTopic().total += 1;
-      recordMistake(state.qs[state.qi]);
-      bumpMastery(false);
-      showToast('Added to your mistake queue');
+      if (state.review) {
+        recordMistake(state.qs[state.qi]);
+        showToast('Stays in your mistakes for another go');
+      } else {
+        perTopic().total += 1;
+        recordMistake(state.qs[state.qi]);
+        bumpMastery(false);
+        showToast('Added to your mistake queue');
+      }
     }
     setTimeout(nextQuestion, 200);
   }
@@ -623,6 +692,7 @@
   });
   $('#nextBtn').addEventListener('click', () => state.ended ? backToMap() : nextQuestion());
   $('#skipBtn').addEventListener('click', skipQuestion);
+  $('#mistakesChip').addEventListener('click', startMistakeReview);
   $('#calcToggle').addEventListener('click', () => {
     const panel = $('#calcPanel');
     panel.classList.toggle('open');
