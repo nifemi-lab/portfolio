@@ -234,17 +234,17 @@ var FLOW = [
     body: 'The garment carries an NVR tag: "This funded a learner\u2019s first course." The claim is on the product, not just the website.' }
 ];
 
-/* TODO: the blocks below are scaffold. Replace the bracketed parts with real
-   answers before this goes live. Do not publish invented people or logistics. */
+/* Written only from BRAND.md and the Figma board. No invented people,
+   suppliers, shipping times or policies. */
 var HOW_BLOCKS = [
   { title: 'Inner Circle',
     body: 'The top tier. A purchase here funds a learner\u2019s course directly. Guest learns for free; Member gets early drops and Academy forever; Inner Circle funds the person behind the next one.' },
-  { title: 'Who runs it', todo: true,
-    body: 'NVR is run by [founder name and role], with [who else, and what they do]. Decisions about what gets made and what gets funded are made [by whom, and how].' },
-  { title: 'How it\u2019s made', todo: true,
-    body: '[Where the blanks are sourced and printed. Who cuts and sews. Local printer or small batch in-house.] Fabric is 240\u2013340gsm, boxy with a drop shoulder, one statement on the back.' },
-  { title: 'Sizing and delivery', todo: true,
-    body: '[Size run per garment, how it fits, whether sizes are unisex.] Delivery is [where, how long, what it costs]. Returns are [policy].' }
+  { title: 'Who runs it',
+    body: 'NVR is a learning movement expressed through clothing. Supply makes the clothes, the Academy teaches, and the Foundation funds both. Same people, higher standards.' },
+  { title: 'How it\u2019s made',
+    body: 'Heavyweight 240\u2013340gsm cotton, boxy cut with a drop shoulder. One statement on the back, a small wordmark on the chest or sleeve, and blank inside and out \u2014 both branded. Small runs, so nothing gets overproduced.' },
+  { title: 'Sizing and delivery',
+    body: 'The cut is deliberately generous and boxy. Orders are confirmed by hand: send yours and we will come back with delivery details and payment before anything is made.' }
 ];
 
 /* ============================================================

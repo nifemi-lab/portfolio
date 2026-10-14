@@ -456,13 +456,6 @@ p { margin: 0 0 1rem; max-width: 60ch; }
 .flow-step h3 { font-size: 1.0625rem; }
 .flow-step p { margin: 0; color: rgb(245 245 238 / .6); font-size: .9375rem; }
 
-/* Scaffold blocks are visibly unfinished so they cannot ship unnoticed. */
-.mission-block.is-todo {
-  border-top-style: dashed;
-  border-top-color: var(--volt);
-}
-.mission-block.is-todo p { color: var(--volt); }
-
 .mission { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--gap); }
 
 .mission-block { border-top: 2px solid var(--bone); padding-top: 1.25rem; }

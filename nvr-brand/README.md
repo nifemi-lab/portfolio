@@ -157,9 +157,12 @@ fails AA; 85% clears it at 4.92:1.
   garments that don't exist would break the brand's own third rule. Replace
   `.tile` with real imagery when there is real imagery.
 - **`CONTACT` is live** (WhatsApp + email). Supabase logging is still off.
-- **Three blocks in "How it works" are scaffold** — *Who runs it*, *How it's
-  made*, *Sizing and delivery*. They render with a dashed volt border as a
-  visible reminder. Real people, production and logistics were deliberately not
-  invented; fill them in `HOW_BLOCKS` in `js/catalog.js`.
+- **People and logistics are described only where they're sourced.** The
+  *How it works* copy comes from `BRAND.md` and the Figma board — garment
+  weights, the boxy drop-shoulder cut, the division structure, the taglines. No
+  names, suppliers, shipping times or return policy were invented. Two spots
+  would be stronger with real detail: adding your name to *Who runs it*, and
+  actual delivery areas and turnaround in *Sizing and delivery*. Both live in
+  `HOW_BLOCKS` in `js/catalog.js`.
 - **Catalogue and prices are placeholders.** VOID/04 at $128 is the only piece
   carried over from the Figma prototype.

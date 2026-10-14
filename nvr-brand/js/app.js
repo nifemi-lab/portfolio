@@ -167,7 +167,7 @@
     var blocks = $('#howBlocks');
     if (blocks) {
       blocks.innerHTML = HOW_BLOCKS.map(function (b) {
-        return '<div class="mission-block' + (b.todo ? ' is-todo' : '') + '" data-reveal>' +
+        return '<div class="mission-block" data-reveal>' +
           '<h3>' + escapeHtml(b.title) + '</h3>' +
           '<p>' + escapeHtml(b.body) + '</p>' +
         '</div>';
