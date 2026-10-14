@@ -11,28 +11,14 @@ function renderPills() {
   if (s) s.textContent = streak;
 }
 
-function addXP(n) { store.set('xp', store.get('xp', 0) + n); renderPills(); trackActivity(); }
 function trackActivity() {
   const days = store.get('activity', {});
   const key = new Date().toDateString();
   days[key] = (days[key] || 0) + 1;
   store.set('activity', days);
 }
-function renderHeatmap() {
-  const el = document.getElementById('heatmap');
-  if (!el) return;
-  const days = store.get('activity', {});
-  const today = new Date();
-  let html = '';
-  for (let i = 27; i >= 0; i--) {
-    const d = new Date(today - i * 864e5);
-    const n = days[d.toDateString()] || 0;
-    const shade = n === 0 ? 'var(--surface2)' : n < 2 ? '#7dd3fc55' : n < 4 ? '#7dd3fc99' : '#7dd3fc';
-    html += `<span title="${d.toDateString()}: ${n} actions" style="width:16px;height:16px;border-radius:4px;background:${shade}"></span>`;
-  }
-  el.innerHTML = html;
-}
 
+function addXP(n) { store.set('xp', store.get('xp', 0) + n); renderPills(); trackActivity(); if (window.Auth) Auth.push(); }
 function touchStreak() {
   const today = new Date().toDateString();
   const last = store.get('lastDay', null);
@@ -44,6 +30,24 @@ function touchStreak() {
 }
 
 // Spaced repetition: saved when a quiz is answered correctly
+function scheduleReview(s) {
+  const srs = store.get('srs', []);
+  let entry = srs.find(e => e.question === s.question);
+  if (!entry) { entry = { question: s.question, options: s.options, answer: s.answer, explain: s.explain, hint: s.hint, level: 0 }; srs.push(entry); }
+  entry.level = Math.min(entry.level + 1, 4);
+  entry.due = Date.now() + [0, 864e5, 3 * 864e5, 7 * 864e5, 14 * 864e5][entry.level];
+  store.set('srs', srs);
+}
+
+function markDone(lessonId) {
+  const done = store.get('done', []);
+  if (!done.includes(lessonId)) done.push(lessonId);
+  store.set('done', done);
+  if (window.Auth) Auth.push();
+}
+
+function isDone(lessonId) { return store.get('done', []).includes(lessonId); }
+
 function renderBadges() {
   const el = document.getElementById('badges');
   if (!el) return;
@@ -62,23 +66,6 @@ function renderBadges() {
     </div>`).join('');
 }
 
-function scheduleReview(s) {
-  const srs = store.get('srs', []);
-  let entry = srs.find(e => e.question === s.question);
-  if (!entry) { entry = { question: s.question, options: s.options, answer: s.answer, explain: s.explain, hint: s.hint, level: 0 }; srs.push(entry); }
-  entry.level = Math.min(entry.level + 1, 4);
-  entry.due = Date.now() + [0, 864e5, 3 * 864e5, 7 * 864e5, 14 * 864e5][entry.level];
-  store.set('srs', srs);
-}
-
-function markDone(lessonId) {
-  const done = store.get('done', []);
-  if (!done.includes(lessonId)) done.push(lessonId);
-  store.set('done', done);
-}
-
-function isDone(lessonId) { return store.get('done', []).includes(lessonId); }
-
 function renderProgress() {
   const el = document.getElementById('progressSection');
   if (!el) return;
@@ -93,6 +80,21 @@ function renderProgress() {
       <p>${finished}/${total} lessons · ${pct}% complete</p></a>`;
   }).join('') + `<div class="card"><h3>🔁 Review due</h3><p>${dueCount} concept(s) waiting</p></div>` +
     `<div class="card"><h3>⏱️ Est. focus time</h3><p>${Math.round(store.get('xp', 0) * 0.8)} min</p></div>`;
+}
+
+function renderHeatmap() {
+  const el = document.getElementById('heatmap');
+  if (!el) return;
+  const days = store.get('activity', {});
+  const today = new Date();
+  let html = '';
+  for (let i = 27; i >= 0; i--) {
+    const d = new Date(today - i * 864e5);
+    const n = days[d.toDateString()] || 0;
+    const shade = n === 0 ? 'var(--surface2)' : n < 2 ? '#7dd3fc55' : n < 4 ? '#7dd3fc99' : '#7dd3fc';
+    html += `<span title="${d.toDateString()}: ${n} actions" style="width:16px;height:16px;border-radius:4px;background:${shade}"></span>`;
+  }
+  el.innerHTML = html;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -113,6 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const cur = store.get('theme', 'dark');
     applyTheme(THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length]);
   };
+
+  // Auth button (cloud login if keys set)
+  const authBtn = document.getElementById('authBtn');
+  if (authBtn) Auth.renderButton();
 
   // Random lesson button
   const rb = document.getElementById('randomBtn');
@@ -156,6 +162,33 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  // Backup: export / import
+  const exportBtn = document.getElementById('exportBtn');
+  if (exportBtn) exportBtn.onclick = () => {
+    const data = { xp: store.get('xp',0), streak: store.get('streak',0), done: store.get('done',[]), srs: store.get('srs',[]), activity: store.get('activity',{}) };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'nvr-coding-backup.json';
+    a.click();
+  };
+  const importBtn = document.getElementById('importBtn');
+  if (importBtn) importBtn.onclick = () => document.getElementById('importFile').click();
+  const importFile = document.getElementById('importFile');
+  if (importFile) importFile.onchange = (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const d = JSON.parse(r.result);
+        ['xp','streak','done','srs','activity'].forEach(k => { if (d[k] !== undefined) store.set(k, d[k]); });
+        renderPills(); renderBadges(); renderProgress(); renderHeatmap();
+        alert('✅ Backup imported!');
+      } catch { alert('⚠️ Not a valid backup file.'); }
+    };
+    r.readAsText(f);
+  };
 
   // Share + print buttons
   const shareBtn = document.getElementById('shareBtn');

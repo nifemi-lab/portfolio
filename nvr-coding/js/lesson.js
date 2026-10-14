@@ -12,6 +12,14 @@ async function init() {
   }
   if (!lesson) { $('lessonArea').innerHTML = '<h2>Lesson not found 😅</h2><a class="btn ghost" href="index.html">Home</a>'; return; }
   document.title = lesson.title + ' — NVR Coding';
+  // Breadcrumbs: Home > Track > Lesson
+  const track = data.tracks.find(t => t.lessons.some(l => l.id === lesson.id));
+  $('lessonCrumbs').innerHTML = `
+    <a href="index.html">Home</a>
+    <span class="sep">›</span>
+    <a href="index.html#tracks">${track ? track.icon + ' ' + track.title : 'Tracks'}</a>
+    <span class="sep">›</span>
+    <span class="current">${lesson.title}</span>`;
   renderStep();
   $('prevBtn').onclick = () => { if (stepIdx > 0) { stepIdx--; quizSolved = true; renderStep(); } };
   $('nextBtn').onclick = onNext;

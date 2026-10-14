@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYR3NS — Logo Draft v2 · Sea Edition</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0b0b12;
+    color: #f5f5fa;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 64px;
+  }
+  h1 {
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: #8a8a9a;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    font-weight: 600;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 320px));
+    gap: 32px;
+    justify-content: center;
+  }
+  .card {
+    background: #12121c;
+    border: 1px solid #23233a;
+    border-radius: 24px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.45);
+  }
+  .card span { font-size: 11px; letter-spacing: 3px; color: #8a8a9a; text-transform: uppercase; }
+  svg { display: block; filter: drop-shadow(0 0 18px rgba(56,189,248,.22)); }
+</style>
+</head>
+<body>
+  <h1>SYR3NS · v2 — Sea Edition</h1>
+  <div class="board">
+
+    <!-- CONCEPT 1: SEASHELL + PEARL -->
+    <div class="card">
+      <svg width="280" height="280" viewBox="0 0 280 280" role="img" aria-label="SYR3NS seashell logo">
+        <defs>
+          <linearGradient id="s1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#99f6e4"/>
+            <stop offset=".5" stop-color="#22d3ee"/>
+            <stop offset="1" stop-color="#818cf8"/>
+          </linearGradient>
+          <radialGradient id="pearl1" cx=".35" cy=".3" r=".9">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset=".55" stop-color="#fbcfe8"/>
+            <stop offset="1" stop-color="#ec4899"/>
+          </radialGradient>
+        </defs>
+        <circle cx="140" cy="112" r="62" fill="none" stroke="url(#s1)" stroke-width="4"/>
+        <!-- scallop shell -->
+        <path d="M 100 138 A 40 40 0 0 1 180 138 C 165 146, 115 146, 100 138 Z"
+              fill="#ffffff" fill-opacity=".06" stroke="url(#s1)" stroke-width="4" stroke-linejoin="round"/>
+        <g stroke="url(#s1)" stroke-width="3" stroke-linecap="round">
+          <path d="M 140 140 L 105.4 118"/>
+          <path d="M 140 140 L 120 103.4"/>
+          <path d="M 140 140 L 140 98"/>
+          <path d="M 140 140 L 160 103.4"/>
+          <path d="M 140 140 L 174.6 118"/>
+        </g>
+        <!-- dangling pearl -->
+        <circle cx="140" cy="158" r="5.5" fill="url(#pearl1)"/>
+        <circle cx="138.2" cy="156.2" r="1.5" fill="#ffffff" opacity=".9"/>
+        <!-- bubbles -->
+        <g fill="#f472b6">
+          <circle cx="104" cy="86" r="2.4" opacity=".8"/>
+          <circle cx="96" cy="102" r="1.6" opacity=".55"/>
+          <circle cx="176" cy="84" r="2" opacity=".7"/>
+          <circle cx="184" cy="100" r="1.4" opacity=".5"/>
+        </g>
+        <text x="140" y="228" text-anchor="middle"
+              font-family="'Segoe UI', Arial, sans-serif"
+              font-size="44" font-weight="800" letter-spacing="6"
+              fill="url(#s1)">SYR<tspan fill="#f472b6">3</tspan>NS</text>
+      </svg>
+      <span>Seashell + pearl</span>
+    </div>
+
+    <!-- CONCEPT 2: S-WAVE -->
+    <div class="card">
+      <svg width="280" height="280" viewBox="0 0 280 280" role="img" aria-label="SYR3NS S-wave logo">
+        <defs>
+          <linearGradient id="s2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#22d3ee"/>
+            <stop offset=".5" stop-color="#3b82f6"/>
+            <stop offset="1" stop-color="#a855f7"/>
+          </linearGradient>
+        </defs>
+        <circle cx="140" cy="112" r="62" fill="none" stroke="url(#s2)" stroke-width="4"/>
+        <!-- the "S" as an ocean wave -->
+        <path d="M 158 66 C 138 58, 116 68, 116 90 C 116 112, 164 108, 164 130 C 164 150, 140 160, 118 152"
+              fill="none" stroke="url(#s2)" stroke-width="13" stroke-linecap="round"/>
+        <g fill="#f472b6">
+          <circle cx="176" cy="70" r="3.4" opacity=".9"/>
+          <circle cx="186" cy="90" r="2.2" opacity=".6"/>
+          <circle cx="100" cy="140" r="2.8" opacity=".8"/>
+          <circle cx="92" cy="120" r="1.8" opacity=".55"/>
+        </g>
+        <text x="140" y="228" text-anchor="middle"
+              font-family="'Segoe UI', Arial, sans-serif"
+              font-size="44" font-weight="800" letter-spacing="6"
+              fill="url(#s2)">SYR<tspan fill="#f472b6">3</tspan>NS</text>
+      </svg>
+      <span>S-wave</span>
+    </div>
+
+    <!-- CONCEPT 3: MERMAID TAIL -->
+    <div class="card">
+      <svg width="280" height="280" viewBox="0 0 280 280" role="img" aria-label="SYR3NS mermaid tail logo">
+        <defs>
+          <linearGradient id="s3" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2dd4bf"/>
+            <stop offset=".5" stop-color="#0ea5e9"/>
+            <stop offset="1" stop-color="#8b5cf6"/>
+          </linearGradient>
+        </defs>
+        <circle cx="140" cy="112" r="62" fill="none" stroke="url(#s3)" stroke-width="4"/>
+        <!-- mermaid tail -->
+        <path d="M 128 64
+                 C 154 66, 168 86, 161 110
+                 C 156 128, 146 140, 140 152
+                 C 152 156, 166 154, 176 144
+                 C 182 137, 180 126, 172 124
+                 C 164 122, 156 128, 151 136
+                 C 147 142, 144 147, 140 152
+                 C 136 147, 133 142, 129 136
+                 C 124 128, 116 122, 108 124
+                 C 100 126, 98 137, 104 144
+                 C 114 154, 128 156, 140 152
+                 C 134 140, 124 128, 119 110
+                 C 112 86, 122 66, 128 64 Z"
+              fill="url(#s3)"/>
+        <g fill="#f472b6">
+          <circle cx="180" cy="158" r="2.6" opacity=".8"/>
+          <circle cx="98" cy="156" r="2.2" opacity=".65"/>
+          <circle cx="192" cy="138" r="1.7" opacity=".5"/>
+        </g>
+        <text x="140" y="228" text-anchor="middle"
+              font-family="'Segoe UI', Arial, sans-serif"
+              font-size="44" font-weight="800" letter-spacing="6"
+              fill="url(#s3)">SYR<tspan fill="#f472b6">3</tspan>NS</text>
+      </svg>
+      <span>Mermaid tail</span>
+    </div>
+
+    <!-- APP ICON -->
+    <div class="card">
+      <svg width="200" height="200" viewBox="0 0 200 200" role="img" aria-label="SYR3NS app icon">
+        <defs>
+          <linearGradient id="s4" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#99f6e4"/>
+            <stop offset=".5" stop-color="#22d3ee"/>
+            <stop offset="1" stop-color="#818cf8"/>
+          </linearGradient>
+          <radialGradient id="pearl4" cx=".35" cy=".3" r=".9">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset=".55" stop-color="#fbcfe8"/>
+            <stop offset="1" stop-color="#ec4899"/>
+          </radialGradient>
+        </defs>
+        <rect x="8" y="8" width="184" height="184" rx="48"
+              fill="#12121c" stroke="url(#s4)" stroke-width="5"/>
+        <path d="M 68 106 A 32 32 0 0 1 132 106 C 118 113, 82 113, 68 106 Z"
+              fill="#ffffff" fill-opacity=".06" stroke="url(#s4)" stroke-width="4" stroke-linejoin="round"/>
+        <g stroke="url(#s4)" stroke-width="3" stroke-linecap="round">
+          <path d="M 100 108 L 72.3 90"/>
+          <path d="M 100 108 L 84 78.3"/>
+          <path d="M 100 108 L 100 74"/>
+          <path d="M 100 108 L 116 78.3"/>
+          <path d="M 100 108 L 127.7 90"/>
+        </g>
+        <circle cx="100" cy="122" r="4.5" fill="url(#pearl4)"/>
+        <circle cx="98.5" cy="120.5" r="1.2" fill="#ffffff" opacity=".9"/>
+      </svg>
+      <span>App icon</span>
+    </div>
+
+  </div>
+</body>
+</html>

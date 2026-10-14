@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SYR3NS — Exports</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0b0b12; }
+  body { display: flex; flex-direction: column; align-items: flex-start; gap: 32px; padding: 32px; }
+  .export { display: inline-block; line-height: 0; }
+</style>
+</head>
+<body>
+
+<!-- shared defs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gTail" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2dd4bf"/>
+      <stop offset=".5" stop-color="#0ea5e9"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <pattern id="scales" width="21" height="17" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="1.4">
+        <circle cx="5.25" cy="4.25" r="6.5"/>
+        <circle cx="15.75" cy="4.25" r="6.5"/>
+        <circle cx="0" cy="12.75" r="6.5"/>
+        <circle cx="10.5" cy="12.75" r="6.5"/>
+        <circle cx="21" cy="12.75" r="6.5"/>
+      </g>
+    </pattern>
+    <path id="tailShape" d="M 128 64
+             C 154 66, 168 86, 161 110
+             C 156 128, 146 140, 140 152
+             C 152 156, 166 154, 176 144
+             C 182 137, 180 126, 172 124
+             C 164 122, 156 128, 151 136
+             C 147 142, 144 147, 140 152
+             C 136 147, 133 142, 129 136
+             C 124 128, 116 122, 108 124
+             C 100 126, 98 137, 104 144
+             C 114 154, 128 156, 140 152
+             C 134 140, 124 128, 119 110
+             C 112 86, 122 66, 128 64 Z"/>
+    <path id="tailBody" d="M 128 64
+             C 154 66, 168 86, 161 110
+             C 156 128, 146 140, 140 152
+             C 134 140, 124 128, 119 110
+             C 112 86, 122 66, 128 64 Z"/>
+  </defs>
+</svg>
+
+<!-- LOGO MARK 1024 -->
+<div class="export" role="img" aria-label="SYR3NS logo mark 1024 pixels" id="mark1024">
+  <svg width="682.67" height="682.67" viewBox="0 0 280 280">
+    <rect width="280" height="280" fill="#0b0b12"/>
+    <circle cx="140" cy="112" r="62" fill="none" stroke="url(#gTail)" stroke-width="4"/>
+    <g transform="rotate(-8 140 112)">
+      <use href="#tailShape" fill="url(#gTail)" stroke="#155e75" stroke-opacity=".4" stroke-width="1.5"/>
+      <use href="#tailBody" fill="url(#scales)"/>
+      <path d="M 158 74 C 172 68, 186 74, 192 88 C 182 94, 168 92, 158 86 Z"
+            fill="url(#gTail)" stroke="#155e75" stroke-opacity=".35" stroke-width="1.2"/>
+      <path d="M 163 80 C 171 80, 179 82, 185 88"
+            fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>
+      <g fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round">
+        <path d="M 148 146 C 158 140, 166 134, 172 126"/>
+        <path d="M 150 150 C 160 148, 168 146, 174 140"/>
+        <path d="M 132 146 C 122 140, 114 134, 108 126"/>
+        <path d="M 130 150 C 120 148, 112 146, 106 140"/>
+      </g>
+      <path d="M 127 70 C 121 86, 121 100, 126 116"
+            fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g fill="#f472b6">
+      <circle cx="180" cy="158" r="2.6" opacity=".8"/>
+      <circle cx="98" cy="156" r="2.2" opacity=".65"/>
+      <circle cx="192" cy="138" r="1.7" opacity=".5"/>
+    </g>
+  </svg>
+</div>
+
+<!-- LOGO MARK 512 -->
+<div class="export" role="img" aria-label="SYR3NS logo mark 512 pixels" id="mark512">
+  <svg width="341.33" height="341.33" viewBox="0 0 280 280">
+    <rect width="280" height="280" fill="#0b0b12"/>
+    <circle cx="140" cy="112" r="62" fill="none" stroke="url(#gTail)" stroke-width="4"/>
+    <g transform="rotate(-8 140 112)">
+      <use href="#tailShape" fill="url(#gTail)" stroke="#155e75" stroke-opacity=".4" stroke-width="1.5"/>
+      <use href="#tailBody" fill="url(#scales)"/>
+      <path d="M 158 74 C 172 68, 186 74, 192 88 C 182 94, 168 92, 158 86 Z"
+            fill="url(#gTail)" stroke="#155e75" stroke-opacity=".35" stroke-width="1.2"/>
+      <path d="M 163 80 C 171 80, 179 82, 185 88"
+            fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>
+      <g fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round">
+        <path d="M 148 146 C 158 140, 166 134, 172 126"/>
+        <path d="M 150 150 C 160 148, 168 146, 174 140"/>
+        <path d="M 132 146 C 122 140, 114 134, 108 126"/>
+        <path d="M 130 150 C 120 148, 112 146, 106 140"/>
+      </g>
+      <path d="M 127 70 C 121 86, 121 100, 126 116"
+            fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g fill="#f472b6">
+      <circle cx="180" cy="158" r="2.6" opacity=".8"/>
+      <circle cx="98" cy="156" r="2.2" opacity=".65"/>
+      <circle cx="192" cy="138" r="1.7" opacity=".5"/>
+    </g>
+  </svg>
+</div>
+
+<!-- FULL LOCKUP 1080 -->
+<div class="export" role="img" aria-label="SYR3NS full logo lockup 1080 pixels" id="lockup1080">
+  <svg width="720" height="720" viewBox="0 0 280 280">
+    <rect width="280" height="280" fill="#0b0b12"/>
+    <circle cx="140" cy="112" r="62" fill="none" stroke="url(#gTail)" stroke-width="4"/>
+    <g transform="rotate(-8 140 112)">
+      <use href="#tailShape" fill="url(#gTail)" stroke="#155e75" stroke-opacity=".4" stroke-width="1.5"/>
+      <use href="#tailBody" fill="url(#scales)"/>
+      <path d="M 158 74 C 172 68, 186 74, 192 88 C 182 94, 168 92, 158 86 Z"
+            fill="url(#gTail)" stroke="#155e75" stroke-opacity=".35" stroke-width="1.2"/>
+      <path d="M 163 80 C 171 80, 179 82, 185 88"
+            fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>
+      <g fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round">
+        <path d="M 148 146 C 158 140, 166 134, 172 126"/>
+        <path d="M 150 150 C 160 148, 168 146, 174 140"/>
+        <path d="M 132 146 C 122 140, 114 134, 108 126"/>
+        <path d="M 130 150 C 120 148, 112 146, 106 140"/>
+      </g>
+      <path d="M 127 70 C 121 86, 121 100, 126 116"
+            fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g fill="#f472b6">
+      <circle cx="180" cy="158" r="2.6" opacity=".8"/>
+      <circle cx="98" cy="156" r="2.2" opacity=".65"/>
+      <circle cx="192" cy="138" r="1.7" opacity=".5"/>
+    </g>
+    <text x="140" y="228" text-anchor="middle"
+          font-family="'Segoe UI', Arial, sans-serif"
+          font-size="44" font-weight="800" letter-spacing="6"
+          fill="url(#gTail)">SYR<tspan fill="#f472b6">3</tspan>NS</text>
+  </svg>
+</div>
+
+<!-- APP ICON 512 -->
+<div class="export" role="img" aria-label="SYR3NS app icon 512 pixels" id="icon512">
+  <svg width="341.33" height="341.33" viewBox="0 0 200 200">
+    <rect width="200" height="200" fill="#0b0b12"/>
+    <rect x="8" y="8" width="184" height="184" rx="48" fill="#12121c" stroke="url(#gTail)" stroke-width="5"/>
+    <g transform="translate(100 100) scale(1.1) translate(-142 -110) rotate(-8 140 112)">
+      <use href="#tailShape" fill="url(#gTail)" stroke="#155e75" stroke-opacity=".4" stroke-width="1.5"/>
+      <use href="#tailBody" fill="url(#scales)"/>
+      <path d="M 158 74 C 172 68, 186 74, 192 88 C 182 94, 168 92, 158 86 Z" fill="url(#gTail)"/>
+      <g fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round">
+        <path d="M 148 146 C 158 140, 166 134, 172 126"/>
+        <path d="M 150 150 C 160 148, 168 146, 174 140"/>
+        <path d="M 132 146 C 122 140, 114 134, 108 126"/>
+        <path d="M 130 150 C 120 148, 112 146, 106 140"/>
+      </g>
+      <path d="M 127 70 C 121 86, 121 100, 126 116"
+            fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </svg>
+</div>
+
+<!-- APP ICON 500 (profile pic) -->
+<div class="export" role="img" aria-label="SYR3NS app icon 500 pixels" id="icon500">
+  <svg width="333.33" height="333.33" viewBox="0 0 200 200">
+    <rect width="200" height="200" fill="#0b0b12"/>
+    <rect x="8" y="8" width="184" height="184" rx="48" fill="#12121c" stroke="url(#gTail)" stroke-width="5"/>
+    <g transform="translate(100 100) scale(1.1) translate(-142 -110) rotate(-8 140 112)">
+      <use href="#tailShape" fill="url(#gTail)" stroke="#155e75" stroke-opacity=".4" stroke-width="1.5"/>
+      <use href="#tailBody" fill="url(#scales)"/>
+      <path d="M 158 74 C 172 68, 186 74, 192 88 C 182 94, 168 92, 158 86 Z" fill="url(#gTail)"/>
+      <g fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round">
+        <path d="M 148 146 C 158 140, 166 134, 172 126"/>
+        <path d="M 150 150 C 160 148, 168 146, 174 140"/>
+        <path d="M 132 146 C 122 140, 114 134, 108 126"/>
+        <path d="M 130 150 C 120 148, 112 146, 106 140"/>
+      </g>
+      <path d="M 127 70 C 121 86, 121 100, 126 116"
+            fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </svg>
+</div>
+
+<!-- APP ICON 192 -->
+<div class="export" role="img" aria-label="SYR3NS app icon 192 pixels" id="icon192">
+  <svg width="128" height="128" viewBox="0 0 200 200">
+    <rect width="200" height="200" fill="#0b0b12"/>
+    <rect x="8" y="8" width="184" height="184" rx="48" fill="#12121c" stroke="url(#gTail)" stroke-width="5"/>
+    <g transform="translate(100 100) scale(1.1) translate(-142 -110) rotate(-8 140 112)">
+      <use href="#tailShape" fill="url(#gTail)" stroke="#155e75" stroke-opacity=".4" stroke-width="1.5"/>
+      <use href="#tailBody" fill="url(#scales)"/>
+      <path d="M 158 74 C 172 68, 186 74, 192 88 C 182 94, 168 92, 158 86 Z" fill="url(#gTail)"/>
+      <g fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round">
+        <path d="M 148 146 C 158 140, 166 134, 172 126"/>
+        <path d="M 150 150 C 160 148, 168 146, 174 140"/>
+        <path d="M 132 146 C 122 140, 114 134, 108 126"/>
+        <path d="M 130 150 C 120 148, 112 146, 106 140"/>
+      </g>
+      <path d="M 127 70 C 121 86, 121 100, 126 116"
+            fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </svg>
+</div>
+
+</body>
+</html>

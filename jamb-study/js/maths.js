@@ -59,6 +59,14 @@
   const LESSONS = (window.LESSONS || {})[SUBJECT] || {};
   const NOTES = (window.LESSON_NOTES || {})[SUBJECT] || {};
   function questionsFor(topic) { return BANK.filter(q => Q_TOPIC[q.q] === topic); }
+  function shuffled(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
 
   const $ = sel => document.querySelector(sel);
   function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -98,7 +106,7 @@
   }
 
   /* ---- quiz state (drill on screen 3) ---- */
-  const state = { topic: null, review: false, qs: [], qi: 0, score: 0, answered: false, ended: false };
+  const state = { topic: null, review: false, mixed: false, qs: [], qi: 0, score: 0, answered: false, ended: false };
   let session = null, written = false;
   const runStreak = {};            // consecutive corrects per topic, this session
 
@@ -212,6 +220,11 @@
           '<div class="stat-line"><span>Questions drilled</span><b>' + s.seen + '</b></div>' +
           '<div class="stat-line"><span>Best streak</span><b>' + s.best + '</b></div>' +
         '</div>' +
+        (qs.length > 10
+          ? '<label class="count-pick">Questions <select id="topicCount">' +
+            [10, 20, 30].filter(n => n < qs.length).map(n => '<option value="' + n + '">' + n + '</option>').join('') +
+            '<option value="all" selected>All (' + qs.length + ')</option></select></label>'
+          : '') +
         '<button class="btn btn-primary block" type="button" id="practiceBtn"' + (qs.length ? '' : ' disabled') + '>Practice this topic</button>' +
       '</div>';
 
@@ -235,15 +248,21 @@
 
     $('#backToMap').addEventListener('click', () => showScreen('screen-map'));
     const pb = $('#practiceBtn');
-    if (pb && qs.length) pb.addEventListener('click', () => { if (window.DOJO.startQuiz) window.DOJO.startQuiz(topic); });
+    if (pb && qs.length) pb.addEventListener('click', () => {
+      const sel = $('#topicCount');
+      const count = sel ? (sel.value === 'all' ? qs.length : +sel.value) : qs.length;
+      startQuiz(topic, count);
+    });
     showScreen('screen-topic');
   }
 
   /* ---- screen 3: the drill ---- */
-  function startQuiz(topic) {
+  function startQuiz(topic, count) {
+    const pool = shuffled(questionsFor(topic));
     state.topic = topic;
     state.review = false;
-    state.qs = questionsFor(topic);
+    state.mixed = false;
+    state.qs = count && count < pool.length ? pool.slice(0, count) : pool;
     state.qi = 0;
     state.score = 0;
     state.answered = false;
@@ -252,6 +271,26 @@
     written = false;
     Object.keys(runStreak).forEach(k => delete runStreak[k]);
     $('#quizEyebrow').textContent = 'Practice · ' + topic;
+    $('#nextBtn').textContent = 'Next question';
+    showScreen('screen-quiz');
+    renderQuestion();
+  }
+
+  /* Mixed practice: shuffled questions from every topic. Each answer still
+     feeds the mastery ring of the topic the question came from. */
+  function startMixed(count) {
+    const pool = shuffled(BANK);
+    state.topic = null;
+    state.review = false;
+    state.mixed = true;
+    state.qs = count && count < pool.length ? pool.slice(0, count) : pool;
+    state.qi = 0;
+    state.score = 0;
+    state.answered = false;
+    state.ended = false;
+    session = { start: Date.now(), perTopic: {} };
+    written = false;
+    $('#quizEyebrow').textContent = 'Mixed practice · ' + state.qs.length + (state.qs.length === 1 ? ' question' : ' questions');
     $('#nextBtn').textContent = 'Next question';
     showScreen('screen-quiz');
     renderQuestion();
@@ -280,6 +319,7 @@
 
   function renderQuestion() {
     const item = state.qs[state.qi];
+    if (state.mixed) state.topic = Q_TOPIC[item.q] || state.topic;
     state.answered = false;
     state.ended = false;
     $('#qCount').textContent = 'Question ' + (state.qi + 1) + ' of ' + state.qs.length;
@@ -409,9 +449,13 @@
       ? (state.score === state.qs.length
         ? 'Clean sweep — every one cleared from your mistakes.'
         : 'Review complete — ' + state.score + ' cleared, the rest stayed in the queue.')
-      : (state.score === state.qs.length
-        ? 'Clean sweep. This topic ring just moved.'
-        : 'Session complete — missed ones joined your mistake queue.');
+      : state.mixed
+        ? (state.score === state.qs.length
+          ? 'Clean sweep. Your mastery rings just moved.'
+          : 'Session complete — missed ones joined your mistake queue.')
+        : (state.score === state.qs.length
+          ? 'Clean sweep. This topic ring just moved.'
+          : 'Session complete — missed ones joined your mistake queue.');
     $('#qOpts').innerHTML = '';
     $('#qSolution').hidden = true;
     $('#skipRow').hidden = true;
@@ -693,6 +737,20 @@
   $('#nextBtn').addEventListener('click', () => state.ended ? backToMap() : nextQuestion());
   $('#skipBtn').addEventListener('click', skipQuestion);
   $('#mistakesChip').addEventListener('click', startMistakeReview);
+  const mixedSel = $('#mixedCount');
+  const savedCount = (db().settings || {}).dojoMixedCount;
+  if (savedCount) {
+    const opt = mixedSel.querySelector('option[value="' + savedCount + '"]');
+    if (opt) mixedSel.value = savedCount;
+  }
+  mixedSel.addEventListener('change', () => {
+    const d = db();
+    d.settings = d.settings || {};
+    d.settings.dojoMixedCount = mixedSel.value;
+    saveDB(d);
+  });
+  $('#mixedBtn').addEventListener('click', () =>
+    startMixed(mixedSel.value === 'all' ? BANK.length : +mixedSel.value));
   $('#calcToggle').addEventListener('click', () => {
     const panel = $('#calcPanel');
     panel.classList.toggle('open');

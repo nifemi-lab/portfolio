@@ -45,6 +45,23 @@
       <p>Every topic in the JAMB maths syllabus, with your mastery ring on each one. Rings fill as your accuracy rises — grey means untouched.</p>
     </div>
 
+    <div class="card mixed-card">
+      <h2 style="font-size:1.05rem">Mixed practice</h2>
+      <p class="faint" style="margin:.2rem 0 .8rem">Shuffled questions from every topic — a quick warm-up across the whole syllabus.</p>
+      <div class="mixed-row">
+        <label class="count-pick" for="mixedCount">Questions
+          <select id="mixedCount">
+            <option value="10">10</option>
+            <option value="20" selected>20</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="all">All</option>
+          </select>
+        </label>
+        <button class="btn btn-primary" id="mixedBtn" type="button">Start mixed practice</button>
+      </div>
+    </div>
+
     <div class="card" id="weakCard" hidden>
       <h2 style="font-size:1.05rem">Weakest topics</h2>
       <p class="faint" style="margin:.2rem 0 .4rem">Your lowest accuracy so far — drill these first.</p>

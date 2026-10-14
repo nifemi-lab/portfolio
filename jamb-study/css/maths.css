@@ -33,6 +33,17 @@
 .chip-mistakes.has-mistakes { background: rgba(255, 195, 107, .16); color: var(--warn); border-color: rgba(255, 195, 107, .4); }
 .chip-mistakes.has-mistakes b { color: var(--warn); }
 
+/* ---- Question-count pickers (mixed practice + topic drills) ---- */
+.mixed-row { display: flex; align-items: end; gap: .8rem; flex-wrap: wrap; }
+.count-pick { display: inline-flex; align-items: center; gap: .45rem; font-size: var(--step--1); font-weight: 600; color: var(--text-muted); }
+.count-pick select {
+  font: inherit; font-weight: 600; padding: .35rem .6rem; border-radius: 999px;
+  background: var(--bg-elev-2); color: var(--text); border: 1px solid var(--border); cursor: pointer;
+}
+.count-pick select:hover { border-color: var(--border-strong); }
+.count-pick select:focus { border-color: var(--accent); outline: none; }
+.topic-hero .count-pick { margin-top: .2rem; }
+
 /* Cards keep the tracker's look, with the mockup's top rhythm. */
 .card { margin-top: 1rem; }
 

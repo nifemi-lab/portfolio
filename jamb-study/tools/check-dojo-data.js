@@ -21,6 +21,13 @@ const topics = syl.flatMap(s => s.topics);
 if (new Set(topics).size !== topics.length) err('duplicate topic names');
 
 const bankSet = new Set(bank.map(q => q.q));
+if (bank.length !== bankSet.size) {
+  const seen = new Set();
+  for (const q of bank) {
+    if (seen.has(q.q)) { err('duplicate question text in bank: ' + q.q); break; }
+    seen.add(q.q);
+  }
+}
 Object.keys(map).forEach(q => {
   if (!bankSet.has(q)) err('Q_TOPIC key not in bank: ' + q);
   if (!topics.includes(map[q])) err('Q_TOPIC value not a topic: ' + map[q]);

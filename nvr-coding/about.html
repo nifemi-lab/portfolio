@@ -12,10 +12,16 @@
   <a class="brand" href="index.html">🧠 NVR<span>Coding</span></a>
   <div class="pills">
     <a class="pill" href="index.html" style="text-decoration:none;color:inherit">← Home</a>
+    <button class="pill" id="authBtn" style="cursor:pointer">👤 Sign in</button>
   </div>
 </header>
 
 <main>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <span class="sep">›</span>
+    <span class="current">About</span>
+  </nav>
   <h1>About NVR Coding 🧠</h1>
   <p style="margin:16px 0">NVR Coding is a psychology-first coding school that runs entirely in your browser. It exists because most courses dump information at you — ours is built around how brains actually learn:</p>
   <div class="cards">
@@ -38,6 +44,8 @@
 
   <p class="tiny" style="margin-top:20px">Built with 🧠 by a bro, for bros. No signup, no tracking, all progress stays in your browser.</p>
 </main>
+<script src="config.js"></script>
+<script src="js/auth.js"></script>
 <script>
   document.getElementById('contactForm').onsubmit = () => {
     const msgs = JSON.parse(localStorage.getItem('nvr_feedback') || '[]');

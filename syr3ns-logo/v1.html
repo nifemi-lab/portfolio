@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYR3NS — Logo Draft v1</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0b0b12;
+    color: #f5f5fa;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 64px;
+  }
+  h1 {
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: #8a8a9a;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    font-weight: 600;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 320px));
+    gap: 32px;
+    justify-content: center;
+  }
+  .card {
+    background: #12121c;
+    border: 1px solid #23233a;
+    border-radius: 24px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.45);
+  }
+  .card.light { background: #f6f6fb; border-color: #e4e4f0; }
+  .card span { font-size: 11px; letter-spacing: 3px; color: #8a8a9a; text-transform: uppercase; }
+  .card.light span { color: #9a9ab0; }
+  svg { display: block; filter: drop-shadow(0 0 18px rgba(139,92,246,.25)); }
+  .card.light svg { filter: none; }
+</style>
+</head>
+<body>
+  <h1>SYR3NS · Logo Draft v1</h1>
+  <div class="board">
+
+    <!-- FULL LOCKUP (dark) -->
+    <div class="card">
+      <svg width="280" height="280" viewBox="0 0 280 280" role="img" aria-label="SYR3NS full logo">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#8b5cf6"/>
+            <stop offset=".5" stop-color="#ec4899"/>
+            <stop offset="1" stop-color="#22d3ee"/>
+          </linearGradient>
+        </defs>
+        <circle cx="140" cy="112" r="62" fill="none" stroke="url(#g1)" stroke-width="4"/>
+        <g fill="url(#g1)">
+          <rect x="105" y="98"  width="9" height="28" rx="4.5"/>
+          <rect x="120" y="84"  width="9" height="56" rx="4.5"/>
+          <rect x="135" y="68"  width="9" height="88" rx="4.5"/>
+          <rect x="150" y="84"  width="9" height="56" rx="4.5"/>
+          <rect x="165" y="98"  width="9" height="28" rx="4.5"/>
+        </g>
+        <text x="140" y="228" text-anchor="middle"
+              font-family="'Segoe UI', Arial, sans-serif"
+              font-size="44" font-weight="800" letter-spacing="6"
+              fill="url(#g1)">SYR3NS</text>
+      </svg>
+      <span>Full lockup · dark</span>
+    </div>
+
+    <!-- APP ICON -->
+    <div class="card">
+      <svg width="200" height="200" viewBox="0 0 200 200" role="img" aria-label="SYR3NS app icon">
+        <defs>
+          <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#8b5cf6"/>
+            <stop offset=".5" stop-color="#ec4899"/>
+            <stop offset="1" stop-color="#22d3ee"/>
+          </linearGradient>
+        </defs>
+        <rect x="8" y="8" width="184" height="184" rx="48"
+              fill="#12121c" stroke="url(#g2)" stroke-width="5"/>
+        <g fill="url(#g2)">
+          <rect x="64"  y="90" width="8" height="20" rx="4"/>
+          <rect x="80"  y="82" width="8" height="36" rx="4"/>
+          <rect x="96"  y="72" width="8" height="56" rx="4"/>
+          <rect x="112" y="82" width="8" height="36" rx="4"/>
+          <rect x="128" y="90" width="8" height="20" rx="4"/>
+        </g>
+      </svg>
+      <span>App icon</span>
+    </div>
+
+    <!-- FULL LOCKUP (light) -->
+    <div class="card light">
+      <svg width="280" height="280" viewBox="0 0 280 280" role="img" aria-label="SYR3NS logo on light background">
+        <defs>
+          <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#6d28d9"/>
+            <stop offset=".5" stop-color="#db2777"/>
+            <stop offset="1" stop-color="#0891b2"/>
+          </linearGradient>
+        </defs>
+        <circle cx="140" cy="112" r="62" fill="none" stroke="url(#g3)" stroke-width="4"/>
+        <g fill="url(#g3)">
+          <rect x="105" y="98"  width="9" height="28" rx="4.5"/>
+          <rect x="120" y="84"  width="9" height="56" rx="4.5"/>
+          <rect x="135" y="68"  width="9" height="88" rx="4.5"/>
+          <rect x="150" y="84"  width="9" height="56" rx="4.5"/>
+          <rect x="165" y="98"  width="9" height="28" rx="4.5"/>
+        </g>
+        <text x="140" y="228" text-anchor="middle"
+              font-family="'Segoe UI', Arial, sans-serif"
+              font-size="44" font-weight="800" letter-spacing="6"
+              fill="url(#g3)">SYR3NS</text>
+      </svg>
+      <span>Full lockup · light</span>
+    </div>
+
+  </div>
+</body>
+</html>
