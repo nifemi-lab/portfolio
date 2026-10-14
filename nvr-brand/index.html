@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NVR Supply — Never stop.</title>
+  <meta name="description" content="NVR Supply — heavyweight basics and high-vis pieces that fund free education at the NVR Academy. Static storefront prototype." />
+  <meta name="robots" content="noindex" />
+  <link rel="canonical" href="" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/brand.css" />
+  <link rel="icon" href="img/logo-mark.svg" type="image/svg+xml" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top" aria-label="NVR Supply, home">
+        <img src="img/logo.svg" alt="NVR — Never stop" width="420" height="120" />
+      </a>
+
+      <nav aria-label="Primary">
+        <ul class="nav-list">
+          <li><a class="nav-link" href="#collections">Collections</a></li>
+          <li><a class="nav-link" href="#shop">Shop</a></li>
+          <li><a class="nav-link" href="#mission">Mission</a></li>
+        </ul>
+      </nav>
+
+      <button type="button" class="bag-btn" id="bagOpen" aria-haspopup="dialog" aria-controls="bagDrawer">
+        Bag <span class="bag-count" id="bagCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <p id="live" class="skip-link" role="status" aria-live="polite"></p>
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero wrap">
+      <span class="tag" data-reveal>NVR Supply &middot; NVR Foundation &middot; NVR Academy</span>
+      <h1 data-reveal>Never<br />stop.</h1>
+      <p class="hero-lede" data-reveal>
+        A learning organization that funds free education — and the clothing
+        label built to wear it. Every piece pays for a learner's first course.
+      </p>
+      <div class="hero-cta" data-reveal>
+        <a class="btn btn--volt" href="#shop">See the pieces</a>
+        <a class="btn" href="#mission">How it works</a>
+      </div>
+      <p class="footnote">Static prototype. No payment is taken anywhere on this page.</p>
+    </section>
+
+    <!-- ============ COLLECTIONS ============ -->
+    <section class="section" id="collections">
+      <div class="wrap">
+        <h2 data-reveal>Five collections</h2>
+        <p class="hero-lede" data-reveal>Named after the internal state, not the season.</p>
+        <div class="collection-grid" data-reveal id="collectionGrid"></div>
+      </div>
+    </section>
+
+    <!-- ============ SHOP ============ -->
+    <section class="section" id="shop">
+      <div class="wrap">
+        <h2 data-reveal>The pieces</h2>
+        <p class="hero-lede" data-reveal>240&ndash;340gsm. Boxy cut. Drop shoulder. One statement on the back.</p>
+
+        <div class="filters" id="filters" role="group" aria-label="Filter by collection"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </section>
+
+    <!-- ============ MISSION ============ -->
+    <section class="section" id="mission">
+      <div class="wrap">
+        <h2 data-reveal>What the label is for</h2>
+        <div class="mission" style="margin-top:2.5rem">
+          <div class="mission-block" data-reveal>
+            <h3>The clothing funds the mission</h3>
+            <p>
+              NVR Supply sells heavyweight pieces. NVR Foundation funds free
+              education. The clothing pays for the school, and the school gives
+              the clothing its meaning. Neither works alone — that's the moat.
+            </p>
+          </div>
+
+          <div class="mission-block" data-reveal>
+            <h3>Three layers</h3>
+            <p>
+              <strong>Foundation</strong> holds the mission and the money.
+              <strong>Supply</strong> holds the clothing and the objects.
+              <strong>Academy</strong> holds the free coding school.
+            </p>
+          </div>
+
+          <div class="mission-block" data-reveal>
+            <h3>Who you are</h3>
+            <ul class="tier-list">
+              <li><span class="tier-name">Guest</span><span class="tier-meaning">Learning for free at the Academy.</span></li>
+              <li><span class="tier-name">Member</span><span class="tier-meaning">Gets early drops and Academy forever.</span></li>
+              <li><span class="tier-name">Inner Circle</span><span class="tier-meaning">Funds a learner's course per purchase.</span></li>
+            </ul>
+          </div>
+
+          <div class="mission-block" data-reveal>
+            <h3>The three rules</h3>
+            <ol class="rules">
+              <li><span>Never use fake urgency or discount spam.</span></li>
+              <li><span>Never post content you wouldn't wear.</span></li>
+              <li><span>Never ship something that doesn't fund the mission.</span></li>
+            </ol>
+          </div>
+        </div>
+
+        <p class="tagline">Every garment carries an NVR tag — "This funded a learner's first course."</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <div class="wrap header-inner">
+      <img src="img/logo-mark.svg" alt="NVR" width="120" height="120" />
+      <p class="tag" style="margin:0">NVR Supply &middot; Built for the ones who don't.</p>
+    </div>
+  </footer>
+
+  <!-- ============ BAG DRAWER ============ -->
+  <div class="scrim" id="scrim" data-open="false"></div>
+
+  <aside class="drawer" id="bagDrawer" data-open="false" aria-hidden="true"
+         role="dialog" aria-modal="true" aria-labelledby="bagTitle">
+    <div class="drawer-head">
+      <h2 id="bagTitle">Your bag</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close bag">&times;</button>
+    </div>
+
+    <div class="drawer-body" id="bagBody"></div>
+
+    <div class="drawer-foot">
+      <p class="total-row">
+        <span id="bagItemCount">0 items</span>
+        <span class="amount" id="bagTotal">$0.00</span>
+      </p>
+
+      <p class="disclosure">
+        No payment is taken here. This is a prototype. Copy your order and send
+        it to NVR by DM or email — we'll confirm by hand.
+      </p>
+
+      <button type="button" class="btn btn--volt btn--block" id="copyOrder">
+        Copy order <span aria-hidden="true">&rarr;</span>
+      </button>
+
+      <p class="status" id="orderStatus" role="status" aria-live="polite"></p>
+
+      <label class="order-label tag" for="orderOut">Your order — copy manually if needed</label>
+      <textarea class="order-out" id="orderOut" rows="8" readonly spellcheck="false"></textarea>
+    </div>
+  </aside>
+
+  <script src="js/catalog.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

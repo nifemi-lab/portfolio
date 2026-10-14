@@ -438,6 +438,8 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.1; letter-spacing:
 .art-3 { background: radial-gradient(120% 120% at 30% 85%, #4a2a6b 0%, #140e1e 70%); }
 .art-4 { background: radial-gradient(120% 120% at 75% 80%, #6b3b23 0%, #1b110b 70%); }
 .art-5 { background: radial-gradient(120% 120% at 25% 20%, #5b2a6e 0%, #150d1f 70%); }
+/* NVR Supply — void base with a volt lift, per the brand bible */
+.art-6 { background: radial-gradient(120% 120% at 50% 0%, #1d3a1a 0%, #040817 72%); }
 
 .slide-art::after {
   content: "";
