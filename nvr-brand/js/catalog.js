@@ -4,14 +4,17 @@
  * Plain script (no modules) so it also runs when opened over file://.
  */
 
+/* Palette from the Figma brand board.
+   Volt is the only accent and is reserved for CTAs and SIGNAL.
+   Collections otherwise use the neutral ramp, so no two accents ever sit
+   on the same piece. Slate is deliberately not used for small text: at
+   #666 on obsidian it only reaches ~3.6:1 and fails WCAG AA. */
 var TOKENS = {
-  void: '#040817',
-  bone: '#e6ecff',
-  volt: '#c6f24e',
-  ultraviolet: '#a78bfa',
-  cyan: '#7dd3fc',
-  ash: '#8b93a7',
-  ascent: '#ff5c2b'
+  obsidian: '#0a0a0a',
+  bone: '#f5f5ee',
+  volt: '#c7ff00',
+  ash: '#bbbbbb',
+  slate: '#666666'
 };
 
 var COLLECTIONS = [
@@ -36,8 +39,8 @@ var COLLECTIONS = [
     name: 'ORBIT',
     vibe: 'Cosmic gradient, space prints',
     note: 'Weightless things, heavy cotton.',
-    accent: 'ultraviolet',
-    accentHex: TOKENS.ultraviolet
+    accent: 'bone',
+    accentHex: TOKENS.bone
   },
   {
     id: 'static',
@@ -52,8 +55,8 @@ var COLLECTIONS = [
     name: 'ASCENT',
     vibe: 'Limited drops, numbers',
     note: 'Numbered, then gone.',
-    accent: 'ascent',
-    accentHex: TOKENS.ascent
+    accent: 'ash',
+    accentHex: TOKENS.ash
   }
 ];
 
@@ -204,9 +207,67 @@ var RULES = [
   'Never ship something that doesn\u2019t fund the mission.'
 ];
 
-/* Where a copied order gets sent. Change these to real handles. */
+/* The three divisions, as shown on the Figma board's lockups. */
+var DIVISIONS = [
+  { mark: 'NVR SUPPLY', role: 'Clothing & products', note: 'What you buy.', href: '#shop' },
+  { mark: 'NVR ACADEMY', role: 'Learning platform', note: 'Where people learn. Free.', href: '#mission' },
+  { mark: 'NVR FOUNDATION', role: 'Impact & community', note: 'What the money does.', href: '#how' }
+];
+
+/* Taglines from the Figma board. */
+var TAGLINES = [
+  'Never stop.',
+  'Wear the mission.',
+  'Built for those still becoming.',
+  'Learn. Build. Repeat.'
+];
+
+/* Money flow — accurate to BRAND.md, no invented claims. */
+var FLOW = [
+  { n: '01', title: 'You buy a piece',
+    body: 'Heavyweight cotton, cut boxy, made in a small run. Nothing overproduced.' },
+  { n: '02', title: 'The margin funds a course',
+    body: 'Part of every sale pays the NVR Academy as course fees for a learner who could not otherwise afford one.' },
+  { n: '03', title: 'Someone learns to build',
+    body: 'That learner works through the free curriculum and leaves with something they can actually use.' },
+  { n: '04', title: 'The tag says so',
+    body: 'The garment carries an NVR tag: "This funded a learner\u2019s first course." The claim is on the product, not just the website.' }
+];
+
+/* TODO: the blocks below are scaffold. Replace the bracketed parts with real
+   answers before this goes live. Do not publish invented people or logistics. */
+var HOW_BLOCKS = [
+  { title: 'Inner Circle',
+    body: 'The top tier. A purchase here funds a learner\u2019s course directly. Guest learns for free; Member gets early drops and Academy forever; Inner Circle funds the person behind the next one.' },
+  { title: 'Who runs it', todo: true,
+    body: 'NVR is run by [founder name and role], with [who else, and what they do]. Decisions about what gets made and what gets funded are made [by whom, and how].' },
+  { title: 'How it\u2019s made', todo: true,
+    body: '[Where the blanks are sourced and printed. Who cuts and sews. Local printer or small batch in-house.] Fabric is 240\u2013340gsm, boxy with a drop shoulder, one statement on the back.' },
+  { title: 'Sizing and delivery', todo: true,
+    body: '[Size run per garment, how it fits, whether sizes are unisex.] Delivery is [where, how long, what it costs]. Returns are [policy].' }
+];
+
+/* ============================================================
+ * Where an order actually reaches you.
+ * Every value here is a placeholder until you replace it.
+ * ============================================================ */
+
 var CONTACT = {
-  handle: '@nvr',
+  /* Full international number, digits only, no + or spaces.
+     Nigeria: 234 then the local number. Leave '' to hide the WhatsApp button. */
+  whatsapp: '',
+
+  /* Where orders go by email. Leave '' to hide the email button. */
   email: 'orders@nvr.example',
-  note: 'No payment is taken here. This is a prototype.'
+
+  /* Shown in the footer and in the copied order text. */
+  handle: '@nvr'
+};
+
+/* Supabase order logging. Leave supabaseUrl as '' to skip logging entirely —
+   WhatsApp and email keep working with no backend at all.
+   Use the anon key. Never put the service_role key in a public file. */
+var SUPABASE = {
+  supabaseUrl: '',
+  supabaseAnonKey: ''
 };

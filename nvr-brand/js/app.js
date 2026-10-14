@@ -72,6 +72,7 @@
     }
     if (found) found.qty += 1;
     else bag.push({ id: id, size: size, qty: 1 });
+    currentRef = null; // changed bag means a new order, so a new reference
     saveBag();
   }
 
@@ -83,14 +84,29 @@
         break;
       }
     }
+    currentRef = null;
     saveBag();
+  }
+
+  /* ---------- order reference ---------- */
+
+  var currentRef = null;
+
+  function orderRef() {
+    // Human-quotable reference, e.g. NVR-7K4Q. No ambiguous characters.
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var out = '';
+    for (var i = 0; i < 4; i++) out += chars[Math.floor(Math.random() * chars.length)];
+    return 'NVR-' + out;
   }
 
   /* ---------- order text ---------- */
 
   function orderText() {
     if (!bag.length) return '';
-    var lines = ['NVR SUPPLY — ORDER', ''];
+    if (!currentRef) currentRef = orderRef();
+
+    var lines = ['NVR SUPPLY — ORDER', currentRef, ''];
     bag.forEach(function (l) {
       var p = productOf(l.id);
       if (!p) return;
@@ -100,8 +116,17 @@
     lines.push('');
     lines.push('SUBTOTAL   ' + money(bagTotal()));
     lines.push('');
-    lines.push('No payment taken. Send this order to NVR by DM or email:');
-    lines.push('  ' + CONTACT.handle + '   /   ' + CONTACT.email);
+    lines.push('No payment taken. Send this with your name and delivery');
+    lines.push('address and we will confirm by hand.');
+
+    if (CONTACT.whatsapp) {
+      lines.push('');
+      lines.push('WhatsApp: ' + CONTACT.whatsapp);
+    }
+    if (CONTACT.email) {
+      lines.push('Email:    ' + CONTACT.email);
+    }
+
     lines.push('');
     lines.push('Every piece funds a learner\u2019s first course.');
     return lines.join('\n');
@@ -124,6 +149,41 @@
           '<p class="note">' + escapeHtml(c.note) + '</p>' +
           '<span class="tag">' + count + ' pieces</span>' +
         '</a>';
+    }).join('');
+  }
+
+  function renderHow() {
+    var flow = $('#flow');
+    if (flow) {
+      flow.innerHTML = FLOW.map(function (s) {
+        return '<li class="flow-step">' +
+          '<span class="flow-n">' + s.n + '</span>' +
+          '<h3>' + escapeHtml(s.title) + '</h3>' +
+          '<p>' + escapeHtml(s.body) + '</p>' +
+        '</li>';
+      }).join('');
+    }
+
+    var blocks = $('#howBlocks');
+    if (blocks) {
+      blocks.innerHTML = HOW_BLOCKS.map(function (b) {
+        return '<div class="mission-block' + (b.todo ? ' is-todo' : '') + '" data-reveal>' +
+          '<h3>' + escapeHtml(b.title) + '</h3>' +
+          '<p>' + escapeHtml(b.body) + '</p>' +
+        '</div>';
+      }).join('');
+    }
+  }
+
+  function renderDivisions() {
+    var host = $('#divisions');
+    if (!host) return;
+    host.innerHTML = DIVISIONS.map(function (d) {
+      return '<a class="division-card" href="' + d.href + '">' +
+        '<span class="division-mark">' + escapeHtml(d.mark) + '</span>' +
+        '<span class="division-role">' + escapeHtml(d.role) + '</span>' +
+        '<span class="division-note">' + escapeHtml(d.note) + '</span>' +
+      '</a>';
     }).join('');
   }
 
@@ -263,6 +323,69 @@
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
 
+  /* ---------- send channels ---------- */
+
+  function mailtoHref() {
+    if (!CONTACT.email) return null;
+    return 'mailto:' + CONTACT.email +
+      '?subject=' + encodeURIComponent('NVR order ' + currentRef) +
+      '&body=' + encodeURIComponent(orderText());
+  }
+
+  function whatsappHref() {
+    if (!CONTACT.whatsapp) return null;
+    return 'https://wa.me/' + CONTACT.whatsapp + '?text=' + encodeURIComponent(orderText());
+  }
+
+  function orderItems() {
+    return bag.map(function (l) {
+      var p = productOf(l.id);
+      if (!p) return null;
+      return {
+        code: p.code,
+        name: p.name,
+        size: l.size,
+        qty: l.qty,
+        price: p.price,
+        line: +(p.price * l.qty).toFixed(2)
+      };
+    }).filter(Boolean);
+  }
+
+  /* ---------- Supabase logging ---------- */
+
+  function logOrder(channel) {
+    // No project configured: skip silently. The other channels still work.
+    if (!SUPABASE.supabaseUrl || !SUPABASE.supabaseAnonKey) {
+      return Promise.resolve({ skipped: true });
+    }
+
+    var payload = {
+      reference: currentRef,
+      items: orderItems(),
+      item_count: bagCount(),
+      subtotal: bagTotal(),
+      channel: channel,
+      status: 'new'
+    };
+
+    return fetch(SUPABASE.supabaseUrl + '/rest/v1/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE.supabaseAnonKey,
+        'Authorization': 'Bearer ' + SUPABASE.supabaseAnonKey,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    }).then(function (res) {
+      return { ok: res.ok, status: res.status };
+    }).catch(function () {
+      // Logging must never block the customer's order path.
+      return { ok: false, status: 0 };
+    });
+  }
+
   /* ---------- copy order ---------- */
 
   function copyOrder() {
@@ -333,6 +456,8 @@
   function init() {
     loadBag();
     renderCollections();
+    renderDivisions();
+    renderHow();
     renderFilters();
     renderProducts();
     renderBag();
@@ -439,6 +564,36 @@
 
     var copyBtn = $('#copyOrder');
     if (copyBtn) copyBtn.addEventListener('click', copyOrder);
+
+    // Channels with nowhere to send are hidden rather than left broken.
+    var waBtn = $('#sendWhatsApp');
+    var mailBtn = $('#sendEmail');
+
+    if (waBtn) {
+      if (CONTACT.whatsapp) {
+        waBtn.addEventListener('click', function () {
+          var href = whatsappHref();
+          if (href) { logOrder('whatsapp'); window.open(href, '_blank', 'noopener'); }
+        });
+      } else {
+        waBtn.setAttribute('hidden', '');
+      }
+    }
+
+    if (mailBtn) {
+      if (CONTACT.email) {
+        mailBtn.addEventListener('click', function () {
+          var href = mailtoHref();
+          if (href) { logOrder('email'); window.location.href = href; }
+        });
+      } else {
+        mailBtn.setAttribute('hidden', '');
+      }
+    }
+
+    // Warning if neither channel is configured — otherwise the bag dead-ends.
+    var warn = $('#noChannel');
+    if (warn && !CONTACT.whatsapp && !CONTACT.email) warn.removeAttribute('hidden');
 
     initReveal();
   }

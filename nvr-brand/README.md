@@ -7,31 +7,57 @@ Static HTML, CSS and JavaScript. No build step, no framework, no dependencies
 beyond Google Fonts. Runs from the filesystem or any static host.
 
 > **No payment is processed in this project.** The bag produces an order you
-> copy and send by DM or email. It is a design and front-end exercise, not a
+> send by WhatsApp or email. It is a design and front-end exercise, not a
 > commerce backend.
 
-## Why it looks the way it does
+## Brand system
 
-Everything follows `BRAND.md`, the brand bible:
+Built to the **Figma brand board**, which supersedes the older `BRAND.md` where
+the two disagree.
 
-| Rule | How it's applied |
-|---|---|
-| Void background + **one accent per piece** | Each collection owns exactly one accent, set via a single `--accent` custom property per card |
-| Headlines: Space Grotesk, ALL CAPS, tight tracking | `h1`–`h3` and `.wordmark` |
-| Body: Inter, sentence case | Default body copy |
-| Data/labels: mono, uppercase, wide tracking | `.tag`, `.size`, `.card-price`, `.bag-count` |
-| Never salesy | No countdowns, no "limited stock!", no discount language |
-| Never ship something that doesn't fund the mission | The NVR tag line is on every order |
+### Palette
 
-Accent tokens:
-
-| Token | Hex | Collection |
+| Token | Hex | Role |
 |---|---|---|
-| Bone | `#e6ecff` | VOID |
-| Volt | `#c6f24e` | SIGNAL |
-| Ultraviolet | `#a78bfa` | ORBIT |
-| Ash | `#8b93a7` | STATIC |
-| Blood orange | `#ff5c2b` | ASCENT |
+| Obsidian | `#0a0a0a` | Primary background |
+| Bone | `#f5f5ee` | Type and logo |
+| Volt | `#c7ff00` | **The only accent** — CTAs and SIGNAL only |
+| Ash | `#bbbbbb` | Supporting text |
+| Slate | `#666666` | Rules and borders only — never small text |
+
+Volt is the single accent and is reserved. Collections are told apart by the
+neutral ramp (bone / volt / ash) rather than by five competing hues, so no two
+accents ever land on the same piece.
+
+> `BRAND.md` specifies a different palette (Void `#040817`, Bone `#e6ecff`,
+> Volt `#c6f24e`, plus Ultraviolet and Cyan). The Figma board wins here. Slate
+> is deliberately kept off small text: at `#666` on obsidian it only reaches
+> ~3.6:1 and fails WCAG AA.
+
+### Logo
+
+| File | Use |
+|---|---|
+| `img/logo.svg` | `NVR` wordmark — header, favicon fallback |
+| `img/logo-mark.svg` | The N-with-volt-diamond mark — footer, favicon |
+| `img/logo-lockup.svg` | Mark + wordmark + `NEVER STOP.` — hero |
+
+The mark's `N` is drawn as an explicit SVG path rather than set as text, so the
+volt diamond stays locked to the letterform in every renderer with no font
+dependency. Verified by pixel sampling: both counters empty, stems and diagonal
+solid, diamond `#c7ff00`.
+
+### Type
+
+Space Grotesk for the logo and headlines (all caps, tight tracking), Inter for
+body, JetBrains Mono for data and labels (uppercase, wide tracking — the
+"techwear" tell).
+
+### Divisions and taglines
+
+From the board: **NVR Supply** (clothing & products), **NVR Academy** (learning
+platform), **NVR Foundation** (impact & community). Taglines: *Never stop.* ·
+*Wear the mission.* · *Built for those still becoming.* · *Learn. Build. Repeat.*
 
 ## Files
 
@@ -39,49 +65,88 @@ Accent tokens:
 nvr-brand/
   index.html      markup and the bag dialog
   css/brand.css   design tokens, layout, components
-  js/catalog.js   collections, products, tiers, rules  (plain script, no modules)
-  js/app.js       rendering, filters, bag, order builder, reveal-on-scroll
-  img/            wordmark and mark
-  BRAND.md        the brand bible this was built to
+  js/catalog.js   collections, products, divisions, taglines, contact config
+  js/app.js       rendering, filters, bag, order builder, order channels
+  img/            wordmark, mark, lockup
+  supabase.sql    orders table + RLS policies
+  BRAND.md        the earlier brand bible (superseded on palette)
+  README.md
 ```
 
 `catalog.js` is a plain script rather than an ES module on purpose — modules are
-blocked by CORS on `file://`, and this project should work when opened straight
-from disk.
+blocked by CORS on `file://`, and this project should work when opened from disk.
+
+## How an order reaches you
+
+Three channels, all in the bag drawer. Channels with nowhere to send are hidden
+rather than left broken, and a warning appears if **neither** is configured, so
+the bag can never dead-end.
+
+1. **WhatsApp** — `https://wa.me/<number>?text=<order>`. Opens WhatsApp with the
+   order pre-typed. No backend, no cost. Same pattern as the welding app.
+2. **Email** — `mailto:` with subject and body pre-filled.
+3. **Supabase** — every order is also `INSERT`ed into an `orders` table so you
+   keep a written record even if a customer abandons the chat.
+
+Each order gets a quotable reference like `NVR-7K4Q`. Logging is fire-and-forget
+and can never block the customer's order path.
+
+### Setting it up
+
+Edit `CONTACT` and `SUPABASE` in `js/catalog.js`:
+
+```js
+var CONTACT = { whatsapp: '2348000000000', email: 'orders@you.com' };
+var SUPABASE = { supabaseUrl: 'https://xxx.supabase.co', supabaseAnonKey: 'eyJ...' };
+```
+
+Leave `supabaseUrl` empty to skip logging entirely — WhatsApp and email still
+work with no backend at all.
+
+Then run `supabase.sql` once in the Supabase SQL editor.
+
+Use the **anon** key. Never put the `service_role` key in a public file.
+
+> The SQL grants `select`/`update` to any authenticated user. That is fine while
+> the only account is yours. If you ever add customer accounts to this project,
+> tighten those two policies first.
 
 ## Behaviour
 
 - **Bag** — add, change quantity, remove. Persists to `localStorage`
   (`nvr-supply-bag`) and survives reload. Degrades quietly if storage is
   unavailable (private browsing).
-- **Checkout** — builds a plain-text order and copies it to the clipboard,
-  falling back to `execCommand` if the async Clipboard API is denied or
-  unavailable. The order is also shown in a textarea, so it can be selected and
-  copied manually as a last resort.
+- **Copy order** — Clipboard API, falling back to `execCommand` when the async
+  API is denied or unavailable, with a select-and-copy textarea as the last
+  resort.
 - **Filters** — by collection, with correct `aria-pressed` state.
-- **Sizes** — required before an item can be added; the add button stays
-  disabled until one is picked.
+- **Sizes** — required before an item can be added.
 
 ## Accessibility
 
-- Lighthouse **100** for accessibility, best practices and SEO; zero console errors.
+Lighthouse **100** for accessibility, best practices and SEO; zero console
+errors.
+
 - The bag is a labelled modal dialog: focus moves in on open, is trapped while
   open, returns to the trigger on close, and `Escape` dismisses it.
 - Bag changes announce through an `aria-live` region.
 - `prefers-reduced-motion` disables reveal animations and smooth scrolling.
-- Scroll-reveal content is visible if JavaScript is unavailable (`no-js` class).
+- Scroll-reveal content stays visible without JavaScript (`no-js` class).
 
-One deliberate deviation from the brand bible: the `.footnote` disclaimer uses
-ash at 85% opacity rather than 70%. At its rendered size, 70% only reaches a
-3.66:1 contrast ratio and fails WCAG AA; 85% clears it at 4.92:1.
+One deliberate deviation from the board: the `.footnote` disclaimer uses ash at
+85% opacity rather than 70%. At its rendered size 70% only reaches 3.66:1 and
+fails AA; 85% clears it at 4.92:1.
 
-## Placeholder imagery
+## Known gaps
 
-Product tiles are drawn in CSS rather than stocked with photographs. Placeholder
-photos of garments that don't exist would break the brand's own third rule.
-Replace `.tile` with real imagery when there is real imagery.
-
-## Contact placeholders
-
-`CONTACT` in `js/catalog.js` holds `@nvr` and `orders@nvr.example`. Swap these
-for real handles before showing this to anyone.
+- **Product tiles are drawn in CSS**, not photographed. Placeholder photos of
+  garments that don't exist would break the brand's own third rule. Replace
+  `.tile` with real imagery when there is real imagery.
+- **`CONTACT` is empty.** The site deliberately shows a "not ready to take
+  orders" warning until a WhatsApp number or email is set.
+- **Three blocks in "How it works" are scaffold** — *Who runs it*, *How it's
+  made*, *Sizing and delivery*. They render with a dashed volt border as a
+  visible reminder. Real people, production and logistics were deliberately not
+  invented; fill them in `HOW_BLOCKS` in `js/catalog.js`.
+- **Catalogue and prices are placeholders.** VOID/04 at $128 is the only piece
+  carried over from the Figma prototype.

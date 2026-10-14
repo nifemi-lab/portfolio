@@ -14,6 +14,8 @@
 
   <link rel="stylesheet" href="css/brand.css" />
   <link rel="icon" href="img/logo-mark.svg" type="image/svg+xml" />
+  <meta property="og:title" content="NVR — Never stop." />
+  <meta property="og:description" content="A learning movement expressed through clothing." />
 </head>
 <body>
 
@@ -22,8 +24,8 @@
   <!-- ============ HEADER ============ -->
   <header class="site-header">
     <div class="wrap header-inner">
-      <a class="brand" href="#top" aria-label="NVR Supply, home">
-        <img src="img/logo.svg" alt="NVR — Never stop" width="420" height="120" />
+      <a class="brand" href="#top" aria-label="NVR, home">
+        <img src="img/logo.svg" alt="NVR" width="220" height="80" />
       </a>
 
       <nav aria-label="Primary">
@@ -31,6 +33,7 @@
           <li><a class="nav-link" href="#collections">Collections</a></li>
           <li><a class="nav-link" href="#shop">Shop</a></li>
           <li><a class="nav-link" href="#mission">Mission</a></li>
+          <li><a class="nav-link" href="#how">How it works</a></li>
         </ul>
       </nav>
 
@@ -47,11 +50,10 @@
 
     <!-- ============ HERO ============ -->
     <section class="hero wrap">
-      <span class="tag" data-reveal>NVR Supply &middot; NVR Foundation &middot; NVR Academy</span>
-      <h1 data-reveal>Never<br />stop.</h1>
+      <img class="hero-lockup" src="img/logo-lockup.svg" alt="NVR — Never stop." width="320" height="300" data-reveal />
       <p class="hero-lede" data-reveal>
-        A learning organization that funds free education — and the clothing
-        label built to wear it. Every piece pays for a learner's first course.
+        A learning movement expressed through clothing. Every piece funds a
+        learner's first course at the NVR Academy.
       </p>
       <div class="hero-cta" data-reveal>
         <a class="btn btn--volt" href="#shop">See the pieces</a>
@@ -66,6 +68,7 @@
         <h2 data-reveal>Five collections</h2>
         <p class="hero-lede" data-reveal>Named after the internal state, not the season.</p>
         <div class="collection-grid" data-reveal id="collectionGrid"></div>
+        <div class="divisions" id="divisions"></div>
       </div>
     </section>
 
@@ -125,13 +128,29 @@
         <p class="tagline">Every garment carries an NVR tag — "This funded a learner's first course."</p>
       </div>
     </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <!-- Scaffold. Everything marked TODO is placeholder copy — replace before
+         launch. The money-flow copy comes from BRAND.md and is accurate to the
+         brand as written; the team and production copy is not known. -->
+    <section class="section" id="how">
+      <div class="wrap">
+        <h2 data-reveal>Where the money goes</h2>
+        <p class="hero-lede" data-reveal>
+          The clothing funds the school. The school gives the clothing its
+          meaning. Here is the actual movement.
+        </p>
+        <ol class="flow" data-reveal id="flow"></ol>
+        <div class="mission" style="margin-top:3rem" id="howBlocks"></div>
+      </div>
+    </section>
   </main>
 
   <!-- ============ FOOTER ============ -->
   <footer class="site-footer">
     <div class="wrap header-inner">
-      <img src="img/logo-mark.svg" alt="NVR" width="120" height="120" />
-      <p class="tag" style="margin:0">NVR Supply &middot; Built for the ones who don't.</p>
+      <img src="img/logo-mark.svg" alt="" width="120" height="120" />
+      <p class="tag" style="margin:0">NVR&reg; &middot; A learning movement expressed through clothing.</p>
     </div>
   </footer>
 
@@ -154,13 +173,27 @@
       </p>
 
       <p class="disclosure">
-        No payment is taken here. This is a prototype. Copy your order and send
-        it to NVR by DM or email — we'll confirm by hand.
+        No payment is taken here. Send your order and we'll confirm by hand
+        with delivery and payment details.
       </p>
 
-      <button type="button" class="btn btn--volt btn--block" id="copyOrder">
-        Copy order <span aria-hidden="true">&rarr;</span>
-      </button>
+      <p class="warning" id="noChannel" hidden>
+        <strong>Not ready to take orders yet.</strong> No WhatsApp number or
+        email is configured. Use copy order below, or set <code>CONTACT</code>
+        in <code>js/catalog.js</code>.
+      </p>
+
+      <div class="channels">
+        <button type="button" class="btn btn--volt btn--block" id="sendWhatsApp">
+          <span>Send on WhatsApp</span> <span aria-hidden="true">&rarr;</span>
+        </button>
+        <button type="button" class="btn btn--block" id="sendEmail">
+          <span>Send by email</span> <span aria-hidden="true">&rarr;</span>
+        </button>
+        <button type="button" class="btn btn--ghost btn--block" id="copyOrder">
+          <span>Copy order</span> <span aria-hidden="true">&darr;</span>
+        </button>
+      </div>
 
       <p class="status" id="orderStatus" role="status" aria-live="polite"></p>
 
