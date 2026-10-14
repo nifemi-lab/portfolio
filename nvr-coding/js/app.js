@@ -18,7 +18,11 @@ function trackActivity() {
   store.set('activity', days);
 }
 
-function addXP(n) { store.set('xp', store.get('xp', 0) + n); renderPills(); trackActivity(); if (window.Auth) Auth.push(); }
+// auth.js declares `const Auth`, which is NOT attached to window — so gate on the
+// binding itself, not window.Auth, or cloud sync silently never fires.
+const auth = (typeof Auth !== 'undefined') ? Auth : null;
+
+function addXP(n) { store.set('xp', store.get('xp', 0) + n); renderPills(); trackActivity(); if (auth && auth.enabled) auth.push(); }
 function touchStreak() {
   const today = new Date().toDateString();
   const last = store.get('lastDay', null);
@@ -43,7 +47,7 @@ function markDone(lessonId) {
   const done = store.get('done', []);
   if (!done.includes(lessonId)) done.push(lessonId);
   store.set('done', done);
-  if (window.Auth) Auth.push();
+  if (auth && auth.enabled) auth.push();
 }
 
 function isDone(lessonId) { return store.get('done', []).includes(lessonId); }
@@ -74,7 +78,7 @@ function renderProgress() {
   el.innerHTML = window.LESSONS.tracks.map(t => {
     const total = t.lessons.length;
     const finished = t.lessons.filter(l => done.includes(l.id)).length;
-    const pct = Math.round(finished / total * 100);
+    const pct = total ? Math.round(finished / total * 100) : 0;
     return `<a class="card" href="lesson.html?lesson=${(t.lessons.find(l => !done.includes(l.id)) || t.lessons[0]).id}" style="text-decoration:none;color:inherit;display:block"><h3>${t.icon} ${t.title}</h3>
       <div class="progress" style="margin:10px 0 6px"><div style="width:${pct}%"></div></div>
       <p>${finished}/${total} lessons · ${pct}% complete</p></a>`;
@@ -118,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Auth button (cloud login if keys set)
   const authBtn = document.getElementById('authBtn');
-  if (authBtn) Auth.renderButton();
+  if (authBtn && auth) auth.renderButton();
 
   // Random lesson button
   const rb = document.getElementById('randomBtn');
@@ -142,6 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
   store.set('lastVisit', todayStr);
 
   // Daily challenge: one lesson per day
+  const notice = document.getElementById('reviewDueNotice');
+  if (notice) {
+    const dueNow = store.get('srs', []).filter(e => e.due <= Date.now()).length;
+    notice.innerHTML = dueNow
+      ? `<a href="review.html" style="color:var(--accent)">🔁 ${dueNow} review${dueNow > 1 ? 's' : ''} ready</a> — your memory will thank you.`
+      : '';
+  }
+
   const dc = document.getElementById('dailyChallenge');
   if (dc) {
     const all = window.LESSONS.tracks.flatMap(t => t.lessons.map(l => ({ ...l, track: t.title })));

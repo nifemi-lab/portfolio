@@ -53,10 +53,10 @@ const Auth = {
       updated_at: new Date().toISOString()
     };
     try {
-      await this.api('/rest/v1/' + window.NVR_CONFIG.TABLE + '?on_conflict=email', {
+      await this.api('/rest/v1/' + window.NVR_CONFIG.TABLE + '?on_conflict=user_id', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates' },
-        body: JSON.stringify({ email: this.user.email, data: payload })
+        body: JSON.stringify({ user_id: this.user.id, data: payload })
       });
     } catch (e) { /* offline - local data is safe */ }
   },
@@ -64,7 +64,7 @@ const Auth = {
   async pull() {
     if (!this.user || !this.enabled) return;
     try {
-      const rows = await this.api('/rest/v1/' + window.NVR_CONFIG.TABLE + '?select=data&email=eq.' + encodeURIComponent(this.user.email));
+      const rows = await this.api('/rest/v1/' + window.NVR_CONFIG.TABLE + '?select=data&user_id=eq.' + encodeURIComponent(this.user.id));
       if (rows && rows[0] && rows[0].data) {
         const d = rows[0].data;
         ['xp', 'streak', 'done', 'srs', 'activity'].forEach(function (k) { if (d[k] !== undefined) store.set(k, d[k]); });

@@ -84,7 +84,7 @@ function answerQuiz(i, s) {
   } else {
     btns[i].classList.add('wrong');
     $('fb').className = 'feedback err';
-    $('fb').textContent = '🌱 Not quite — errors are data! Read the explanation and try the right one.' + ' ' + s.hint;
+    $('fb').textContent = '🌱 Not quite — errors are data! Read the explanation and try the right one.' + (s.hint ? ' ' + s.hint : '');
     setTimeout(() => { btns.forEach(b => { b.disabled = false; b.classList.remove('wrong'); }); $('fb').textContent = ''; }, 2200);
   }
 }
@@ -115,7 +115,7 @@ function checkWrite(s) {
     document.getElementById('runBtn').disabled = true;
   } else if (attempts >= 2) {
     $('fb').className = 'feedback err';
-    $('fb').textContent = '🌱 Hint: ' + s.hint + ' — one more try, you’ve got it!';
+    $('fb').textContent = '🌱 Hint: ' + (s.hint || 'break it into smaller pieces') + ' — one more try, you’ve got it!';
   } else {
     $('fb').className = 'feedback err';
     $('fb').textContent = '👀 Close! Check spelling, quotes, and the console.log part. You can also press Next and come back.';

@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (+b.dataset.k === s.answer) {
         b.classList.add('correct');
         document.getElementById('fb').className = 'feedback ok';
-        document.getElementById('fb').textContent = '✅ ' + s.explain;
+        document.getElementById('fb').textContent = '✅ ' + (s.explain || 'Correct!');
         addXP(5);
         const srs = store.get('srs', []);
         const entry = srs.find(e => e.question === s.question);
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         b.classList.add('wrong');
         document.getElementById('fb').className = 'feedback err';
-        document.getElementById('fb').textContent = '🌱 Errors are data! ' + s.hint + ' — reviewing this again tomorrow.';
+        document.getElementById('fb').textContent = '🌱 Errors are data! ' + (s.hint || 'Come back and try it again.') + ' — reviewing this again tomorrow.';
         const srs = store.get('srs', []);
         const entry = srs.find(e => e.question === s.question);
         if (entry) { entry.level = 0; entry.due = Date.now() + 864e5; store.set('srs', srs); }
@@ -43,6 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   };
-  function markDoneCount() { store.set('lastReview', new Date().toDateString()); }
+  function markDoneCount() { store.set('lastReview', new Date().toDateString()); renderBadges(); }
   show();
 });
