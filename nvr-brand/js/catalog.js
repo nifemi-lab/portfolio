@@ -258,7 +258,7 @@ var CONTACT = {
   whatsapp: '',
 
   /* Where orders go by email. Leave '' to hide the email button. */
-  email: 'orders@nvr.example',
+  email: '',
 
   /* Shown in the footer and in the copied order text. */
   handle: '@nvr'

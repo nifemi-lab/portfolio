@@ -197,8 +197,10 @@
 
       <p class="status" id="orderStatus" role="status" aria-live="polite"></p>
 
-      <label class="order-label tag" for="orderOut">Your order — copy manually if needed</label>
-      <textarea class="order-out" id="orderOut" rows="8" readonly spellcheck="false"></textarea>
+      <details class="order-manual">
+        <summary class="order-label tag">Order text — open to copy manually</summary>
+        <textarea class="order-out" id="orderOut" rows="7" readonly spellcheck="false"></textarea>
+      </details>
     </div>
   </aside>
 

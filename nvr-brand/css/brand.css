@@ -28,6 +28,17 @@
 *::before,
 *::after { box-sizing: border-box; }
 
+/* Default scrollbars render as bright grey blocks against obsidian. */
+* { scrollbar-width: thin; scrollbar-color: var(--slate) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--slate);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--ash); background-clip: content-box; }
+
 html { scroll-behavior: smooth; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -551,7 +562,8 @@ p { margin: 0 0 1rem; max-width: 60ch; }
 .icon-btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
 .drawer-body {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0; /* let the list shrink so the footer is never pushed off */
   overflow-y: auto;
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -618,7 +630,16 @@ p { margin: 0 0 1rem; max-width: 60ch; }
 .line-remove:hover { color: var(--bone); }
 .line-remove:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
-.drawer-foot { padding: 1.25rem 1.5rem 1.5rem; border-top: 1px solid rgb(245 245 238 / .14); }
+/* Footer keeps its natural height, then scrolls internally once the viewport
+   is too short. Without the cap it overflowed the drawer and the order
+   textarea became unreachable below roughly 650px of window height. */
+.drawer-foot {
+  flex: 0 0 auto;
+  max-height: 70%;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem 1.5rem;
+  border-top: 1px solid rgb(245 245 238 / .14);
+}
 
 .total-row {
   display: flex;
@@ -639,7 +660,17 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   line-height: 1.5;
 }
 
-.channels { display: grid; gap: .5rem; }
+/* Pinned to the top of the scrolling footer so the send actions are never
+   scrolled away on a short window. */
+.channels {
+  display: grid;
+  gap: .5rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--void);
+  padding-block: .25rem;
+}
 
 .warning {
   border: 1px solid var(--volt);
@@ -677,11 +708,33 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   margin: 1rem 0 .5rem;
 }
 
+/* Collapsed by default: the manual textarea is a last-resort fallback, and
+   leaving it open made the footer taller than a short window could show. */
+.order-manual { margin-top: 1.25rem; }
+.order-manual > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 0;
+  color: var(--ash);
+}
+.order-manual > summary::-webkit-details-marker { display: none; }
+.order-manual > summary::before {
+  content: '+';
+  font-family: var(--mono);
+  color: var(--volt);
+}
+.order-manual[open] > summary::before { content: '\2212'; }
+.order-manual > summary:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
+.order-manual[open] > summary { color: var(--bone); }
+
 .order-out {
   width: 100%;
   margin-top: 1rem;
-  min-height: 12rem;
-  background: #060b1c;
+  min-height: 7.5rem;
+  background: #161616;
   border: 1px solid rgb(245 245 238 / .16);
   color: var(--bone);
   font-family: var(--mono);
