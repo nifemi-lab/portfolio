@@ -121,7 +121,7 @@
 
     if (CONTACT.whatsapp) {
       lines.push('');
-      lines.push('WhatsApp: ' + CONTACT.whatsapp);
+      lines.push('WhatsApp: +' + whatsappNumber());
     }
     if (CONTACT.email) {
       lines.push('Email:    ' + CONTACT.email);
@@ -248,10 +248,8 @@
 
     if (!bag.length) {
       body.innerHTML = '<p class="empty">Your bag is empty</p>';
-      return;
-    }
-
-    body.innerHTML = bag.map(function (l) {
+    } else {
+      body.innerHTML = bag.map(function (l) {
       var p = productOf(l.id);
       if (!p) return '';
       var c = collectionOf(p.collection);
@@ -273,10 +271,25 @@
           '</div>' +
         '</div>';
     }).join('');
+    }
 
     var text = orderText();
     var out = $('#orderOut');
     if (out) out.value = text;
+
+    // Keep the real hrefs in sync so they can be copied or opened without JS.
+    var wa = $('#sendWhatsApp');
+    var mail = $('#sendEmail');
+    if (wa) {
+      var waHref = bag.length ? whatsappHref() : null;
+      wa.setAttribute('href', waHref || '#');
+      wa.setAttribute('aria-disabled', waHref ? 'false' : 'true');
+    }
+    if (mail) {
+      var mailHref = bag.length ? mailtoHref() : null;
+      mail.setAttribute('href', mailHref || '#');
+      mail.setAttribute('aria-disabled', mailHref ? 'false' : 'true');
+    }
   }
 
   /* ---------- drawer ---------- */
@@ -332,9 +345,19 @@
       '&body=' + encodeURIComponent(orderText());
   }
 
+  /* wa.me rejects +, spaces and dashes, so normalise whatever was pasted. */
+  function whatsappNumber() {
+    if (!CONTACT.whatsapp) return '';
+    var digits = String(CONTACT.whatsapp).replace(/\D/g, '');
+    // A bare 10-digit local number gets the Nigeria country code prepended.
+    if (digits.length === 10) digits = (digits[0] === '0' ? '234' + digits.slice(1) : '234' + digits);
+    return digits;
+  }
+
   function whatsappHref() {
-    if (!CONTACT.whatsapp) return null;
-    return 'https://wa.me/' + CONTACT.whatsapp + '?text=' + encodeURIComponent(orderText());
+    var num = whatsappNumber();
+    if (!num) return null;
+    return 'https://wa.me/' + num + '?text=' + encodeURIComponent(orderText());
   }
 
   function orderItems() {
@@ -571,9 +594,13 @@
 
     if (waBtn) {
       if (CONTACT.whatsapp) {
-        waBtn.addEventListener('click', function () {
-          var href = whatsappHref();
-          if (href) { logOrder('whatsapp'); window.open(href, '_blank', 'noopener'); }
+        waBtn.addEventListener('click', function (e) {
+          // Anchors navigate on their own; JS only records the order.
+          if (waBtn.getAttribute('aria-disabled') === 'true') {
+            e.preventDefault();
+            return;
+          }
+          logOrder('whatsapp');
         });
       } else {
         waBtn.setAttribute('hidden', '');
@@ -582,9 +609,12 @@
 
     if (mailBtn) {
       if (CONTACT.email) {
-        mailBtn.addEventListener('click', function () {
-          var href = mailtoHref();
-          if (href) { logOrder('email'); window.location.href = href; }
+        mailBtn.addEventListener('click', function (e) {
+          if (mailBtn.getAttribute('aria-disabled') === 'true') {
+            e.preventDefault();
+            return;
+          }
+          logOrder('email');
         });
       } else {
         mailBtn.setAttribute('hidden', '');

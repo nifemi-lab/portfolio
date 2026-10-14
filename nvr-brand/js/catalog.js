@@ -255,10 +255,12 @@ var HOW_BLOCKS = [
 var CONTACT = {
   /* Full international number, digits only, no + or spaces.
      Nigeria: 234 then the local number. Leave '' to hide the WhatsApp button. */
-  whatsapp: '',
+  /* wa.me needs digits only. Non-digits are stripped in app.js, so any
+     paste format is safe. */
+  whatsapp: '+2348106285867',
 
   /* Where orders go by email. Leave '' to hide the email button. */
-  email: '',
+  email: 'gafarianimation@gmail.com',
 
   /* Shown in the footer and in the copied order text. */
   handle: '@nvr'

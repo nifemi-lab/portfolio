@@ -91,19 +91,33 @@ the bag can never dead-end.
 Each order gets a quotable reference like `NVR-7K4Q`. Logging is fire-and-forget
 and can never block the customer's order path.
 
-### Setting it up
+### Current state
 
-Edit `CONTACT` and `SUPABASE` in `js/catalog.js`:
+WhatsApp and email are **live**:
 
 ```js
-var CONTACT = { whatsapp: '2348000000000', email: 'orders@you.com' };
-var SUPABASE = { supabaseUrl: 'https://xxx.supabase.co', supabaseAnonKey: 'eyJ...' };
+var CONTACT = { whatsapp: '+2348106285867', email: 'gafarianimation@gmail.com' };
 ```
 
-Leave `supabaseUrl` empty to skip logging entirely — WhatsApp and email still
-work with no backend at all.
+Supabase logging is **off** (`supabaseUrl` empty) — orders still arrive by
+WhatsApp and email, they just aren't also stored in a database.
 
-Then run `supabase.sql` once in the Supabase SQL editor.
+The number is pasted with a `+`, which is fine: `whatsappNumber()` strips
+non-digits before building the link, and prepends `234` to a bare 10-digit
+local number. So any paste format produces a valid `wa.me` URL.
+
+Both channels are real `<a href>` links rather than buttons, so they support
+right-click "copy link", middle-click, and show the destination in the status
+bar. With an empty bag they carry `aria-disabled="true"` and do nothing.
+
+### Turning on Supabase logging (optional)
+
+1. Run `supabase.sql` once in the Supabase SQL editor.
+2. Fill in `SUPABASE` in `js/catalog.js`:
+
+```js
+var SUPABASE = { supabaseUrl: 'https://xxx.supabase.co', supabaseAnonKey: 'eyJ...' };
+```
 
 Use the **anon** key. Never put the `service_role` key in a public file.
 
@@ -142,8 +156,7 @@ fails AA; 85% clears it at 4.92:1.
 - **Product tiles are drawn in CSS**, not photographed. Placeholder photos of
   garments that don't exist would break the brand's own third rule. Replace
   `.tile` with real imagery when there is real imagery.
-- **`CONTACT` is empty.** The site deliberately shows a "not ready to take
-  orders" warning until a WhatsApp number or email is set.
+- **`CONTACT` is live** (WhatsApp + email). Supabase logging is still off.
 - **Three blocks in "How it works" are scaffold** — *Who runs it*, *How it's
   made*, *Sizing and delivery*. They render with a dashed volt border as a
   visible reminder. Real people, production and logistics were deliberately not

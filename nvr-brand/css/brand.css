@@ -693,6 +693,13 @@ p { margin: 0 0 1rem; max-width: 60ch; }
 .btn--ghost { border-color: rgb(245 245 238 / .3); color: var(--ash); }
 .btn--ghost:hover { background: var(--bone); border-color: var(--bone); color: var(--void); }
 
+/* Empty bag: the send links are inert but still readable. */
+.channels a[aria-disabled='true'] {
+  opacity: .4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .status {
   font-family: var(--mono);
   font-size: .6875rem;
