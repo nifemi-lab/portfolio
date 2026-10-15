@@ -56,10 +56,38 @@ function topFit(chest, length, sleeve, sizes) {
   return m;
 }
 
+/* ============================================================
+ * Storefront pricing and origin
+ * Defined before CATALOG because every product below references both.
+ * ============================================================ */
+
+/* Charm pricing. NVR only, so it never touches a seller's agreed price -
+   sellers name a floor and we publish above it. Round to x,900 so it reads
+   as a deliberate price rather than an odd one. */
+function charmPrice(amount) {
+  if (amount < 10000) return amount;
+  var base = Math.floor(amount / 1000) * 1000;
+  var candidate = base + 900;
+  return candidate < amount ? candidate : base - 100;
+}
+
+/* A markdown is only ever shown when there is a genuine prior price.
+   Fabricating a "was" price to make a discount look bigger is false
+   advertising, and we handle customer money. */
+function priceRow(list, wasBefore) {
+  var row = { list: list };
+  if (wasBefore && wasBefore > list) row.was = wasBefore;
+  return row;
+}
+
+/* Everything on the storefront is either made by NVR or curated from the
+   community. The badge is the trust signal, so it is never optional. */
+var ORIGIN = { NVR: 'nvr', SELLER: 'seller' };
+
 var CATALOG = [
   {
     id: 'void-01', code: 'VOID/01', name: 'Heavyweight tee', collection: 'void',
-    price: 15000, weight: '300gsm', sizes: ['S', 'M', 'L', 'XL'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(15000), weight: '300gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
     blurb: 'Boxy. Drop shoulder. Blank inside and out, both branded.',
     guideNote: FIT_TOP,
@@ -68,7 +96,7 @@ var CATALOG = [
   },
   {
     id: 'void-02', code: 'VOID/02', name: 'Boxy hoodie', collection: 'void',
-    price: 32000, weight: '320gsm', sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(32000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     stock: 'In stock',
     blurb: 'Heavy rib. Oversized back print, one statement, one line.',
     guideNote: FIT_TOP,
@@ -77,7 +105,7 @@ var CATALOG = [
   },
   {
     id: 'void-03', code: 'VOID/03', name: 'Wide cargo pant', collection: 'void',
-    price: 28000, weight: '280gsm', sizes: ['S', 'M', 'L', 'XL'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(28000), weight: '280gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
     blurb: 'Utility pocket set. Straight through the leg.',
     guideNote: FIT_BOTTOM,
@@ -89,7 +117,7 @@ var CATALOG = [
   },
   {
     id: 'void-04', code: 'VOID/04', name: 'Baggy utility pant', collection: 'void',
-    price: 30000, weight: '290gsm', sizes: ['S', 'M', 'L'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(30000), weight: '290gsm', sizes: ['S', 'M', 'L'],
     stock: 'In stock',
     blurb: 'The one we build most of. Falls from the hip.',
     guideNote: FIT_BOTTOM,
@@ -100,7 +128,7 @@ var CATALOG = [
   },
   {
     id: 'signal-01', code: 'SIGNAL/01', name: 'Reflective shell', collection: 'signal',
-    price: 38000, weight: '240gsm', sizes: ['S', 'M', 'L', 'XL'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(38000), weight: '240gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
     blurb: 'Reflective piping front and back. Reads at distance.',
     guideNote: FIT_TOP,
@@ -109,7 +137,7 @@ var CATALOG = [
   },
   {
     id: 'signal-02', code: 'SIGNAL/02', name: 'Hi-vis cap', collection: 'signal',
-    price: 9000, weight: 'One size', sizes: ['OS'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(9000), weight: 'One size', sizes: ['OS'],
     stock: 'In stock',
     blurb: 'Small wordmark only. Nothing shouty.',
     guideNote: FIT_ONE,
@@ -118,7 +146,7 @@ var CATALOG = [
   },
   {
     id: 'orbit-01', code: 'ORBIT/01', name: 'Gradient long sleeve', collection: 'orbit',
-    price: 18000, weight: '260gsm', sizes: ['S', 'M', 'L', 'XL'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(18000), weight: '260gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
     blurb: 'Ultraviolet into cyan. One accent, on purpose.',
     guideNote: FIT_TOP,
@@ -127,7 +155,7 @@ var CATALOG = [
   },
   {
     id: 'orbit-02', code: 'ORBIT/02', name: 'Orbital print tee', collection: 'orbit',
-    price: 14000, weight: '280gsm', sizes: ['S', 'M', 'L', 'XL'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(14000), weight: '280gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
     blurb: 'Single-stroke ring. The mark, printed flat.',
     guideNote: FIT_TOP,
@@ -136,7 +164,7 @@ var CATALOG = [
   },
   {
     id: 'static-01', code: 'STATIC/01', name: 'Glitch washed tee', collection: 'static',
-    price: 13000, weight: '240gsm', sizes: ['S', 'M', 'L'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(13000), weight: '240gsm', sizes: ['S', 'M', 'L'],
     stock: 'In stock',
     blurb: 'Pigment wash, misregistered print. Every one differs.',
     guideNote: FIT_TOP,
@@ -145,7 +173,7 @@ var CATALOG = [
   },
   {
     id: 'static-02', code: 'STATIC/02', name: 'Noise sweat', collection: 'static',
-    price: 26000, weight: '300gsm', sizes: ['S', 'M', 'L', 'XL'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(26000), weight: '300gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
     blurb: 'Ash body, static white set-in sleeve.',
     guideNote: FIT_TOP,
@@ -154,7 +182,7 @@ var CATALOG = [
   },
   {
     id: 'ascent-01', code: 'ASCENT/01', name: 'Numbered drop tee', collection: 'ascent',
-    price: 16000, weight: '290gsm', sizes: ['S', 'M', 'L'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(16000), weight: '290gsm', sizes: ['S', 'M', 'L'],
     stock: 'Numbered run',
     blurb: 'Blood orange, numbered to the run. No restock.',
     guideNote: FIT_TOP,
@@ -163,7 +191,7 @@ var CATALOG = [
   },
   {
     id: 'ascent-02', code: 'ASCENT/02', name: 'Limited fleece', collection: 'ascent',
-    price: 42000, weight: '340gsm', sizes: ['S', 'M', 'L', 'XL'],
+    origin: ORIGIN.NVR, made: true, price: charmPrice(42000), weight: '340gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'Numbered run',
     blurb: 'Heaviest thing we make. Comes with a number.',
     guideNote: FIT_TOP,
@@ -294,6 +322,11 @@ var SELLING = {
     'The brand label, readable'
   ],
 
-  note: 'One piece per application to start. We review in batches, so expect a ' +
-        'reply within a few days.'
+  note: 'Add as many pieces as you like. Nothing appears on the storefront ' +
+        'until we approve it, which usually takes a few days.'
 };
+
+/* ============================================================
+ * Storefront pricing
+ * (charmPrice, priceRow and ORIGIN are defined above CATALOG, which uses them.)
+ * ============================================================ */

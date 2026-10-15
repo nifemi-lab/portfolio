@@ -22,10 +22,65 @@ function money(n) {
   }
 
   function collectionOf(id) {
+    if (id === 'community') return COMMUNITY;
     for (var i = 0; i < COLLECTIONS.length; i++) {
       if (COLLECTIONS[i].id === id) return COLLECTIONS[i];
     }
     return COLLECTIONS[0];
+  }
+
+  /* Seller listings, shaped like catalogue items so one grid can render both.
+     Only approved AND priced listings appear — until you set a price there
+     is nothing to sell, so it stays hidden. */
+  var COMMUNITY = { id: 'community', name: 'COMMUNITY', accentHex: '#bbbbbb' };
+  var sellerItems = [];
+
+  function normaliseSellerItem(listing, seller) {
+    if (!listing.list_price || listing.list_price < 1) return null;
+    return {
+      id: listing.reference,
+      code: listing.reference,
+      name: listing.garment,
+      collection: 'community',
+      origin: ORIGIN.SELLER,
+      soldBy: seller ? (seller.handle || seller.full_name) : null,
+      sellerRef: seller ? seller.reference : null,
+      price: listing.list_price,
+      weight: listing.condition,
+      sizes: listing.size ? [listing.size] : ['OS'],
+      stock: 'Curated',
+      blurb: listing.notes || (listing.brand ? listing.brand + ' — curated by NVR.' : 'Curated by NVR.'),
+      metrics: null,
+      measurements: null
+    };
+  }
+
+  function loadSellerItems() {
+    if (!SUPABASE.supabaseUrl || !SUPABASE.supabaseAnonKey) {
+      sellerItems = [];
+      return Promise.resolve([]);
+    }
+    var head = {
+      apikey: SUPABASE.supabaseAnonKey,
+      'Authorization': 'Bearer ' + SUPABASE.supabaseAnonKey
+    };
+    // RLS on `listings` already limits anon to status 'listed' or 'sold'.
+    return fetch(SUPABASE.supabaseUrl + '/rest/v1/listings?status=eq.listed&select=*,seller:sellers(reference,full_name,handle)', { headers: head })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .catch(function () { return []; })
+      .then(function (rows) {
+        sellerItems = (rows || [])
+          .map(function (row) {
+            var s = Array.isArray(row.seller) ? row.seller[0] : row.seller;
+            return normaliseSellerItem(row, s);
+          })
+          .filter(Boolean);
+        return sellerItems;
+      });
+  }
+
+  function allItems() {
+    return CATALOG.concat(sellerItems);
   }
 
   function productOf(id) {
@@ -156,6 +211,14 @@ function money(n) {
   var activeFilter = 'all';
   var sizeChoice = {}; // productId -> size
 
+  function originBadge(p) {
+    if (p.origin === ORIGIN.SELLER) {
+      return '<span class="origin-badge origin-badge--seller">Sold by ' +
+        escapeHtml(p.soldBy || 'a seller') + '</span>';
+    }
+    return '<span class="origin-badge origin-badge--nvr">NVR</span>';
+  }
+
   function renderCollections() {
     var host = $('#collectionGrid');
     if (!host) return;
@@ -209,7 +272,7 @@ function money(n) {
   function renderFilters() {
     var host = $('#filters');
     if (!host) return;
-    var all = [{ id: 'all', name: 'All' }].concat(COLLECTIONS);
+    var all = [{ id: 'all', name: 'All' }, { id: 'nvr', name: 'NVR made' }, { id: 'community', name: 'Community' }].concat(COLLECTIONS);
     host.innerHTML = all.map(function (c) {
       return '<button type="button" class="filter" data-filter="' + c.id + '" aria-pressed="' +
         (c.id === activeFilter) + '">' + escapeHtml(c.name) + '</button>';
@@ -220,9 +283,11 @@ function money(n) {
     var host = $('#grid');
     if (!host) return;
 
-    var items = activeFilter === 'all'
-      ? CATALOG
-      : CATALOG.filter(function (p) { return p.collection === activeFilter; });
+    var source = allItems();
+    var items = activeFilter === 'all' ? source
+      : activeFilter === 'nvr' ? source.filter(function (p) { return p.origin === ORIGIN.NVR; })
+      : activeFilter === 'community' ? source.filter(function (p) { return p.origin === ORIGIN.SELLER; })
+      : source.filter(function (p) { return p.collection === activeFilter; });
 
     host.innerHTML = items.map(function (p) {
       var c = collectionOf(p.collection);
@@ -237,6 +302,7 @@ function money(n) {
           '<div class="tile-wrap">' +
             '<div class="tile"><span class="tile-mark">' + escapeHtml(c.name) + '</span></div>' +
             '<span class="tile-code">' + escapeHtml(p.code) + '</span>' +
+            originBadge(p) +
           '</div>' +
           '<div class="card-body">' +
             '<div class="card-head">' +
@@ -963,6 +1029,16 @@ function money(n) {
   function init() {
     loadBag();
     renderCollections();
+    // Seller pieces join the same grid, but only approved and priced ones.
+    loadSellerItems().then(function () {
+      renderProducts();
+      var note = $('#communityNote');
+      if (note) {
+        note.hidden = sellerItems.length === 0;
+        var n = $('#communityCount');
+        if (n) n.textContent = sellerItems.length;
+      }
+    });
     renderDivisions();
     renderHow();
     renderPayment();

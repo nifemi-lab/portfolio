@@ -325,6 +325,26 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   color: var(--ash);
 }
 
+/* Who made it. This is the trust signal - a buyer must always be able to
+   tell an NVR piece from a community one. */
+.origin-badge {
+  position: absolute;
+  top: .625rem;
+  left: .625rem;
+  font-family: var(--mono);
+  font-size: .5625rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  padding: .3125rem .5rem;
+  background: rgb(10 10 10 / .82);
+  border: 1px solid var(--accent, var(--bone));
+  color: var(--accent, var(--bone));
+  max-width: calc(100% - 1.25rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tile-wrap { position: relative; }
 
 .card-body {
@@ -379,6 +399,16 @@ p { margin: 0 0 1rem; max-width: 60ch; }
 .size:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 .size[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--void); }
 .size:disabled { opacity: .3; cursor: not-allowed; text-decoration: line-through; }
+
+.community-note {
+  font-family: var(--mono);
+  font-size: .75rem;
+  letter-spacing: .06em;
+  color: var(--ash);
+  margin: 0 0 1.5rem;
+}
+.community-note strong { color: var(--volt); }
+.community-note a { color: var(--bone); }
 
 .card-add {
   margin-top: .75rem;

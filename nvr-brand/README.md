@@ -351,6 +351,36 @@ aggregating only their own rows.
 > business with obligations. Get the registration right and check CACPC and
 > tax position before running it at volume.
 
+### Storefront: NVR pieces and community pieces together
+
+One grid, two origins, and a badge that says which is which on every single
+card — **NVR** or **Sold by @handle**. A buyer must never have to guess whether
+a piece came from the studio or from someone else, because "curated by NVR"
+only means something if it is distinguishable.
+
+Filters gained **NVR made** and **Community** alongside the collections.
+
+A seller listing appears only when it is `status = 'listed'` **and** has a
+`list_price`. Until you approve it *and* price it there is nothing to sell, so
+it stays invisible. `supabase.sql` also gives `anon` select access to
+`listings` only where `status in ('listed','sold')`, so pending work is never
+reachable from the browser even if someone asks for it directly.
+
+### Pricing
+
+NVR publishes **one clean price**. The seller's asking price is a floor, not a
+displayed number, and the difference between floor and shelf price is the
+commission. Buyers never see a fee and never see the seller quoted a lower
+figure.
+
+NVR's own pieces run through `charmPrice()` — round to `x,900` — so ₦15,000
+displays as ₦14,900. It never applies to a seller's agreed price.
+
+> `priceRow(list, wasBefore)` only ever produces a "was" price when
+> `wasBefore` is a genuine prior price. Inventing a reference price to make a
+> discount look larger is false advertising, and now that NVR holds customer
+> money that is a real exposure. No markdown is currently displayed anywhere.
+
 ## Behaviour
 
 - **Bag** — add, change quantity, remove. Persists to `localStorage`
