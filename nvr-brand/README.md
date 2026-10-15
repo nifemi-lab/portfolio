@@ -125,6 +125,37 @@ Use the **anon** key. Never put the `service_role` key in a public file.
 > the only account is yours. If you ever add customer accounts to this project,
 > tighten those two policies first.
 
+## Pricing
+
+Prices are in **Naira**, because that is what customers actually pay. The dollar
+figure shown beneath is **derived at runtime** from a single constant:
+
+```js
+var NGN_PER_USD = 1500; // in js/catalog.js
+```
+
+Nothing is stored twice, so when the rate moves you change that one line and
+every dollar equivalent on the site updates with it. Storing a separate `usd`
+price per product would drift out of sync within a week.
+
+| Piece | NGN | ~USD |
+|---|---:|---:|
+| SIGNAL/02 Hi-vis cap | ₦9,000 | ~$6 |
+| STATIC/01 Glitch washed tee | ₦13,000 | ~$9 |
+| ORBIT/02 Orbital print tee | ₦14,000 | ~$9 |
+| VOID/01 Heavyweight tee | ₦15,000 | ~$10 |
+| ASCENT/01 Numbered drop tee | ₦16,000 | ~$11 |
+| ORBIT/01 Gradient long sleeve | ₦18,000 | ~$12 |
+| STATIC/02 Noise sweat | ₦26,000 | ~$17 |
+| VOID/03 Wide cargo pant | ₦28,000 | ~$19 |
+| VOID/04 Baggy utility pant | ₦30,000 | ~$20 |
+| VOID/02 Boxy hoodie | ₦32,000 | ~$21 |
+| SIGNAL/01 Reflective shell | ₦38,000 | ~$25 |
+| ASCENT/02 Limited fleece | ₦42,000 | ~$28 |
+
+Naira shows on the card, in every bag line, in the running total, and in the
+copied order. USD shows beneath each in a quieter weight so the real price leads.
+
 ## Behaviour
 
 - **Bag** — add, change quantity, remove. Persists to `localStorage`
@@ -164,5 +195,6 @@ fails AA; 85% clears it at 4.92:1.
   would be stronger with real detail: adding your name to *Who runs it*, and
   actual delivery areas and turnaround in *Sizing and delivery*. Both live in
   `HOW_BLOCKS` in `js/catalog.js`.
-- **Catalogue and prices are placeholders.** VOID/04 at $128 is the only piece
-  carried over from the Figma prototype.
+- **Catalogue is a placeholder range.** Prices are set at plausible Nigerian
+  streetwear rates but are not your final pricing — move them freely in
+  `CATALOG` in `js/catalog.js`.

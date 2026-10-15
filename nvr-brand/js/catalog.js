@@ -4,6 +4,12 @@
  * Plain script (no modules) so it also runs when opened over file://.
  */
 
+/* Prices are in Naira — that is what customers actually pay.
+   The USD figure is derived, never stored, so changing this one number
+   updates every dollar equivalent on the site.
+   Update it when the rate moves; don't hardcode a second copy. */
+var NGN_PER_USD = 1500;
+
 /* Palette from the Figma brand board.
    Volt is the only accent and is reserved for CTAs and SIGNAL.
    Collections otherwise use the neutral ramp, so no two accents ever sit
@@ -66,7 +72,7 @@ var CATALOG = [
     code: 'VOID/01',
     name: 'Heavyweight tee',
     collection: 'void',
-    price: 58,
+    price: 15000,
     weight: '300gsm',
     sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
@@ -77,7 +83,7 @@ var CATALOG = [
     code: 'VOID/02',
     name: 'Boxy hoodie',
     collection: 'void',
-    price: 128,
+    price: 32000,
     weight: '320gsm',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     stock: 'In stock',
@@ -88,7 +94,7 @@ var CATALOG = [
     code: 'VOID/03',
     name: 'Wide cargo pant',
     collection: 'void',
-    price: 118,
+    price: 28000,
     weight: '280gsm',
     sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
@@ -99,7 +105,7 @@ var CATALOG = [
     code: 'VOID/04',
     name: 'Baggy utility pant',
     collection: 'void',
-    price: 128,
+    price: 30000,
     weight: '290gsm',
     sizes: ['S', 'M', 'L'],
     stock: 'In stock',
@@ -110,7 +116,7 @@ var CATALOG = [
     code: 'SIGNAL/01',
     name: 'Reflective shell',
     collection: 'signal',
-    price: 168,
+    price: 38000,
     weight: '240gsm',
     sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
@@ -121,7 +127,7 @@ var CATALOG = [
     code: 'SIGNAL/02',
     name: 'Hi-vis cap',
     collection: 'signal',
-    price: 42,
+    price: 9000,
     weight: 'One size',
     sizes: ['OS'],
     stock: 'In stock',
@@ -132,7 +138,7 @@ var CATALOG = [
     code: 'ORBIT/01',
     name: 'Gradient long sleeve',
     collection: 'orbit',
-    price: 88,
+    price: 18000,
     weight: '260gsm',
     sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
@@ -143,7 +149,7 @@ var CATALOG = [
     code: 'ORBIT/02',
     name: 'Orbital print tee',
     collection: 'orbit',
-    price: 62,
+    price: 14000,
     weight: '280gsm',
     sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
@@ -154,7 +160,7 @@ var CATALOG = [
     code: 'STATIC/01',
     name: 'Glitch washed tee',
     collection: 'static',
-    price: 66,
+    price: 13000,
     weight: '240gsm',
     sizes: ['S', 'M', 'L'],
     stock: 'In stock',
@@ -165,7 +171,7 @@ var CATALOG = [
     code: 'STATIC/02',
     name: 'Noise sweat',
     collection: 'static',
-    price: 112,
+    price: 26000,
     weight: '300gsm',
     sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
@@ -176,7 +182,7 @@ var CATALOG = [
     code: 'ASCENT/01',
     name: 'Numbered drop tee',
     collection: 'ascent',
-    price: 72,
+    price: 16000,
     weight: '290gsm',
     sizes: ['S', 'M', 'L'],
     stock: 'Numbered run',
@@ -187,7 +193,7 @@ var CATALOG = [
     code: 'ASCENT/02',
     name: 'Limited fleece',
     collection: 'ascent',
-    price: 148,
+    price: 42000,
     weight: '340gsm',
     sizes: ['S', 'M', 'L', 'XL'],
     stock: 'Numbered run',

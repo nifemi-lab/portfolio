@@ -11,7 +11,15 @@
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
 
-  function money(n) { return '$' + n.toFixed(2); }
+  /* Naira is the real price; dollars are derived from NGN_PER_USD so there is
+   only ever one exchange rate to maintain. */
+function money(n) {
+  return '₦' + Math.round(n).toLocaleString('en-NG');
+  }
+
+  function usd(n) {
+    return '~$' + Math.round(n / NGN_PER_USD).toLocaleString('en-US');
+  }
 
   function collectionOf(id) {
     for (var i = 0; i < COLLECTIONS.length; i++) {
@@ -111,10 +119,11 @@
       var p = productOf(l.id);
       if (!p) return;
       lines.push(p.code + '  ' + p.name);
-      lines.push('  Size ' + l.size + '   Qty ' + l.qty + '   ' + money(p.price * l.qty));
+      lines.push('  Size ' + l.size + '   Qty ' + l.qty + '   ' +
+        money(p.price * l.qty) + '  (' + usd(p.price * l.qty) + ')');
     });
     lines.push('');
-    lines.push('SUBTOTAL   ' + money(bagTotal()));
+    lines.push('SUBTOTAL   ' + money(bagTotal()) + '  (' + usd(bagTotal()) + ')');
     lines.push('');
     lines.push('No payment taken. Send this with your name and delivery');
     lines.push('address and we will confirm by hand.');
@@ -222,7 +231,10 @@
           '<div class="card-body">' +
             '<div class="card-head">' +
               '<span class="card-name">' + escapeHtml(p.name) + '</span>' +
-              '<span class="card-price">' + money(p.price) + '</span>' +
+              '<span class="price-stack">' +
+                '<span class="card-price">' + money(p.price) + '</span>' +
+                '<span class="card-price-usd">' + usd(p.price) + '</span>' +
+              '</span>' +
             '</div>' +
             '<p class="card-blurb">' + escapeHtml(p.blurb) + '</p>' +
             '<span class="tag">' + escapeHtml(p.weight) + ' &middot; <span class="stock">' + escapeHtml(p.stock) + '</span></span>' +
@@ -238,10 +250,12 @@
     var body = $('#bagBody');
     var countEl = $('#bagCount');
     var totalEl = $('#bagTotal');
+    var totalUsdEl = $('#bagTotalUsd');
     var count = $('#bagItemCount');
 
     if (countEl) countEl.textContent = String(bagCount());
     if (totalEl) totalEl.textContent = money(bagTotal());
+    if (totalUsdEl) totalUsdEl.textContent = usd(bagTotal());
     if (count) count.textContent = bag.length === 1 ? '1 item' : bag.length + ' items';
 
     if (!body) return;
@@ -266,7 +280,10 @@
             '</div>' +
           '</div>' +
           '<div class="line-right">' +
-            '<span class="line-price">' + money(p.price * l.qty) + '</span>' +
+            '<span class="price-stack">' +
+              '<span class="line-price">' + money(p.price * l.qty) + '</span>' +
+              '<span class="line-price-usd">' + usd(p.price * l.qty) + '</span>' +
+            '</span>' +
             '<button type="button" class="line-remove" data-rm="' + p.id + '" data-size="' + escapeHtml(l.size) + '">Remove</button>' +
           '</div>' +
         '</div>';
