@@ -515,6 +515,73 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   margin-top: 2rem;
 }
 
+/* ---------- size guide ---------- */
+
+.card-guide {
+  margin-top: .5rem;
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: .625rem;
+  width: 100%;
+  background: transparent;
+  color: var(--ash);
+  border: 1px solid rgb(245 245 238 / .22);
+  cursor: pointer;
+}
+.card-guide:hover { color: var(--bone); border-color: var(--bone); }
+.card-guide:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
+
+.drawer--guide { width: min(460px, 100%); }
+
+.guide-name {
+  font-family: var(--head);
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin: .375rem 0 1.25rem;
+  color: var(--bone);
+}
+
+.guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: .8125rem;
+}
+.guide-table caption { text-align: left; }
+.guide-table th,
+.guide-table td {
+  padding: .625rem .5rem;
+  border-bottom: 1px solid rgb(245 245 238 / .12);
+  text-align: right;
+}
+.guide-table thead th {
+  font-size: .625rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ash);
+  font-weight: 400;
+}
+.guide-table tbody th {
+  text-align: left;
+  color: var(--ash);
+  font-weight: 400;
+  letter-spacing: .06em;
+}
+.guide-table tbody td { color: var(--bone); }
+
+.guide-note {
+  font-size: .8125rem;
+  color: var(--ash);
+  line-height: 1.6;
+  margin: 1.25rem 0 0;
+  max-width: none;
+}
+
+.guide-cta { margin-top: 1.5rem; }
+
 /* ---------- bag / drawer ---------- */
 
 .scrim {

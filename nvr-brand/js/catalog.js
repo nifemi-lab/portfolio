@@ -1,8 +1,13 @@
-/* NVR Supply — catalogue data
- * Design rules (BRAND.md): void background + ONE accent per piece.
- * Accent lives on the collection, never on two elements at once.
- * Plain script (no modules) so it also runs when opened over file://.
- */
+/* ============================================================
+   NVR Supply — catalogue data
+   Design rules: obsidian background + ONE accent per piece.
+   Plain script (no modules) so it also runs when opened over file://.
+
+   MEASUREMENTS: figures below are industry-standard starting points
+   for heavyweight streetwear, NOT measured from real stock. Measure
+   an actual garment and correct them before you sell. Every number is
+   editable in place. All dimensions are in centimetres.
+   ============================================================ */
 
 /* Prices are in Naira — that is what customers actually pay.
    The USD figure is derived, never stored, so changing this one number
@@ -14,7 +19,7 @@ var NGN_PER_USD = 1500;
    Volt is the only accent and is reserved for CTAs and SIGNAL.
    Collections otherwise use the neutral ramp, so no two accents ever sit
    on the same piece. Slate is deliberately not used for small text: at
-   #666 on obsidian it only reaches ~3.6:1 and fails WCAG AA. */
+   #666 on obsidian it only reaches ~3.5:1 and fails WCAG AA. */
 var TOKENS = {
   obsidian: '#0a0a0a',
   bone: '#f5f5ee',
@@ -24,193 +29,147 @@ var TOKENS = {
 };
 
 var COLLECTIONS = [
-  {
-    id: 'void',
-    name: 'VOID',
-    vibe: 'Core, heavyweight basics',
-    note: 'The foundation. 300gsm and up, cut boxy.',
-    accent: 'bone',
-    accentHex: TOKENS.bone
-  },
-  {
-    id: 'signal',
-    name: 'SIGNAL',
-    vibe: 'High-vis, reflective, street',
-    note: 'Seen before you are.',
-    accent: 'volt',
-    accentHex: TOKENS.volt
-  },
-  {
-    id: 'orbit',
-    name: 'ORBIT',
-    vibe: 'Cosmic gradient, space prints',
-    note: 'Weightless things, heavy cotton.',
-    accent: 'bone',
-    accentHex: TOKENS.bone
-  },
-  {
-    id: 'static',
-    name: 'STATIC',
-    vibe: 'Noise, glitch, washed',
-    note: 'Every print slightly wrong on purpose.',
-    accent: 'ash',
-    accentHex: TOKENS.ash
-  },
-  {
-    id: 'ascent',
-    name: 'ASCENT',
-    vibe: 'Limited drops, numbers',
-    note: 'Numbered, then gone.',
-    accent: 'ash',
-    accentHex: TOKENS.ash
-  }
+  { id: 'void', name: 'VOID', vibe: 'Core, heavyweight basics',
+    note: 'The foundation. 300gsm and up, cut boxy.', accent: 'bone', accentHex: TOKENS.bone },
+  { id: 'signal', name: 'SIGNAL', vibe: 'High-vis, reflective, street',
+    note: 'Seen before you are.', accent: 'volt', accentHex: TOKENS.volt },
+  { id: 'orbit', name: 'ORBIT', vibe: 'Cosmic gradient, space prints',
+    note: 'Weightless things, heavy cotton.', accent: 'bone', accentHex: TOKENS.bone },
+  { id: 'static', name: 'STATIC', vibe: 'Noise, glitch, washed',
+    note: 'Every print slightly wrong on purpose.', accent: 'ash', accentHex: TOKENS.ash },
+  { id: 'ascent', name: 'ASCENT', vibe: 'Limited drops, numbers',
+    note: 'Numbered, then gone.', accent: 'ash', accentHex: TOKENS.ascent }
 ];
+
+COLLECTIONS[4].accentHex = TOKENS.ash;
+
+/* Reusable measurement sets so identical cuts stay identical. */
+var FIT_TOP = 'Body width is measured flat across the chest, then doubled. Length is shoulder to hem, measured flat. Sleeve is shoulder to cuff. Model is 183cm and wears M.';
+var FIT_BOTTOM = 'Waist is the full relaxed waistband. Hip is measured flat across the widest point, then doubled. Inseam is the inner leg seam. Leg opening is measured flat, then doubled.';
+var FIT_ONE = 'One size, adjustable. Measure around your head just above the ears.';
+
+function topFit(chest, length, sleeve, sizes) {
+  var m = {};
+  sizes.forEach(function (s, i) {
+    m[s] = [chest[i], length[i], sleeve[i]];
+  });
+  return m;
+}
 
 var CATALOG = [
   {
-    id: 'void-01',
-    code: 'VOID/01',
-    name: 'Heavyweight tee',
-    collection: 'void',
-    price: 15000,
-    weight: '300gsm',
-    sizes: ['S', 'M', 'L', 'XL'],
+    id: 'void-01', code: 'VOID/01', name: 'Heavyweight tee', collection: 'void',
+    price: 15000, weight: '300gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
-    blurb: 'Boxy. Drop shoulder. Blank inside and out, both branded.'
+    blurb: 'Boxy. Drop shoulder. Blank inside and out, both branded.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([54, 57, 60, 63], [72, 74, 76, 78], [21, 22, 23, 24], ['S', 'M', 'L', 'XL'])
   },
   {
-    id: 'void-02',
-    code: 'VOID/02',
-    name: 'Boxy hoodie',
-    collection: 'void',
-    price: 32000,
-    weight: '320gsm',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    id: 'void-02', code: 'VOID/02', name: 'Boxy hoodie', collection: 'void',
+    price: 32000, weight: '320gsm', sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     stock: 'In stock',
-    blurb: 'Heavy rib. Oversized back print, one statement, one line.'
+    blurb: 'Heavy rib. Oversized back print, one statement, one line.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([56, 59, 62, 65, 68], [66, 68, 70, 72, 74], [62, 63, 64, 65, 66], ['S', 'M', 'L', 'XL', 'XXL'])
   },
   {
-    id: 'void-03',
-    code: 'VOID/03',
-    name: 'Wide cargo pant',
-    collection: 'void',
-    price: 28000,
-    weight: '280gsm',
-    sizes: ['S', 'M', 'L', 'XL'],
+    id: 'void-03', code: 'VOID/03', name: 'Wide cargo pant', collection: 'void',
+    price: 28000, weight: '280gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
-    blurb: 'Utility pocket set. Straight through the leg.'
+    blurb: 'Utility pocket set. Straight through the leg.',
+    guideNote: FIT_BOTTOM,
+    metrics: ['Waist', 'Hip', 'Inseam', 'Leg opening'],
+    measurements: {
+      S: [36, 46, 76, 22], M: [39, 49, 77, 23],
+      L: [42, 52, 78, 24], XL: [45, 55, 79, 25]
+    }
   },
   {
-    id: 'void-04',
-    code: 'VOID/04',
-    name: 'Baggy utility pant',
-    collection: 'void',
-    price: 30000,
-    weight: '290gsm',
-    sizes: ['S', 'M', 'L'],
+    id: 'void-04', code: 'VOID/04', name: 'Baggy utility pant', collection: 'void',
+    price: 30000, weight: '290gsm', sizes: ['S', 'M', 'L'],
     stock: 'In stock',
-    blurb: 'The one we build most of. Falls from the hip.'
+    blurb: 'The one we build most of. Falls from the hip.',
+    guideNote: FIT_BOTTOM,
+    metrics: ['Waist', 'Hip', 'Inseam', 'Leg opening'],
+    measurements: {
+      S: [36, 47, 74, 24], M: [39, 50, 75, 25], L: [42, 53, 76, 26]
+    }
   },
   {
-    id: 'signal-01',
-    code: 'SIGNAL/01',
-    name: 'Reflective shell',
-    collection: 'signal',
-    price: 38000,
-    weight: '240gsm',
-    sizes: ['S', 'M', 'L', 'XL'],
+    id: 'signal-01', code: 'SIGNAL/01', name: 'Reflective shell', collection: 'signal',
+    price: 38000, weight: '240gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
-    blurb: 'Reflective piping front and back. Reads at distance.'
+    blurb: 'Reflective piping front and back. Reads at distance.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([55, 58, 61, 64], [68, 70, 72, 74], [63, 64, 65, 66], ['S', 'M', 'L', 'XL'])
   },
   {
-    id: 'signal-02',
-    code: 'SIGNAL/02',
-    name: 'Hi-vis cap',
-    collection: 'signal',
-    price: 9000,
-    weight: 'One size',
-    sizes: ['OS'],
+    id: 'signal-02', code: 'SIGNAL/02', name: 'Hi-vis cap', collection: 'signal',
+    price: 9000, weight: 'One size', sizes: ['OS'],
     stock: 'In stock',
-    blurb: 'Small wordmark only. Nothing shouty.'
+    blurb: 'Small wordmark only. Nothing shouty.',
+    guideNote: FIT_ONE,
+    metrics: ['Head circumference'],
+    measurements: { OS: [58] }
   },
   {
-    id: 'orbit-01',
-    code: 'ORBIT/01',
-    name: 'Gradient long sleeve',
-    collection: 'orbit',
-    price: 18000,
-    weight: '260gsm',
-    sizes: ['S', 'M', 'L', 'XL'],
+    id: 'orbit-01', code: 'ORBIT/01', name: 'Gradient long sleeve', collection: 'orbit',
+    price: 18000, weight: '260gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
-    blurb: 'Ultraviolet into cyan. One accent, on purpose.'
+    blurb: 'Ultraviolet into cyan. One accent, on purpose.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([52, 55, 58, 61], [71, 73, 75, 77], [62, 63, 64, 65], ['S', 'M', 'L', 'XL'])
   },
   {
-    id: 'orbit-02',
-    code: 'ORBIT/02',
-    name: 'Orbital print tee',
-    collection: 'orbit',
-    price: 14000,
-    weight: '280gsm',
-    sizes: ['S', 'M', 'L', 'XL'],
+    id: 'orbit-02', code: 'ORBIT/02', name: 'Orbital print tee', collection: 'orbit',
+    price: 14000, weight: '280gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
-    blurb: 'Single-stroke ring. The mark, printed flat.'
+    blurb: 'Single-stroke ring. The mark, printed flat.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([54, 57, 60, 63], [72, 74, 76, 78], [21, 22, 23, 24], ['S', 'M', 'L', 'XL'])
   },
   {
-    id: 'static-01',
-    code: 'STATIC/01',
-    name: 'Glitch washed tee',
-    collection: 'static',
-    price: 13000,
-    weight: '240gsm',
-    sizes: ['S', 'M', 'L'],
+    id: 'static-01', code: 'STATIC/01', name: 'Glitch washed tee', collection: 'static',
+    price: 13000, weight: '240gsm', sizes: ['S', 'M', 'L'],
     stock: 'In stock',
-    blurb: 'Pigment wash, misregistered print. Every one differs.'
+    blurb: 'Pigment wash, misregistered print. Every one differs.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([53, 56, 59], [70, 72, 74], [21, 22, 23], ['S', 'M', 'L'])
   },
   {
-    id: 'static-02',
-    code: 'STATIC/02',
-    name: 'Noise sweat',
-    collection: 'static',
-    price: 26000,
-    weight: '300gsm',
-    sizes: ['S', 'M', 'L', 'XL'],
+    id: 'static-02', code: 'STATIC/02', name: 'Noise sweat', collection: 'static',
+    price: 26000, weight: '300gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'In stock',
-    blurb: 'Ash body, static white set-in sleeve.'
+    blurb: 'Ash body, static white set-in sleeve.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([54, 57, 60, 63], [64, 66, 68, 70], [61, 62, 63, 64], ['S', 'M', 'L', 'XL'])
   },
   {
-    id: 'ascent-01',
-    code: 'ASCENT/01',
-    name: 'Numbered drop tee',
-    collection: 'ascent',
-    price: 16000,
-    weight: '290gsm',
-    sizes: ['S', 'M', 'L'],
+    id: 'ascent-01', code: 'ASCENT/01', name: 'Numbered drop tee', collection: 'ascent',
+    price: 16000, weight: '290gsm', sizes: ['S', 'M', 'L'],
     stock: 'Numbered run',
-    blurb: 'Blood orange, numbered to the run. No restock.'
+    blurb: 'Blood orange, numbered to the run. No restock.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([54, 57, 60], [72, 74, 76], [21, 22, 23], ['S', 'M', 'L'])
   },
   {
-    id: 'ascent-02',
-    code: 'ASCENT/02',
-    name: 'Limited fleece',
-    collection: 'ascent',
-    price: 42000,
-    weight: '340gsm',
-    sizes: ['S', 'M', 'L', 'XL'],
+    id: 'ascent-02', code: 'ASCENT/02', name: 'Limited fleece', collection: 'ascent',
+    price: 42000, weight: '340gsm', sizes: ['S', 'M', 'L', 'XL'],
     stock: 'Numbered run',
-    blurb: 'Heaviest thing we make. Comes with a number.'
+    blurb: 'Heaviest thing we make. Comes with a number.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([57, 60, 63, 66], [67, 69, 71, 73], [62, 63, 64, 65], ['S', 'M', 'L', 'XL'])
   }
-];
-
-var TIERS = [
-  { name: 'Guest', meaning: 'Learning for free at the Academy.' },
-  { name: 'Member', meaning: 'Gets early drops and Academy forever.' },
-  { name: 'Inner Circle', meaning: 'Funds a learner\u2019s course per purchase.' }
-];
-
-var RULES = [
-  'Never use fake urgency or discount spam.',
-  'Never post content you wouldn\u2019t wear.',
-  'Never ship something that doesn\u2019t fund the mission.'
 ];
 
 /* The three divisions, as shown on the Figma board's lockups. */
@@ -250,17 +209,14 @@ var HOW_BLOCKS = [
   { title: 'How it\u2019s made',
     body: 'Heavyweight 240\u2013340gsm cotton, boxy cut with a drop shoulder. One statement on the back, a small wordmark on the chest or sleeve, and blank inside and out \u2014 both branded. Small runs, so nothing gets overproduced.' },
   { title: 'Sizing and delivery',
-    body: 'The cut is deliberately generous and boxy. Orders are confirmed by hand: send yours and we will come back with delivery details and payment before anything is made.' }
+    body: 'The cut is deliberately generous and boxy. Every piece lists its measurements in centimetres \u2014 check them against a garment you already own before ordering. Orders are confirmed by hand: send yours and we will come back with delivery details and payment before anything is made.' }
 ];
 
 /* ============================================================
  * Where an order actually reaches you.
- * Every value here is a placeholder until you replace it.
  * ============================================================ */
 
 var CONTACT = {
-  /* Full international number, digits only, no + or spaces.
-     Nigeria: 234 then the local number. Leave '' to hide the WhatsApp button. */
   /* wa.me needs digits only. Non-digits are stripped in app.js, so any
      paste format is safe. */
   whatsapp: '+2348106285867',
@@ -272,8 +228,8 @@ var CONTACT = {
   handle: '@nvr'
 };
 
-/* Supabase order logging. Leave supabaseUrl as '' to skip logging entirely —
-   WhatsApp and email keep working with no backend at all.
+/* Supabase order logging. Still unconfigured — the store works without it.
+   Set supabaseUrl to turn on logging; WhatsApp and email are unaffected.
    Use the anon key. Never put the service_role key in a public file. */
 var SUPABASE = {
   supabaseUrl: '',

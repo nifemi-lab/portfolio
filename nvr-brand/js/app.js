@@ -239,8 +239,14 @@ function money(n) {
             '<p class="card-blurb">' + escapeHtml(p.blurb) + '</p>' +
             '<span class="tag">' + escapeHtml(p.weight) + ' &middot; <span class="stock">' + escapeHtml(p.stock) + '</span></span>' +
             '<div class="sizes" role="group" aria-label="Size for ' + escapeHtml(p.code) + '">' + sizes + '</div>' +
-            '<button type="button" class="card-add"' + (chosen ? '' : ' disabled') +
+            // The guide only renders when the product actually carries measurements.
+// A visitor on a cached older catalogue simply doesn't see the button,
+// rather than clicking into an error.
+'<button type="button" class="card-add"' + (chosen ? '' : ' disabled') +
               ' data-add="' + p.id + '">Add to bag</button>' +
+            (hasGuide(p)
+              ? '<button type="button" class="card-guide" data-guide="' + p.id + '">Size guide &amp; measurements</button>'
+              : '') +
           '</div>' +
         '</article>';
     }).join('');
@@ -317,6 +323,14 @@ function money(n) {
     var d = $('#bagDrawer');
     var s = $('#scrim');
     if (!d) return;
+    // Only one dialog at a time.
+    var g = $('#guideDrawer');
+    if (g && g.getAttribute('data-open') === 'true') {
+      g.setAttribute('data-open', 'false');
+      g.setAttribute('aria-hidden', 'true');
+      var gs = $('#guideScrim');
+      if (gs) gs.setAttribute('data-open', 'false');
+    }
     lastFocus = document.activeElement;
     d.setAttribute('data-open', 'true');
     d.removeAttribute('aria-hidden');
@@ -338,9 +352,11 @@ function money(n) {
   }
 
   function trapFocus(e) {
-    var d = $('#bagDrawer');
-    if (!d || d.getAttribute('data-open') !== 'true') return;
     if (e.key !== 'Tab') return;
+    // Whichever dialog is open owns the trap; only one can be at a time.
+    var d = $('#bagDrawer');
+    if (!d || d.getAttribute('data-open') !== 'true') d = $('#guideDrawer');
+    if (!d || d.getAttribute('data-open') !== 'true') return;
 
     var focusable = $$('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])', d)
       .filter(function (el) { return el.offsetParent !== null; });
@@ -352,6 +368,72 @@ function money(n) {
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
+
+  /* ---------- size guide ---------- */
+
+  function hasGuide(p) {
+    if (!p || !Array.isArray(p.metrics) || !p.measurements || !Array.isArray(p.sizes)) return false;
+    return p.sizes.every(function (s) {
+      return Array.isArray(p.measurements[s]) && p.measurements[s].length === p.metrics.length;
+    });
+  }
+
+  function openGuide(id) {
+    var p = productOf(id);
+    var body = $('#guideBody');
+    var drawer = $('#guideDrawer');
+    var scrim = $('#guideScrim');
+    if (!p || !body || !drawer) return;
+    if (!hasGuide(p)) return;
+
+    var rows = p.metrics.map(function (label, i) {
+      var cells = p.sizes.map(function (s) {
+        var vals = p.measurements[s] || [];
+        var v = vals[i];
+        return '<td>' + (v === undefined ? '—' : v) + '</td>';
+      }).join('');
+      return '<tr><th scope="row">' + escapeHtml(label) + '</th>' + cells + '</tr>';
+    }).join('');
+
+    body.innerHTML =
+      '<p class="tag tag--accent">' + escapeHtml(p.code) + '</p>' +
+      '<h3 class="guide-name">' + escapeHtml(p.name) + '</h3>' +
+      '<table class="guide-table">' +
+        '<caption class="skip-link">Measurements in centimetres</caption>' +
+        '<thead><tr><th scope="col">cm</th>' +
+          p.sizes.map(function (s) { return '<th scope="col">' + escapeHtml(s) + '</th>'; }).join('') +
+        '</tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table>' +
+      '<p class="guide-note">' + escapeHtml(p.guideNote) + '</p>' +
+      '<p class="guide-cta">' +
+        '<button type="button" class="btn btn--volt btn--block" data-guide-pick="' + escapeHtml(p.id) + '">' +
+          '<span>Choose a size</span> <span aria-hidden="true">&rarr;</span>' +
+        '</button>' +
+      '</p>';
+
+    guideProduct = id;
+    lastFocus = document.activeElement;
+    drawer.setAttribute('data-open', 'true');
+    drawer.removeAttribute('aria-hidden');
+    if (scrim) scrim.setAttribute('data-open', 'true');
+    document.body.style.overflow = 'hidden';
+    var close = $('[data-guide-close]', drawer);
+    if (close) close.focus();
+  }
+
+  function closeGuide() {
+    var drawer = $('#guideDrawer');
+    var scrim = $('#guideScrim');
+    if (!drawer) return;
+    drawer.setAttribute('data-open', 'false');
+    drawer.setAttribute('aria-hidden', 'true');
+    if (scrim) scrim.setAttribute('data-open', 'false');
+    document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  var guideProduct = null;
 
   /* ---------- send channels ---------- */
 
@@ -505,6 +587,12 @@ function money(n) {
     var grid = $('#grid');
     if (grid) {
       grid.addEventListener('click', function (e) {
+        var guideBtn = e.target.closest('[data-guide]');
+        if (guideBtn) {
+          openGuide(guideBtn.getAttribute('data-guide'));
+          return;
+        }
+
         var sizeBtn = e.target.closest('[data-size]');
         var card = e.target.closest('.card');
         if (!card) return;
@@ -594,8 +682,35 @@ function money(n) {
     var scrim = $('#scrim');
     if (scrim) scrim.addEventListener('click', closeDrawer);
 
+    // Size guide: open from the card, close via button, scrim or Escape.
+    $$('[data-guide-close]').forEach(function (el) {
+      el.addEventListener('click', closeGuide);
+    });
+
+    var guideScrim = $('#guideScrim');
+    if (guideScrim) guideScrim.addEventListener('click', closeGuide);
+
+    var guideBody = $('#guideBody');
+    if (guideBody) {
+      guideBody.addEventListener('click', function (e) {
+        var pick = e.target.closest('[data-guide-pick]');
+        if (!pick) return;
+        closeGuide();
+        // Send focus to the size buttons for the garment just measured.
+        var card = document.querySelector('#grid .card[data-id="' + pick.getAttribute('data-guide-pick') + '"]');
+        if (!card) return;
+        var firstSize = card.querySelector('.size');
+        if (firstSize) {
+          firstSize.focus();
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    }
+
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') {
+        var g = $('#guideDrawer');
+        if (g && g.getAttribute('data-open') === 'true') { closeGuide(); return; }
         var d = $('#bagDrawer');
         if (d && d.getAttribute('data-open') === 'true') closeDrawer();
       }

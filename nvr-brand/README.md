@@ -155,6 +155,26 @@ price per product would drift out of sync within a week.
 Naira shows on the card, in every bag line, in the running total, and in the
 copied order. USD shows beneath each in a quieter weight so the real price leads.
 
+## Size guide
+
+Every product carries a **Size guide & measurements** button that opens a dialog
+with a real measurement table in centimetres — chest, length and sleeve for
+tops; waist, hip, inseam and leg opening for bottoms; head circumference for
+the cap.
+
+Each table states how it was measured (flat then doubled, relaxed waistband,
+and so on) and notes the model is 183cm wearing M, so "M" means something.
+
+The guide button is only rendered when a product actually has measurements for
+every one of its sizes. A visitor whose browser still has an older `catalog.js`
+cached simply doesn't see the button instead of clicking into a broken dialog.
+
+> **The numbers are starting points, not measurements from real stock.** They
+> follow industry-standard heavyweight streetwear specs so the guide is usable
+> immediately, but measure an actual garment and correct `measurements` in
+> `CATALOG` (`js/catalog.js`) before you sell. Every figure is editable in
+> place.
+
 ## Behaviour
 
 - **Bag** — add, change quantity, remove. Persists to `localStorage`
