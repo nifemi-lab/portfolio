@@ -515,6 +515,37 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   margin-top: 2rem;
 }
 
+/* ---------- customer details ---------- */
+
+.details { display: grid; gap: .75rem; margin-bottom: .5rem; }
+.details-field { display: grid; gap: .375rem; }
+.details-field .tag { display: block; }
+
+.details-field input {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgb(245 245 238 / .22);
+  color: var(--bone);
+  font-family: var(--mono);
+  font-size: .8125rem;
+  letter-spacing: .04em;
+  padding: .625rem .75rem;
+}
+.details-field input::placeholder { color: var(--slate); }
+.details-field input:hover { border-color: rgb(245 245 238 / .45); }
+.details-field input:focus-visible {
+  outline: 2px solid var(--volt);
+  outline-offset: -1px;
+  border-color: var(--volt);
+}
+
+.details-note {
+  font-size: .75rem;
+  color: var(--ash);
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
 /* ---------- bank transfer ---------- */
 
 .bank-block { margin-top: 1px; }
@@ -888,6 +919,8 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   cursor: not-allowed;
   pointer-events: none;
 }
+
+.status--log { color: var(--ash); min-height: 0; }
 
 .status {
   font-family: var(--mono);

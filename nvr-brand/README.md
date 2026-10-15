@@ -216,6 +216,53 @@ Customers can ask about a piece three ways:
 All WhatsApp links are built through one `whatsappNumber()` helper, so the
 number is entered once.
 
+## Order records (Supabase)
+
+Every order is also written to a Supabase `orders` table, so you keep a record
+even if someone abandons the WhatsApp chat.
+
+It uses the **same Supabase project** as the JAMB Study tracker and NVR Coding
+(project ref `mhfxmjaxexgwcyhkoyhz`) and the same public anon key. That key is
+designed to ship in browser code; row-level security is what protects the data.
+
+### One-time setup
+
+**Until you do this, logging silently fails and WhatsApp and email carry on
+working unchanged.** The customer sees "Sent. (Order not logged — database not
+set up yet.)"
+
+1. Open your Supabase project → **SQL Editor** → **New query**
+2. Paste the whole of [`supabase.sql`](supabase.sql) and run it
+3. Done — new orders appear immediately
+
+To read them: Supabase → **Table editor** → `orders`. Or **Data** → **Orders**.
+
+### What gets stored
+
+| Column | Value |
+|---|---|
+| `reference` | quotable reference, e.g. `NVR-7K4Q` |
+| `full_name`, `phone` | from the bag form, if the customer filled it in |
+| `items` | JSONB — code, name, size, qty, price, line total |
+| `item_count`, `subtotal` | integers and numeric, in naira |
+| `channel` | `whatsapp` or `email` |
+| `status` | `new` → `confirmed` → `made` → `shipped` → `done`, or `cancelled` |
+
+`status` has a check constraint, so typos are rejected rather than silently
+stored. There is no delete policy: orders are a record, cancel by status.
+
+> The SQL grants `select`/`update` to any authenticated Supabase user. That is
+> fine while the only account is yours. If you ever add customer accounts to
+> this project, tighten those two policies first.
+
+### Customer details
+
+The bag asks for a name and phone number, both optional, remembered in
+`localStorage` after the first time. Without them a logged order can't be
+matched to a WhatsApp message — which is most of the point of logging.
+
+Logging is fire-and-forget and can never block or delay the customer's order.
+
 ## Behaviour
 
 - **Bag** — add, change quantity, remove. Persists to `localStorage`
@@ -247,8 +294,10 @@ fails AA; 85% clears it at 4.92:1.
 - **Product tiles are drawn in CSS**, not photographed. Placeholder photos of
   garments that don't exist would break the brand's own third rule. Replace
   `.tile` with real imagery when there is real imagery.
-- **`CONTACT` is live** (WhatsApp + email). Supabase logging is still off.
-- **`BANK` is live** (OPay). Supabase logging is still off.
+- **`CONTACT` is live** (WhatsApp + email). **`BANK` is live** (OPay).
+- **Supabase is configured but the `orders` table does not exist yet.** Run
+  `supabase.sql` once. Until then logging fails silently and nothing is lost —
+  orders still arrive on WhatsApp.
 - **People and logistics are described only where they're sourced.** The
   *How it works* copy comes from `BRAND.md` and the Figma board — garment
   weights, the boxy drop-shoulder cut, the division structure, the taglines. No

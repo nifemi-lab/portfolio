@@ -115,6 +115,15 @@ function money(n) {
     if (!currentRef) currentRef = orderRef();
 
     var lines = ['NVR SUPPLY — ORDER', currentRef, ''];
+
+    var name = ($('#custName') && $('#custName').value || '').trim();
+    var phone = ($('#custPhone') && $('#custPhone').value || '').trim();
+    if (name || phone) {
+      if (name) lines.push('Name:  ' + name);
+      if (phone) lines.push('Phone: ' + phone);
+      lines.push('');
+    }
+
     bag.forEach(function (l) {
       var p = productOf(l.id);
       if (!p) return;
@@ -565,6 +574,8 @@ function money(n) {
 
     var payload = {
       reference: currentRef,
+      full_name: ($('#custName') && $('#custName').value || '').trim() || null,
+      phone: ($('#custPhone') && $('#custPhone').value || '').trim() || null,
       items: orderItems(),
       item_count: bagCount(),
       subtotal: bagTotal(),
@@ -582,11 +593,26 @@ function money(n) {
       },
       body: JSON.stringify(payload)
     }).then(function (res) {
-      return { ok: res.ok, status: res.status };
+      // 404 means the table hasn't been created yet - the usual case
+      // until supabase.sql has been run once.
+      return { ok: res.ok, status: res.status, missing: res.status === 404 };
     }).catch(function () {
       // Logging must never block the customer's order path.
-      return { ok: false, status: 0 };
+      return { ok: false, status: 0, missing: false };
     });
+  }
+
+  function reportLogging(result) {
+    var el = $('#logStatus');
+    if (!el) return;
+    if (!result || result.skipped) { el.textContent = ''; return; }
+    if (result.ok) {
+      el.textContent = 'Order saved to our records.';
+    } else if (result.missing) {
+      el.textContent = 'Sent. (Order not logged — database not set up yet.)';
+    } else {
+      el.textContent = 'Sent.';
+    }
   }
 
   /* ---------- copy order ---------- */
@@ -841,7 +867,7 @@ function money(n) {
             e.preventDefault();
             return;
           }
-          logOrder('whatsapp');
+          logOrder('whatsapp').then(reportLogging);
         });
       } else {
         waBtn.setAttribute('hidden', '');
@@ -855,7 +881,7 @@ function money(n) {
             e.preventDefault();
             return;
           }
-          logOrder('email');
+          logOrder('email').then(reportLogging);
         });
       } else {
         mailBtn.setAttribute('hidden', '');
@@ -865,6 +891,20 @@ function money(n) {
     // Warning if neither channel is configured — otherwise the bag dead-ends.
     var warn = $('#noChannel');
     if (warn && !CONTACT.whatsapp && !CONTACT.email) warn.removeAttribute('hidden');
+
+    // Remember who is ordering, so they only type it once.
+    ['#custName', '#custPhone'].forEach(function (sel) {
+      var el = $(sel);
+      if (!el) return;
+      var key = 'nvr-cust-' + sel.replace('#cust', '').toLowerCase();
+      try { el.value = localStorage.getItem(key) || ''; } catch (e) { /* private mode */ }
+      el.addEventListener('input', function () {
+        try { localStorage.setItem(key, el.value); } catch (e) { /* private mode */ }
+        // Keep the copied order text in step with what they have typed.
+        var out = $('#orderOut');
+        if (out && bag.length) out.value = orderText();
+      });
+    });
 
     initReveal();
   }

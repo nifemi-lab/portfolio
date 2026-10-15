@@ -184,7 +184,23 @@
         in <code>js/catalog.js</code>.
       </p>
 
-      <div class="channels">
+      <div class="details">
+          <label class="details-field">
+            <span class="tag">Your name</span>
+            <input type="text" id="custName" name="name" autocomplete="name"
+                   placeholder="e.g. Monisola S." spellcheck="false" />
+          </label>
+          <label class="details-field">
+            <span class="tag">Phone or WhatsApp</span>
+            <input type="tel" id="custPhone" name="tel" autocomplete="tel"
+                   placeholder="0801 234 5678" spellcheck="false" />
+          </label>
+        </div>
+        <p class="details-note">
+          Optional, but it lets us match the order to the message you send us.
+        </p>
+
+        <div class="channels">
         <a class="btn btn--volt btn--block" id="sendWhatsApp" href="#" rel="noopener">
           <span>Send on WhatsApp</span> <span aria-hidden="true">&rarr;</span>
         </a>
@@ -197,6 +213,7 @@
       </div>
 
       <p class="status" id="orderStatus" role="status" aria-live="polite"></p>
+      <p class="status status--log" id="logStatus" role="status" aria-live="polite"></p>
 
       <details class="order-manual">
         <summary class="order-label tag">Order text — open to copy manually</summary>

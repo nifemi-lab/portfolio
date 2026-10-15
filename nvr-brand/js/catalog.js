@@ -228,12 +228,18 @@ var CONTACT = {
   handle: '@nvr'
 };
 
-/* Supabase order logging. Still unconfigured — the store works without it.
-   Set supabaseUrl to turn on logging; WhatsApp and email are unaffected.
-   Use the anon key. Never put the service_role key in a public file. */
+/* Supabase order logging.
+   Same project as the JAMB Study tracker and NVR Coding, using the same
+   public anon key - it is designed to ship in browser code, and
+   row-level security is what protects the data.
+
+   REQUIRES: run supabase.sql once in the Supabase SQL editor to create the
+   `orders` table. Until you do, logging silently fails and WhatsApp and
+   email carry on working exactly as before.
+   Never put the service_role key in this file. */
 var SUPABASE = {
-  supabaseUrl: '',
-  supabaseAnonKey: ''
+  supabaseUrl: 'https://mhfxmjaxexgwcyhkoyhz.supabase.co',
+  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZnhtamF4ZXhnd2N5aGtveWh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MDA5MjksImV4cCI6MjEwNjM3NjkyOX0.svtoSR3EUQyW0Du2RPsA6h7eiHNSb6mbub1dYEtbB3A'
 };
 
 /* ============================================================
