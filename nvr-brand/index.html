@@ -34,6 +34,7 @@
           <li><a class="nav-link" href="#shop">Shop</a></li>
           <li><a class="nav-link" href="#mission">Mission</a></li>
           <li><a class="nav-link" href="#how">How it works</a></li>
+          <li><a class="nav-link" href="#payment">Payment</a></li>
         </ul>
       </nav>
 
@@ -216,7 +217,26 @@
     <div class="drawer-body" id="guideBody"></div>
   </aside>
 
-  <script src="js/catalog.js"></script>
+  <!-- ============ PAYMENT ============ -->
+    <section class="section" id="payment">
+      <div class="wrap">
+        <h2 data-reveal>How you pay</h2>
+        <p class="hero-lede" data-reveal>
+          Bank transfer, by hand. No card details, no checkout gateway, nothing
+          stored on a payment processor. A person confirms every order.
+        </p>
+        <ol class="flow" data-reveal id="payFlow"></ol>
+        <div class="bank-block" id="bankBlock" data-reveal></div>
+      </div>
+    </section>
+
+    <!-- ============ ENQUIRY ============ -->
+    <a class="enquiry-fab" id="enquiryFab" href="#" rel="noopener"
+       aria-label="Ask about a piece on WhatsApp">
+      <span class="enquiry-fab-label">Ask about a piece</span>
+    </a>
+
+    <script src="js/catalog.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

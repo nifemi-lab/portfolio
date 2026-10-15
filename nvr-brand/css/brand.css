@@ -515,6 +515,119 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   margin-top: 2rem;
 }
 
+/* ---------- bank transfer ---------- */
+
+.bank-block { margin-top: 1px; }
+.bank-inner {
+  border: 1px solid rgb(245 245 238 / .14);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+.bank-inner .tag--accent { display: block; margin-bottom: 1.25rem; }
+
+.bank-list { margin: 0; display: grid; gap: 1rem; }
+.bank-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 12rem) 1fr;
+  gap: 1rem;
+  align-items: baseline;
+}
+.bank-row dt {
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ash);
+}
+.bank-row dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 1.0625rem;
+  letter-spacing: .06em;
+  color: var(--bone);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+.bank-copy {
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--volt);
+  border: 1px solid var(--volt);
+  padding: .375rem .625rem;
+  cursor: pointer;
+}
+.bank-copy:hover { background: var(--volt); color: var(--void); }
+.bank-copy:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
+
+.bank-note,
+.bank-missing {
+  font-size: .875rem;
+  color: var(--ash);
+  margin: 1.25rem 0 0;
+  max-width: 60ch;
+}
+.bank-missing { color: var(--bone); }
+
+/* ---------- enquiry button ---------- */
+
+/* Persistent, always reachable, and out of the way of the drawers. */
+.enquiry-fab {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 35;
+  display: inline-flex;
+  align-items: center;
+  gap: .625rem;
+  padding: .875rem 1.25rem;
+  background: var(--volt);
+  color: var(--void);
+  text-decoration: none;
+  border: 0;
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 24px rgb(0 0 0 / .45);
+  transition: opacity .18s ease, transform .18s ease;
+}
+.enquiry-fab:hover { background: var(--bone); transform: translateY(-2px); }
+.enquiry-fab:focus-visible { outline: 2px solid var(--bone); outline-offset: 3px; }
+
+.enquiry-fab.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+}
+
+.card-ask {
+  display: block;
+  margin-top: .5rem;
+  padding: .625rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ash);
+  border: 1px solid rgb(245 245 238 / .22);
+  text-decoration: none;
+}
+.card-ask:hover { color: var(--volt); border-color: var(--volt); }
+.card-ask:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
+.card-ask[hidden] { display: none; }
+
+@media (max-width: 520px) {
+  .enquiry-fab-label { display: none; }
+  .enquiry-fab { padding: 1rem; }
+  .bank-row { grid-template-columns: 1fr; gap: .25rem; }
+}
+
 /* ---------- size guide ---------- */
 
 .card-guide {

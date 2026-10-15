@@ -125,8 +125,9 @@ function money(n) {
     lines.push('');
     lines.push('SUBTOTAL   ' + money(bagTotal()) + '  (' + usd(bagTotal()) + ')');
     lines.push('');
-    lines.push('No payment taken. Send this with your name and delivery');
-    lines.push('address and we will confirm by hand.');
+    lines.push('No payment taken here. Send this with your name and delivery');
+    lines.push('address, and we will confirm by hand and send bank transfer');
+    lines.push('details with your total.');
 
     if (CONTACT.whatsapp) {
       lines.push('');
@@ -247,6 +248,10 @@ function money(n) {
             (hasGuide(p)
               ? '<button type="button" class="card-guide" data-guide="' + p.id + '">Size guide &amp; measurements</button>'
               : '') +
+            '<a class="card-ask" href="' + escapeHtml(enquiryHref(
+              'Hi NVR — I have a question about ' + p.code + ' (' + p.name + ').'
+            ) || '#') + '" rel="noopener"' + (CONTACT.whatsapp ? '' : ' hidden') +
+            '>Ask about this piece</a>' +
           '</div>' +
         '</article>';
     }).join('');
@@ -336,6 +341,8 @@ function money(n) {
     d.removeAttribute('aria-hidden');
     if (s) s.setAttribute('data-open', 'true');
     document.body.style.overflow = 'hidden';
+    var fab = $('#enquiryFab');
+    if (fab) fab.classList.add('is-hidden');
     var close = $('[data-close]', d);
     if (close) close.focus();
   }
@@ -348,6 +355,8 @@ function money(n) {
     d.setAttribute('aria-hidden', 'true');
     if (s) s.setAttribute('data-open', 'false');
     document.body.style.overflow = '';
+    var fab = $('#enquiryFab');
+    if (fab) fab.classList.remove('is-hidden');
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
@@ -367,6 +376,69 @@ function money(n) {
 
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+
+  /* ---------- payment + enquiries ---------- */
+
+  function bankReady() {
+    return !!(BANK.bankName && BANK.accountName && BANK.accountNumber);
+  }
+
+  function enquiryHref(message) {
+    if (!CONTACT.whatsapp) return null;
+    return 'https://wa.me/' + whatsappNumber() + '?text=' + encodeURIComponent(message);
+  }
+
+  function renderPayment() {
+    var flow = $('#payFlow');
+    if (flow) {
+      flow.innerHTML = PAYMENT_STEPS.map(function (s) {
+        return '<li class="flow-step">' +
+          '<span class="flow-n">' + s.n + '</span>' +
+          '<h3>' + escapeHtml(s.title) + '</h3>' +
+          '<p>' + escapeHtml(s.body) + '</p>' +
+        '</li>';
+      }).join('');
+    }
+
+    var block = $('#bankBlock');
+    if (!block) return;
+
+    // Never show a placeholder account number. Until it is filled in, say so.
+    if (!bankReady()) {
+      block.innerHTML =
+        '<div class="bank-inner">' +
+          '<span class="tag tag--accent">Bank transfer</span>' +
+          '<p class="bank-missing">Transfer details are not published yet. ' +
+          'Ask on WhatsApp and we will send them with your order confirmation.</p>' +
+        '</div>';
+      return;
+    }
+
+    block.innerHTML =
+      '<div class="bank-inner">' +
+        '<span class="tag tag--accent">Bank transfer</span>' +
+        '<dl class="bank-list">' +
+          '<div class="bank-row"><dt>Bank</dt><dd>' + escapeHtml(BANK.bankName) + '</dd></div>' +
+          '<div class="bank-row"><dt>Account name</dt><dd>' + escapeHtml(BANK.accountName) + '</dd></div>' +
+          '<div class="bank-row"><dt>Account number</dt><dd>' +
+            '<span id="bankNumber">' + escapeHtml(BANK.accountNumber) + '</span>' +
+            '<button type="button" class="bank-copy" id="copyBank">Copy</button>' +
+          '</dd></div>' +
+        '</dl>' +
+        '<p class="bank-note">Transfer the exact amount and send the receipt on WhatsApp so we can match it to your order.</p>' +
+      '</div>';
+  }
+
+  function setEnquiryFab() {
+    var fab = $('#enquiryFab');
+    if (!fab) return;
+    var href = enquiryHref('Hi NVR — I have a question about a piece.');
+    if (!href) {
+      fab.setAttribute('hidden', '');
+      return;
+    }
+    fab.setAttribute('href', href);
   }
 
   /* ---------- size guide ---------- */
@@ -418,6 +490,8 @@ function money(n) {
     drawer.removeAttribute('aria-hidden');
     if (scrim) scrim.setAttribute('data-open', 'true');
     document.body.style.overflow = 'hidden';
+    var fabEl = $('#enquiryFab');
+    if (fabEl) fabEl.classList.add('is-hidden');
     var close = $('[data-guide-close]', drawer);
     if (close) close.focus();
   }
@@ -430,6 +504,8 @@ function money(n) {
     drawer.setAttribute('aria-hidden', 'true');
     if (scrim) scrim.setAttribute('data-open', 'false');
     document.body.style.overflow = '';
+    var fab = $('#enquiryFab');
+    if (fab) fab.classList.remove('is-hidden');
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
@@ -580,6 +656,8 @@ function money(n) {
     renderCollections();
     renderDivisions();
     renderHow();
+    renderPayment();
+    setEnquiryFab();
     renderFilters();
     renderProducts();
     renderBag();
@@ -704,6 +782,32 @@ function money(n) {
           firstSize.focus();
           card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+      });
+    }
+
+    // Copy the account number without making the customer select it by hand.
+    var bankBlock = $('#bankBlock');
+    if (bankBlock) {
+      bankBlock.addEventListener('click', function (e) {
+        if (!e.target.closest('#copyBank')) return;
+        var num = $('#bankNumber');
+        if (!num) return;
+        var done = function (ok) {
+          var btn = $('#copyBank');
+          if (btn) btn.textContent = ok ? 'Copied' : 'Press Ctrl+C';
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(num.textContent.trim()).then(
+            function () { done(true); }, function () { done(false); }
+          );
+          return;
+        }
+        var range = document.createRange();
+        range.selectNodeContents(num);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        done(document.execCommand('copy'));
       });
     }
 

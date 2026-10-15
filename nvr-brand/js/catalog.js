@@ -235,3 +235,26 @@ var SUPABASE = {
   supabaseUrl: '',
   supabaseAnonKey: ''
 };
+
+/* ============================================================
+ * Payment: bank transfer only.
+ *
+ * TODO: replace every placeholder below with your real details.
+ * Until bankName and accountNumber are filled, the site hides the
+ * transfer block entirely and tells customers to ask instead of
+ * showing a fake account number.
+ * ============================================================ */
+
+var BANK = {
+  bankName: '',
+  accountName: '',
+  accountNumber: ''
+};
+
+/* How the money moves, stated plainly. */
+var PAYMENT_STEPS = [
+  { n: '01', title: 'Send your order', body: 'On WhatsApp, email, or from your bag. No payment is taken on this site.' },
+  { n: '02', title: 'We confirm by hand', body: 'We check stock, confirm your size and delivery details, and reply with the total.' },
+  { n: '03', title: 'Transfer to the bank', body: 'We send you the account name and number. Transfer the exact amount and send the receipt.' },
+  { n: '04', title: 'We make it', body: 'Payment clears, we cut and print your piece, and send you a dispatch update.' }
+];
