@@ -36,6 +36,7 @@
           <li><a class="nav-link" href="#how">How it works</a></li>
           <li><a class="nav-link" href="#payment">Payment</a></li>
           <li><a class="nav-link" href="#track">Track</a></li>
+          <li><a class="nav-link" href="#sell">Sell with us</a></li>
         </ul>
       </nav>
 
@@ -279,6 +280,120 @@
 
         <p class="status track-status" id="trackStatus" role="status" aria-live="polite"></p>
         <div id="trackResult"></div>
+      </div>
+    </section>
+
+    <!-- ============ SELL WITH NVR ============ -->
+    <section class="section" id="sell">
+      <div class="wrap">
+        <h2 data-reveal>Sell with NVR</h2>
+        <p class="hero-lede" data-reveal>
+          We take a limited number of pieces from outside the label. One form,
+          one application, no chasing. Everything we need is asked for up front
+          so you can fill it in once.
+        </p>
+
+        <div class="sell-note" data-reveal>
+          <p>
+            <strong>Nothing is uploaded here.</strong> Fill this in, then send
+            the photos on WhatsApp using the reference you get back. We only
+            need photos of a real garment — never a listing screenshot.
+          </p>
+          <p style="margin:.75rem 0 .35rem">The four we ask for:</p>
+          <ol id="sellPhotos"></ol>
+        </div>
+
+        <form class="sell-form" id="sellForm" data-reveal novalidate>
+          <fieldset>
+            <legend class="tag">About you</legend>
+            <div class="sell-grid">
+              <label class="details-field">
+                <span class="tag">Full name *</span>
+                <input type="text" id="sName" autocomplete="name" required />
+              </label>
+              <label class="details-field">
+                <span class="tag">Phone or WhatsApp *</span>
+                <input type="tel" id="sPhone" autocomplete="tel" required />
+              </label>
+              <label class="details-field">
+                <span class="tag">City</span>
+                <input type="text" id="sCity" autocomplete="address-level2" />
+              </label>
+              <label class="details-field">
+                <span class="tag">Email</span>
+                <input type="email" id="sEmail" autocomplete="email" />
+              </label>
+              <label class="details-field">
+                <span class="tag">How should we credit you?</span>
+                <input type="text" id="sHandle" placeholder="e.g. @yourhandle or your real name" />
+              </label>
+              <label class="details-field">
+                <span class="tag">OPay number for payout</span>
+                <input type="tel" id="sPayout" placeholder="0801 234 5678" />
+              </label>
+            </div>
+            <label class="details-field sell-wide">
+              <span class="tag">One line about your wardrobe</span>
+              <input type="text" id="sBio" placeholder="e.g. Mostly deadstock NVR and SIGNAL pieces, kept unworn." />
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend class="tag">The piece</legend>
+            <div class="sell-grid">
+              <label class="details-field">
+                <span class="tag">Brand *</span>
+                <input type="text" id="lBrand" placeholder="e.g. NVR" required />
+              </label>
+              <label class="details-field">
+                <span class="tag">Garment *</span>
+                <input type="text" id="lGarment" placeholder="e.g. Heavyweight tee" required />
+              </label>
+              <label class="details-field">
+                <span class="tag">Size</span>
+                <input type="text" id="lSize" placeholder="e.g. M" />
+              </label>
+              <label class="details-field">
+                <span class="tag">Condition *</span>
+                <select id="lCondition" required>
+                  <option value="">Choose one</option>
+                  <option>Unworn with tags</option>
+                  <option>Unworn, tags off</option>
+                  <option>Worn once or twice</option>
+                  <option>Worn, no flaws</option>
+                  <option>Has flaws</option>
+                </select>
+              </label>
+              <label class="details-field">
+                <span class="tag">Your asking price (₦) *</span>
+                <input type="number" id="lPrice" min="1" step="100" placeholder="30000" required />
+              </label>
+              <label class="details-field">
+                <span class="tag">Have you sold through NVR before?</span>
+                <select id="lReturning">
+                  <option value="false">No, first time</option>
+                  <option value="true">Yes, I am an approved seller</option>
+                </select>
+              </label>
+            </div>
+            <label class="details-field sell-wide">
+              <span class="tag">Anything we should know</span>
+              <textarea id="lNotes" rows="3" placeholder="Flaws, repairs, original box, anything unusual."></textarea>
+            </label>
+          </fieldset>
+
+          <p class="sell-error" id="sellError" role="alert"></p>
+
+          <div class="sell-actions">
+            <button type="submit" class="btn btn--volt">Send application</button>
+            <p class="sell-fine">
+              We reply within a few days. Listing is at our discretion, and we
+              ask for photos before anything goes live.
+            </p>
+          </div>
+        </form>
+
+        <div id="sellResult"></div>
       </div>
     </section>
 

@@ -88,3 +88,179 @@ grant execute on function public.lookup_order(text, text) to anon, authenticated
 
 -- What a customer is allowed to change on their own order: nothing.
 -- They can look, not touch.
+
+
+-- ============================================================
+--  SELLERS
+-- ------------------------------------------------------------
+--  Sellers apply through the "Sell with NVR" form. Applications are
+--  deliberately structured so reviewing one is a few seconds of reading
+--  rather than a conversation: everything needed to judge is asked up
+--  front, and photos come over WhatsApp.
+-- ============================================================
+
+create table if not exists public.sellers (
+  id          uuid        primary key default gen_random_uuid(),
+  created_at  timestamptz not null default now(),
+  reference   text        not null unique,     -- e.g. SLR-4K9P
+  full_name   text        not null,
+  phone       text        not null,
+  email       text,
+  city        text,
+  handle      text,                            -- how they want to be credited
+  bio         text,
+  payout_to   text,                            -- OPay number or bank account
+  status      text        not null default 'pending',
+  decided_at  timestamptz,
+  constraint sellers_status_check
+    check (status in ('pending', 'approved', 'declined', 'paused'))
+);
+
+create index if not exists sellers_status_idx on public.sellers (status);
+create index if not exists sellers_created_idx on public.sellers (created_at desc);
+
+alter table public.sellers enable row level security;
+
+drop policy if exists "sellers_insert_public" on public.sellers;
+create policy "sellers_insert_public"
+  on public.sellers for insert
+  to anon, authenticated
+  with check ( true );
+
+drop policy if exists "sellers_read_owner" on public.sellers;
+create policy "sellers_read_owner"
+  on public.sellers for select
+  to authenticated
+  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+
+drop policy if exists "sellers_update_owner" on public.sellers;
+create policy "sellers_update_owner"
+  on public.sellers for update
+  to authenticated
+  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' )
+  with check ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+
+
+-- One row per garment a seller wants to list.
+create table if not exists public.listings (
+  id            uuid        primary key default gen_random_uuid(),
+  created_at    timestamptz not null default now(),
+  seller_id     uuid        not null references public.sellers (id) on delete cascade,
+  reference     text        not null unique,
+  brand         text        not null,
+  garment       text        not null,
+  size          text,
+  condition     text        not null,
+  -- what the seller wants
+  asking_price  integer     not null check (asking_price > 0),
+  -- what NVR sells it for once commission is taken
+  list_price    integer,
+  commission_pct integer,
+  payout_amount integer,
+  -- curator's notes: why it was rejected, or how it was listed
+  notes         text,
+  has_label_photo boolean   not null default false,
+  has_back_photo  boolean   not null default false,
+  status        text        not null default 'pending',
+  decided_at    timestamptz,
+  constraint listings_status_check
+    check (status in ('pending', 'listed', 'sold', 'declined', 'paused'))
+);
+
+create index if not exists listings_status_idx  on public.listings (status);
+create index if not exists listings_seller_idx  on public.listings (seller_id);
+create index if not exists listings_created_idx on public.listings (created_at desc);
+
+alter table public.listings enable row level security;
+
+drop policy if exists "listings_insert_owner" on public.listings;
+create policy "listings_insert_owner"
+  on public.listings for insert
+  to authenticated
+  using ( auth.uid() = seller_id )
+  with check ( auth.uid() = seller_id );
+
+drop policy if exists "listings_read_owner" on public.listings;
+create policy "listings_read_owner"
+  on public.listings for select
+  to authenticated
+  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+
+drop policy if exists "listings_update_owner" on public.listings;
+create policy "listings_update_owner"
+  on public.listings for update
+  to authenticated
+  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' )
+  with check ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+
+-- Public can see only what has actually been listed, never pending work.
+drop policy if exists "listings_read_public" on public.listings;
+create policy "listings_read_public"
+  on public.listings for select
+  to anon
+  using ( status in ('listed', 'sold') );
+
+
+-- ============================================================
+--  PAYOUT LEDGER
+-- ------------------------------------------------------------
+--  When a buyer pays NVR, the seller's share is a liability, not
+--  income. Without this table that money goes untracked and gets
+--  paid twice. One row per order; the weekly payout run marks them
+--  paid. Do not skip this.
+-- ============================================================
+
+create table if not exists public.payouts (
+  id             uuid        primary key default gen_random_uuid(),
+  created_at     timestamptz not null default now(),
+  seller_id      uuid        not null references public.sellers (id) on delete restrict,
+  listing_id     uuid        references public.listings (id) on delete set null,
+  order_reference text       not null unique,
+  gross_amount   integer     not null check (gross_amount >= 0),
+  commission_pct integer     not null check (commission_pct between 0 and 100),
+  commission_amount integer  not null check (commission_amount >= 0),
+  net_amount     integer     not null check (net_amount >= 0),
+  status         text        not null default 'owed',
+  paid_at        timestamptz,
+  constraint payouts_status_check
+    check (status in ('owed', 'scheduled', 'paid', 'void'))
+);
+
+create index if not exists payouts_seller_idx on public.payouts (seller_id, status);
+
+alter table public.payouts enable row level security;
+
+-- Sellers can see their own ledger; nobody can write to it.
+drop policy if exists "payouts_read_owner" on public.payouts;
+create policy "payouts_read_owner"
+  on public.payouts for select
+  to authenticated
+  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+
+-- Let a seller check their balance with reference + phone, same pattern
+-- as lookup_order. Aggregates only; no other seller's data is exposed.
+create or replace function public.lookup_seller_balance(p_reference text, p_phone text)
+returns jsonb
+language sql
+security definer
+set search_path = public
+as $$
+  select jsonb_build_object(
+    'seller', s.reference,
+    'name',   s.full_name,
+    'owed',   coalesce(sum(p.net_amount) filter (where p.status in ('owed','scheduled')), 0),
+    'paid',   coalesce(sum(p.net_amount) filter (where p.status = 'paid'), 0),
+    'orders', count(*)
+  )
+  from public.sellers s
+  left join public.payouts p on p.seller_id = s.id
+  where upper(s.reference) = upper(trim(p_reference))
+    and p_phone is not null
+    and regexp_replace(coalesce(s.phone, ''), '[^0-9]', '', 'g')
+      = regexp_replace(coalesce(p_phone, ''), '[^0-9]', '', 'g')
+  group by s.id, s.reference, s.full_name
+  limit 1;
+$$;
+
+revoke all on function public.lookup_seller_balance(text, text) from public;
+grant execute on function public.lookup_seller_balance(text, text) to anon, authenticated;

@@ -298,6 +298,59 @@ Until `supabase.sql` has been run the endpoint answers 404 and the form says
 *"Order tracking is not switched on yet. Message us on WhatsApp"* rather than
 failing silently.
 
+## Selling with NVR
+
+A **Sell with NVR** section where outside sellers apply. Curated, not open:
+nothing is listed until you approve it.
+
+### Why a form and not a marketplace
+
+Curation only became expensive when it was unstructured — a seller messages
+you and you interrogate them one question at a time. The form asks for
+everything needed to judge, up front, so a submission arrives finished:
+
+- name, phone, city, handle, payout number
+- brand, garment, size, condition (dropdown), asking price, notes
+- whether they have sold through NVR before
+
+Photos stay on **WhatsApp**, deliberately. Hosting them would mean a bucket,
+resizing, moderation queues and storage — for a flow you already run. The form
+asks for exactly four: front, back, **care label**, **brand label**. The last
+two are the anti-counterfeit check, and let you judge authenticity and
+condition without a call.
+
+Every application gets a reference like `SLR-4K9P` so photos and replies stay
+matched.
+
+### Commission
+
+```js
+var SELLING = { commissionPct: 15 };
+```
+
+The seller names their price; NVR lists it and the buyer pays NVR. The
+difference is the commission. 15% covers curation, photography, the storefront
+and handling without making the fee worth arguing over on a small piece.
+
+When the `sellers` and `listings` tables do not exist yet, submitting the form
+does not fail silently — it builds the whole application as a pre-filled
+WhatsApp message so nobody loses what they typed.
+
+### Payout ledger
+
+`payouts` is not optional. When a buyer pays NVR, the seller's share is a
+**liability, not income**. Without a row per order recording gross, commission,
+net and whether it has been paid, that money goes untracked and eventually gets
+paid twice.
+
+`lookup_seller_balance(reference, phone)` lets a seller check what they're owed
+without an account — same reference-plus-phone pattern as order tracking,
+aggregating only their own rows.
+
+> Because NVR holds customer money before paying sellers, this is a real
+> business with obligations. Get the registration right and check CACPC and
+> tax position before running it at volume.
+
 ## Behaviour
 
 - **Bag** — add, change quantity, remove. Persists to `localStorage`

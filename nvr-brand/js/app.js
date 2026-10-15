@@ -496,6 +496,175 @@ function money(n) {
     });
   }
 
+  /* ---------- sell with NVR ---------- */
+
+  function shortRef(prefix) {
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var out = '';
+    for (var i = 0; i < 4; i++) out += chars[Math.floor(Math.random() * chars.length)];
+    return prefix + out;
+  }
+
+  var val = function (id) {
+    var el = $(id);
+    return el ? String(el.value || '').trim() : '';
+  };
+
+  function postJson(path, body) {
+    if (!SUPABASE.supabaseUrl || !SUPABASE.supabaseAnonKey) {
+      return Promise.resolve({ unavailable: true });
+    }
+    return fetch(SUPABASE.supabaseUrl + '/rest/v1/' + path, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE.supabaseAnonKey,
+        'Authorization': 'Bearer ' + SUPABASE.supabaseAnonKey,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(body)
+    }).then(function (res) {
+      // sellers/listings come from supabase.sql. Until it is run the endpoint
+      // answers 404 and the application falls back to WhatsApp.
+      if (res.status === 404) return { unavailable: true };
+      if (res.status === 409) return { duplicate: true };
+      if (!res.ok) return { error: true, status: res.status };
+      return { ok: true };
+    }).catch(function () {
+      return { error: true, status: 0 };
+    });
+  }
+
+  function initSelling() {
+    var form = $('#sellForm');
+    if (!form) return;
+
+    var photos = $('#sellPhotos');
+    if (photos) {
+      photos.innerHTML = SELLING.photosNeeded.map(function (p) {
+        return '<li>' + escapeHtml(p) + '</li>';
+      }).join('');
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var err = $('#sellError');
+      var setErr = function (m) { if (err) err.textContent = m; };
+
+      var name = val('#sName');
+      var phone = val('#sPhone');
+      var brand = val('#lBrand');
+      var garment = val('#lGarment');
+      var condition = val('#lCondition');
+      var price = parseInt(val('#lPrice'), 10);
+
+      if (!name || !phone) { setErr('We need your name and a phone number.'); return; }
+      if (!brand || !garment) { setErr('Tell us the brand and the garment.'); return; }
+      if (!condition) { setErr('Choose a condition.'); return; }
+      if (!price || price < 1) { setErr('Put a price on it, in naira.'); return; }
+
+      setErr('');
+      var net = Math.round(price * (1 - SELLING.commissionPct / 100));
+      var sref = shortRef('SLR-');
+
+      var sellerPayload = {
+        reference: sref,
+        full_name: name,
+        phone: phone,
+        email: val('#sEmail') || null,
+        city: val('#sCity') || null,
+        handle: val('#sHandle') || null,
+        bio: val('#sBio') || null,
+        payout_to: val('#sPayout') || null,
+        status: 'pending'
+      };
+
+      postJson('sellers', sellerPayload).then(function (res) {
+        if (res && res.unavailable) {
+          // Database not set up. Don't lose the application — hand it over
+          // as a ready-to-send WhatsApp message instead.
+          var body = [
+            'NVR SELLER APPLICATION',
+            'Name: ' + name,
+            'Phone: ' + phone,
+            'City: ' + (sellerPayload.city || '-'),
+            'Handle: ' + (sellerPayload.handle || '-'),
+            'Payout: ' + (sellerPayload.payout_to || '-'),
+            'About: ' + (sellerPayload.bio || '-'),
+            '',
+            'Brand: ' + brand,
+            'Garment: ' + garment,
+            'Size: ' + (val('#lSize') || '-'),
+            'Condition: ' + condition,
+            'Asking: N' + price + ' (NVR keeps ' + SELLING.commissionPct + '%, you get N' + net + ')',
+            'Notes: ' + (val('#lNotes') || '-'),
+            '',
+            'Photos to follow: ' + SELLING.photosNeeded.join('; ')
+          ].join('\n');
+
+          $('#sellResult').innerHTML =
+            '<div class="track-card">' +
+              '<p class="tag tag--accent" style="margin:0 0 .5rem">Not connected yet</p>' +
+              '<p>Applications are not being stored on the website yet. Send yours straight to us on WhatsApp — it is filled in for you.</p>' +
+              '<a class="btn btn--volt btn--block" href="https://wa.me/' + whatsappNumber() +
+                '?text=' + encodeURIComponent(body) + '" rel="noopener">Send on WhatsApp</a>' +
+            '</div>';
+          form.hidden = true;
+          return;
+        }
+
+        if (res && res.error) {
+          setErr('Something went wrong on our side. Message us on WhatsApp and we will take it from there.');
+          return;
+        }
+
+        // The seller row exists. The listing needs seller_id, which a minimal
+        // insert does not return, so read it back by reference.
+        fetch(SUPABASE.supabaseUrl + '/rest/v1/sellers?reference=eq.' + encodeURIComponent(sref) + '&select=id', {
+          headers: {
+            'apikey': SUPABASE.supabaseAnonKey,
+            'Authorization': 'Bearer ' + SUPABASE.supabaseAnonKey
+          }
+        }).then(function (r) { return r.ok ? r.json() : []; })
+          .catch(function () { return []; })
+          .then(function (rows) {
+            var sellerId = rows && rows[0] ? rows[0].id : null;
+            if (!sellerId) return null;
+            return postJson('listings', {
+              reference: shortRef('LST-'),
+              seller_id: sellerId,
+              brand: brand,
+              garment: garment,
+              size: val('#lSize') || null,
+              condition: condition,
+              asking_price: price,
+              commission_pct: SELLING.commissionPct,
+              payout_amount: net,
+              notes: val('#lNotes') || null,
+              has_label_photo: false,
+              has_back_photo: false,
+              status: 'pending'
+            });
+          })
+          .then(function () {
+            var wa = 'https://wa.me/' + whatsappNumber() + '?text=' + encodeURIComponent(
+              'Hi NVR — I just applied to sell with NVR. My reference is ' + sref +
+              '. Photos to follow: ' + SELLING.photosNeeded.join('; ') + '.'
+            );
+            $('#sellResult').innerHTML =
+              '<div class="track-card">' +
+                '<p class="tag tag--accent" style="margin:0 0 .5rem">Application sent</p>' +
+                '<p>Keep this reference. Send your four photos on WhatsApp and quote it.</p>' +
+                '<p class="track-ref">' + sref + '</p>' +
+                '<a class="btn btn--volt btn--block" href="' + wa + '" rel="noopener">Send the photos</a>' +
+                '<p class="details-note" style="margin-top:1rem">' + escapeHtml(SELLING.note) + '</p>' +
+              '</div>';
+            form.hidden = true;
+          });
+      });
+    });
+  }
+
   /* ---------- payment + enquiries ---------- */
 
   function bankReady() {
@@ -1016,6 +1185,7 @@ function money(n) {
     });
 
     initTracking();
+    initSelling();
     initReveal();
   }
 

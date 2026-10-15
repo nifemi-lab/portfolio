@@ -268,3 +268,32 @@ var PAYMENT_STEPS = [
   { n: '03', title: 'Transfer to the bank', body: 'We send you the account name and number. Transfer the exact amount and send the receipt.' },
   { n: '04', title: 'We make it', body: 'Payment clears, we cut and print your piece, and send you a dispatch update.' }
 ];
+
+/* ============================================================
+ * Selling with NVR
+ *
+ * NVR takes a cut of every sale. A seller names their price, NVR lists it,
+ * the buyer pays NVR, and the seller's share is paid out on a weekly run.
+ * The difference is the commission.
+ *
+ * 15% covers curation, photography, the storefront and handling without
+ * making the fee worth arguing over on a small piece.
+ * ============================================================ */
+
+var SELLING = {
+  commissionPct: 15,
+
+  /* Shown to applicants. Keep this in step with commissionPct. */
+  blurb: 'We take ' + 15 + '% for curation, photography, the storefront and ' +
+         'handling. You name your price; we list it; you get paid weekly.',
+
+  photosNeeded: [
+    'Front of the garment, flat and well lit',
+    'Back of the garment, flat and well lit',
+    'The care label, readable',
+    'The brand label, readable'
+  ],
+
+  note: 'One piece per application to start. We review in batches, so expect a ' +
+        'reply within a few days.'
+};
