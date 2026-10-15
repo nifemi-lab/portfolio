@@ -381,6 +381,27 @@ displays as ₦14,900. It never applies to a seller's agreed price.
 > discount look larger is false advertising, and now that NVR holds customer
 > money that is a real exposure. No markdown is currently displayed anywhere.
 
+## Photography
+
+There is no stock imagery and no AI-generated garment. Product tiles are
+**SVG garment outlines** — a tee, hoodie, pant, cap, shell, crew or fleece,
+matched to the product and tinted in its collection accent. They are honest
+illustrations, not photographs pretending to be the thing.
+
+The real fix is **seller uploads**. Sellers photographing the garment they
+actually own solves the cold start without a stock library or a licensing
+question, because the picture is guaranteed to be that exact piece.
+
+`initPhotos()` handles drag-and-drop or file picking, up to 6 photos, 8MB
+each, JPEG/PNG/WebP. Type, size and count are all checked in the browser before
+anything is uploaded, and rejected files are named back to the seller. iPhone
+HEIC is refused rather than silently failing — most browsers cannot display it.
+
+Uploaded files go to a **private** `listing-photos` bucket under the seller's
+reference. The bucket is deliberately not public: approved photos are served
+via signed URLs issued at approval time, so a pending applicant's pictures are
+never publicly reachable and there is no permanent URL to scrape.
+
 ## Behaviour
 
 - **Bag** — add, change quantity, remove. Persists to `localStorage`

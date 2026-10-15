@@ -545,6 +545,132 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   margin-top: 2rem;
 }
 
+/* ---------- photo upload ---------- */
+
+.sell-photos-intro {
+  font-size: .875rem;
+  color: var(--ash);
+  line-height: 1.6;
+  margin: 0 0 1rem;
+  max-width: 60ch;
+}
+.sell-photos-intro strong { color: var(--bone); }
+
+.sell-photo-list {
+  margin: 0 0 1.25rem;
+  padding-left: 1.25rem;
+  font-size: .875rem;
+  color: var(--ash);
+  line-height: 1.7;
+}
+.sell-photo-list li::marker { color: var(--volt); }
+
+.photo-drop {
+  border: 1px dashed rgb(245 245 238 / .3);
+  position: relative;
+  transition: border-color .18s ease, background .18s ease;
+}
+.photo-drop:hover,
+.photo-drop.is-over {
+  border-color: var(--volt);
+  background: rgb(199 255 0 / .04);
+}
+.photo-drop:focus-within { border-color: var(--volt); }
+
+.photo-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+.photo-input:focus-visible + .photo-drop-label { outline: 2px solid var(--volt); outline-offset: 2px; }
+
+.photo-drop-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .375rem;
+  padding: 1.75rem 1rem;
+  text-align: center;
+  cursor: pointer;
+}
+.photo-drop-label strong {
+  font-family: var(--mono);
+  font-size: .75rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--bone);
+  font-weight: 400;
+}
+.photo-drop-label span {
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .1em;
+  color: var(--ash);
+}
+
+.photo-grid {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: .625rem;
+}
+
+.photo-item {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid rgb(245 245 238 / .16);
+  background: #0f0f0f;
+  overflow: hidden;
+}
+.photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.photo-item.is-uploading { opacity: .45; }
+.photo-item.is-uploading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--volt);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  width: 22px;
+  height: 22px;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+}
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+.photo-remove {
+  position: absolute;
+  top: .25rem;
+  right: .25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  background: rgb(10 10 10 / .88);
+  border: 1px solid rgb(245 245 238 / .3);
+  color: var(--bone);
+  font-size: .875rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.photo-remove:hover { border-color: var(--volt); color: var(--volt); }
+.photo-remove:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-item.is-uploading::after { animation: none; }
+}
+
 /* ---------- sell with NVR ---------- */
 
 .sell-note {
@@ -857,6 +983,16 @@ p { margin: 0 0 1rem; max-width: 60ch; }
 }
 
 /* ---------- size guide ---------- */
+
+/* Garment outline used until a real photo is uploaded. */
+.tile-art { width: 62%; height: auto; max-height: 76%; display: block; }
+
+.tile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
 .card-guide {
   margin-top: .5rem;

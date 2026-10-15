@@ -386,6 +386,30 @@
             </label>
           </fieldset>
 
+          <fieldset>
+            <legend class="tag">Photos</legend>
+            <p class="sell-photos-intro">
+              Photograph the actual garment, not a listing screenshot. Lay it
+              flat on a plain surface near a window — no flash, no filter.
+              <strong>Label photos are required</strong>: we cannot approve a
+              piece we cannot verify. iPhone users: set Camera to Most
+              Compatible, or these will not upload.
+            </p>
+            <ol id="sellPhotos" class="sell-photo-list"></ol>
+
+            <div class="photo-drop" id="photoDrop">
+              <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp"
+                     multiple class="photo-input" />
+              <label for="photoInput" class="photo-drop-label">
+                <strong>Choose or drop photos</strong>
+                <span>JPEG, PNG or WebP &middot; up to 6 &middot; 8MB each</span>
+              </label>
+            </div>
+
+            <ul class="photo-grid" id="photoGrid"></ul>
+            <p class="sell-error" id="photoError" role="alert"></p>
+          </fieldset>
+
           <p class="sell-error" id="sellError" role="alert"></p>
 
           <div class="sell-actions">

@@ -297,13 +297,18 @@ function money(n) {
           (s === chosen) + '">' + escapeHtml(s) + '</button>';
       }).join('');
 
+      var tileArt = p.photoUrl
+            ? '<img class="tile-photo" src="' + escapeHtml(p.photoUrl) + '" alt="' +
+              escapeHtml(p.name) + '" loading="lazy" decoding="async" />'
+            : silhouette(silhouetteFor(p), c.accentHex);
+
       return '' +
-        '<article class="card" style="--accent:' + c.accentHex + '" data-id="' + p.id + '">' +
-          '<div class="tile-wrap">' +
-            '<div class="tile"><span class="tile-mark">' + escapeHtml(c.name) + '</span></div>' +
-            '<span class="tile-code">' + escapeHtml(p.code) + '</span>' +
-            originBadge(p) +
-          '</div>' +
+          '<article class="card" style="--accent:' + c.accentHex + '" data-id="' + p.id + '">' +
+            '<div class="tile-wrap">' +
+              '<div class="tile">' + tileArt + '</div>' +
+              '<span class="tile-code">' + escapeHtml(p.code) + '</span>' +
+              originBadge(p) +
+            '</div>' +
           '<div class="card-body">' +
             '<div class="card-head">' +
               '<span class="card-name">' + escapeHtml(p.name) + '</span>' +
@@ -562,6 +567,202 @@ function money(n) {
     });
   }
 
+  /* ---------- photo upload ---------- */
+
+  var MAX_PHOTOS = 6;
+  var MAX_BYTES = 8 * 1024 * 1024;
+  var OK_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  var stagedPhotos = [];   // { file, url, key, state }
+
+  function photoError(msg) {
+    var el = $('#photoError');
+    if (el) el.textContent = msg || '';
+  }
+
+  function renderPhotoGrid() {
+    var grid = $('#photoGrid');
+    if (!grid) return;
+    grid.innerHTML = stagedPhotos.map(function (p, i) {
+      return '<li class="photo-item' + (p.state === 'uploading' ? ' is-uploading' : '') + '">' +
+        '<img src="' + p.url + '" alt="Garment photo ' + (i + 1) + '" loading="lazy" />' +
+        '<button type="button" class="photo-remove" data-photo-remove="' + i + '" aria-label="Remove photo ' + (i + 1) + '">&times;</button>' +
+      '</li>';
+    }).join('');
+  }
+
+  function validateFiles(files) {
+    var accepted = [];
+    var rejected = [];
+    Array.prototype.slice.call(files).forEach(function (f) {
+      if (stagedPhotos.length + accepted.length >= MAX_PHOTOS) {
+        rejected.push(f.name + ' — over the ' + MAX_PHOTOS + ' photo limit');
+        return;
+      }
+      if (OK_TYPES.indexOf(f.type) === -1) {
+        rejected.push(f.name + ' — not a JPEG, PNG or WebP');
+        return;
+      }
+      if (f.size > MAX_BYTES) {
+        rejected.push(f.name + ' — larger than 8MB');
+        return;
+      }
+      accepted.push(f);
+    });
+    return { accepted: accepted, rejected: rejected };
+  }
+
+  function uploadOne(file, key) {
+    return fetch(SUPABASE.supabaseUrl + '/storage/v1/object/listing-photos/' + key, {
+      method: 'POST',
+      headers: {
+        'Content-Type': file.type,
+        'apikey': SUPABASE.supabaseAnonKey,
+        'Authorization': 'Bearer ' + SUPABASE.supabaseAnonKey,
+        'x-upsert': 'false'
+      },
+      body: file
+    }).then(function (res) {
+      if (!res.ok) throw new Error('upload failed ' + res.status);
+      return key;
+    }).catch(function () {
+      throw new Error('Could not upload ' + file.name);
+    });
+  }
+
+  function handleFiles(files) {
+    var check = validateFiles(files);
+
+    check.accepted.forEach(function (file) {
+      var item = { file: file, url: URL.createObjectURL(file), key: null, state: 'ready' };
+      stagedPhotos.push(item);
+    });
+
+    renderPhotoGrid();
+
+    if (check.rejected.length) {
+      photoError(check.rejected.join(' · '));
+    } else if (check.accepted.length) {
+      photoError('');
+    }
+
+    if (!check.accepted.length) return;
+
+    // Upload only once the seller row exists, so files land under their ref.
+    if (!stagedPhotos[0].key) return;
+
+    uploadPending(check.accepted);
+  }
+
+  function uploadPending() {
+    if (!SUPABASE.supabaseUrl || !SUPABASE.supabaseAnonKey) return Promise.resolve();
+    var sellerRef = stagedPhotos._sellerRef;
+    if (!sellerRef) return Promise.resolve();
+
+    var jobs = stagedPhotos
+      .filter(function (p) { return p.state === 'ready'; })
+      .map(function (p) {
+        p.state = 'uploading';
+        renderPhotoGrid();
+        var ext = (p.file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+        var key = sellerRef + '/' + Math.random().toString(36).slice(2, 10) + '.' + ext;
+        return uploadOne(p.file, key).then(function (k) {
+          p.key = k;
+          p.state = 'done';
+        }).catch(function () {
+          p.state = 'failed';
+        });
+      });
+
+    return Promise.all(jobs).then(renderPhotoGrid);
+  }
+
+  function initPhotos() {
+    var input = $('#photoInput');
+    var drop = $('#photoDrop');
+    if (!input || !drop) return;
+
+    input.addEventListener('change', function () {
+      handleFiles(input.files);
+      input.value = '';   // so the same file can be re-picked
+    });
+
+    ['dragenter', 'dragover'].forEach(function (ev) {
+      drop.addEventListener(ev, function (e) {
+        e.preventDefault();
+        drop.classList.add('is-over');
+      });
+    });
+    ['dragleave', 'drop'].forEach(function (ev) {
+      drop.addEventListener(ev, function (e) {
+        e.preventDefault();
+        drop.classList.remove('is-over');
+      });
+    });
+    drop.addEventListener('drop', function (e) {
+      if (e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+    });
+
+    var grid = $('#photoGrid');
+    if (grid) {
+      grid.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-photo-remove]');
+        if (!btn) return;
+        var i = parseInt(btn.getAttribute('data-photo-remove'), 10);
+        if (stagedPhotos[i] && stagedPhotos[i].url) URL.revokeObjectURL(stagedPhotos[i].url);
+        stagedPhotos.splice(i, 1);
+        renderPhotoGrid();
+        photoError('');
+      });
+    }
+  }
+
+  /* ---------- garment silhouettes ---------- */
+
+  /* Not photography, and not pretending to be. These are honest garment
+     outlines so a product card reads as clothing rather than an empty grey
+     box, until real photos arrive. Anything drawn from CSS tiles was the
+     weakest part of the storefront. */
+  function silhouette(kind, accent) {
+    var c = accent || '#f5f5ee';
+    var parts = {
+      tee: '<path d="M60 26 L86 38 L112 54 L100 78 L88 72 L88 150 L32 150 L32 72 L20 78 L8 54 L34 38 Z" ' +
+           'fill="' + c + '" opacity=".9"/><path d="M46 26 Q60 44 74 26" fill="none" stroke="#0a0a0a" stroke-width="4"/>',
+      hoodie: '<path d="M60 24 L88 38 L112 56 L100 80 L88 74 L88 152 L32 152 L32 74 L20 80 L8 56 L32 38 Z" ' +
+           'fill="' + c + '" opacity=".9"/>' +
+           '<path d="M44 26 Q60 46 76 26" fill="none" stroke="#0a0a0a" stroke-width="4"/>' +
+           '<path d="M40 96 L80 96 L74 128 L46 128 Z" fill="#0a0a0a" opacity=".35"/>' +
+           '<path d="M58 44 L54 76 M64 44 L68 76" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round"/>',
+      pant: '<path d="M36 40 L84 40 L88 70 L84 152 L64 152 L60 96 L56 152 L36 152 L32 70 Z" ' +
+           'fill="' + c + '" opacity=".9"/><path d="M36 50 L84 50" stroke="#0a0a0a" stroke-width="3" opacity=".4"/>',
+      cap: '<path d="M22 104 Q22 52 78 48 Q112 46 116 78 L116 92 L64 92 Z" fill="' + c + '" opacity=".9"/>' +
+           '<path d="M22 104 Q60 88 116 92 L116 106 Q60 100 22 116 Z" fill="' + c + '" opacity=".55"/>' +
+           '<circle cx="78" cy="48" r="5" fill="#0a0a0a" opacity=".5"/>',
+      shell: '<path d="M60 24 L88 38 L114 56 L102 82 L90 76 L90 150 L30 150 L30 76 L18 82 L6 56 L32 38 Z" ' +
+           'fill="' + c + '" opacity=".9"/>' +
+           '<path d="M60 26 L60 150" stroke="#0a0a0a" stroke-width="3" opacity=".35"/>' +
+           '<path d="M34 60 L86 60 M34 70 L86 70" stroke="#0a0a0a" stroke-width="2.5" opacity=".28"/>',
+      crew: '<path d="M60 24 L88 38 L112 56 L100 80 L88 74 L88 150 L32 150 L32 74 L20 80 L8 56 L32 38 Z" ' +
+           'fill="' + c + '" opacity=".9"/>' +
+           '<path d="M44 27 Q60 46 76 27" fill="none" stroke="#0a0a0a" stroke-width="6" opacity=".55"/>',
+      fleece: '<path d="M60 24 L88 38 L112 56 L100 80 L88 74 L88 152 L32 152 L32 74 L20 80 L8 56 L32 38 Z" ' +
+           'fill="' + c + '" opacity=".9"/>' +
+           '<path d="M42 28 Q60 50 78 28" fill="none" stroke="#0a0a0a" stroke-width="9" opacity=".55"/>' +
+           '<path d="M44 104 L76 104 L72 132 L48 132 Z" fill="#0a0a0a" opacity=".3"/>'
+    };
+    var shape = parts[kind] || parts.tee;
+    return '<svg class="tile-art" viewBox="0 0 120 176" width="120" height="176" aria-hidden="true" focusable="false">' +
+      shape + '</svg>';
+  }
+
+  function silhouetteFor(p) {
+    var n = (p.name || '').toLowerCase();
+    if (/cap|hat/.test(n)) return 'cap';
+    if (/hoodie|sweat|fleece|sweatshirt/.test(n)) return /fleece/.test(n) ? 'fleece' : (/hoodie/.test(n) ? 'hoodie' : 'crew');
+    if (/pant|trouser|jean/.test(n)) return 'pant';
+    if (/shell|jacket|coat/.test(n)) return 'shell';
+    return 'tee';
+  }
+
   /* ---------- sell with NVR ---------- */
 
   function shortRef(prefix) {
@@ -665,7 +866,8 @@ function money(n) {
             'Asking: N' + price + ' (NVR keeps ' + SELLING.commissionPct + '%, you get N' + net + ')',
             'Notes: ' + (val('#lNotes') || '-'),
             '',
-            'Photos to follow: ' + SELLING.photosNeeded.join('; ')
+            'Photos to follow: ' + SELLING.photosNeeded.join('; '),
+            'Photos attached to the form: ' + stagedPhotos.length
           ].join('\n');
 
           $('#sellResult').innerHTML =
@@ -683,6 +885,10 @@ function money(n) {
           setErr('Something went wrong on our side. Message us on WhatsApp and we will take it from there.');
           return;
         }
+
+        // Seller exists, so photos can now be filed under their reference.
+        stagedPhotos._sellerRef = sref;
+        uploadPending();
 
         // The seller row exists. The listing needs seller_id, which a minimal
         // insert does not return, so read it back by reference.
@@ -1262,6 +1468,7 @@ function money(n) {
 
     initTracking();
     initSelling();
+    initPhotos();
     initReveal();
   }
 

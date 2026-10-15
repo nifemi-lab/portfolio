@@ -238,7 +238,7 @@ create policy "payouts_read_owner"
   using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
 
 -- Let a seller check their balance with reference + phone, same pattern
--- as lookup_order. Aggregates only; no other seller's data is exposed.
+-- as lookup_order. Aggregates only; no other seller's data are exposed.
 create or replace function public.lookup_seller_balance(p_reference text, p_phone text)
 returns jsonb
 language sql
@@ -264,3 +264,50 @@ $$;
 
 revoke all on function public.lookup_seller_balance(text, text) from public;
 grant execute on function public.lookup_seller_balance(text, text) to anon, authenticated;
+
+
+-- ============================================================
+--  LISTING PHOTOS
+-- ------------------------------------------------------------
+--  Sellers upload their own photographs. This is deliberate: the people
+--  listing a garment are the people who own it, so the picture is
+--  guaranteed to be that actual piece rather than stock.
+--
+--  Upload policy: any path under listing-photos/ is writable, but only
+--  readable once NVR approves the listing. See note below.
+-- ============================================================
+
+insert into storage.buckets (id, name, public)
+values ('listing-photos', 'listing-photos', false)
+on conflict (id) do nothing;
+
+-- Anyone may upload into the bucket. File type and size are checked in the
+-- browser before upload; these policies stop the bucket being world-readable
+-- or world-writable outside the folder.
+drop policy if exists "listing_photos_upload" on storage.objects;
+create policy "listing_photos_upload"
+  on storage.objects for insert
+  to anon, authenticated
+  with check ( bucket_id = 'listing-photos' );
+
+drop policy if exists "listing_photos_owner_update" on storage.objects;
+create policy "listing_photos_owner_update"
+  on storage.objects for update
+  to authenticated
+  using ( bucket_id = 'listing-photos' )
+  with check ( bucket_id = 'listing-photos' );
+
+drop policy if exists "listing_photos_owner_delete" on storage.objects;
+create policy "listing_photos_owner_delete"
+  on storage.objects for delete
+  to authenticated
+  using ( bucket_id = 'listing-photos' );
+
+-- DELIBERATELY NOT PUBLIC.
+-- The bucket stays private. Serving approved photos goes through a signed
+-- URL issued by NVR at approval time (storage.create_signed_url), so a
+-- pending applicant's pictures are never publicly reachable and there is no
+-- permanent public URL to scrape.
+--
+-- To list photos publicly later, add a read policy scoped to approved
+-- listings only - do not flip the bucket to public.
