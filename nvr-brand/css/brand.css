@@ -545,6 +545,81 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   margin-top: 2rem;
 }
 
+/* ---------- NVR Studio / premium ---------- */
+
+.studio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1px;
+  background: rgb(245 245 238 / .12);
+  border: 1px solid rgb(245 245 238 / .12);
+  margin-top: 2.5rem;
+}
+
+.studio-card {
+  background: var(--void);
+  padding: 1.75rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: .625rem;
+}
+
+.studio-n {
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--volt);
+}
+.studio-card h3 { font-size: 1.0625rem; }
+.studio-card p {
+  margin: 0;
+  color: rgb(245 245 238 / .6);
+  font-size: .9375rem;
+}
+
+.studio-caveat {
+  margin-top: 1px;
+  border: 1px solid rgb(245 245 238 / .12);
+  padding: 1.5rem;
+}
+.studio-caveat .tag { display: block; margin-bottom: .75rem; color: var(--ash); }
+.studio-caveat p:last-child {
+  margin: 0;
+  color: var(--bone);
+  font-size: .9375rem;
+  line-height: 1.6;
+  max-width: 70ch;
+}
+
+.studio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.studio-actions .btn { flex: none; }
+
+/* A service badge, sitting under the origin badge. Says who did the work. */
+.studio-badge {
+  position: absolute;
+  top: 2.25rem;
+  left: .625rem;
+  font-family: var(--mono);
+  font-size: .5rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  padding: .25rem .4375rem;
+  background: rgb(10 10 10 / .82);
+  border: 1px solid var(--volt);
+  color: var(--volt);
+  max-width: calc(100% - 1.25rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ---------- photo upload ---------- */
 
 .sell-photos-intro {

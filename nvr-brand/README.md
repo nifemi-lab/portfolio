@@ -402,6 +402,42 @@ reference. The bucket is deliberately not public: approved photos are served
 via signed URLs issued at approval time, so a pending applicant's pictures are
 never publicly reachable and there is no permanent URL to scrape.
 
+## NVR Studio (premium)
+
+Premium sells **work, not attention**. It unlocks:
+
+| | |
+|---|---|
+| **NVR photography** | We shoot the piece and they get the files |
+| **First access to drops** | New pieces reach premium sellers first |
+| **Featured, by hand** | One slot a week, picked by a person |
+| **Lower commission** | 10% instead of 15% |
+
+It unlocks **nothing about position**. Nothing sorts by tier — verified: NVR's own
+twelve pieces still lead the grid, and seller items stay in listing order
+regardless of tier. A premium item gets a `Shot by NVR` badge under the origin
+badge, which states who did the work, not how much they paid.
+
+The featured slot lives in a `featured` table with `picked_by` recorded, and
+its read policy only exposes a row inside its window and only while the
+underlying listing is still live. There is no rank score and no auction.
+
+> **If this ever becomes "highest bidder wins", stop.** The promise that NVR
+> curates the shop is the only reason a marketplace is worth more than a
+> WhatsApp group. Paying for position makes that promise untrue, and the whole
+> tier stops making sense.
+
+### Not purchasable yet
+
+`PREMIUM.priceNaira` is `null`, and the CTA reads *"NVR Studio — enquire"*
+linking to WhatsApp. That is deliberate: **OPay has no recurring billing.**
+Subscriptions need Paystack or Flutterwave, which need KYC and take real time
+to approve. A "Buy premium" button that silently fails, or worse, a
+hand-managed renewal list in a spreadsheet, is worse than no button at all.
+
+Set `priceNaira` once the rails exist and the CTA switches itself to show the
+price.
+
 ## Behaviour
 
 - **Bag** — add, change quantity, remove. Persists to `localStorage`

@@ -45,6 +45,7 @@ function money(n) {
       origin: ORIGIN.SELLER,
       soldBy: seller ? (seller.handle || seller.full_name) : null,
       sellerRef: seller ? seller.reference : null,
+      premium: seller ? seller.tier === 'premium' : false,
       price: listing.list_price,
       weight: listing.condition,
       sizes: listing.size ? [listing.size] : ['OS'],
@@ -213,8 +214,9 @@ function money(n) {
 
   function originBadge(p) {
     if (p.origin === ORIGIN.SELLER) {
+      var premium = p.premium ? premiumBadge() : '';
       return '<span class="origin-badge origin-badge--seller">Sold by ' +
-        escapeHtml(p.soldBy || 'a seller') + '</span>';
+        escapeHtml(p.soldBy || 'a seller') + '</span>' + premium;
     }
     return '<span class="origin-badge origin-badge--nvr">NVR</span>';
   }
@@ -763,6 +765,44 @@ function money(n) {
     return 'tee';
   }
 
+  /* ---------- premium / NVR Studio ---------- */
+
+  function renderStudio() {
+    var grid = $('#studioGrid');
+    if (grid) {
+      grid.innerHTML = PREMIUM.includes.map(function (f) {
+        return '<div class="studio-card">' +
+          '<span class="studio-n">' + escapeHtml(PREMIUM.label) + '</span>' +
+          '<h3>' + escapeHtml(f.title) + '</h3>' +
+          '<p>' + escapeHtml(f.body) + '</p>' +
+        '</div>';
+      }).join('');
+    }
+
+    var not = $('#studioNot');
+    if (not) not.textContent = PREMIUM.whatItIsNot;
+
+    var cta = $('#studioCta');
+    if (cta) {
+      // Never render a checkout that cannot take payment. Until a recurring
+      // billing provider is wired up, the only honest action is "apply".
+      if (PREMIUM.priceNaira) {
+        cta.textContent = PREMIUM.label + ' — ' + money(PREMIUM.priceNaira);
+        cta.setAttribute('href', '#sell');
+      } else {
+        cta.textContent = PREMIUM.label + ' — enquire';
+        cta.setAttribute('href', whatsappHref() ||
+          'https://wa.me/' + whatsappNumber() + '?text=' + encodeURIComponent(
+            'Hi NVR — tell me about NVR Studio and how to join.'));
+      }
+    }
+  }
+
+  /* Premium is a service badge, not a position. It says who did the work. */
+  function premiumBadge() {
+    return '<span class="studio-badge">Shot by NVR</span>';
+  }
+
   /* ---------- sell with NVR ---------- */
 
   function shortRef(prefix) {
@@ -1235,7 +1275,7 @@ function money(n) {
   function init() {
     loadBag();
     renderCollections();
-    // Seller pieces join the same grid, but only approved and priced ones.
+    renderStudio();
     loadSellerItems().then(function () {
       renderProducts();
       var note = $('#communityNote');
@@ -1469,6 +1509,7 @@ function money(n) {
     initTracking();
     initSelling();
     initPhotos();
+    renderStudio();
     initReveal();
   }
 

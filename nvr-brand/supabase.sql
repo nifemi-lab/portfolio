@@ -111,10 +111,16 @@ create table if not exists public.sellers (
   bio         text,
   payout_to   text,                            -- OPay number or bank account
   status      text        not null default 'pending',
+  tier        text        not null default 'standard',
+  tier_since  timestamptz,
   decided_at  timestamptz,
   constraint sellers_status_check
-    check (status in ('pending', 'approved', 'declined', 'paused'))
+    check (status in ('pending', 'approved', 'declined', 'paused')),
+  constraint sellers_tier_check
+    check (tier in ('standard', 'premium'))
 );
+
+create index if not exists sellers_tier_idx on public.sellers (tier);
 
 create index if not exists sellers_status_idx on public.sellers (status);
 create index if not exists sellers_created_idx on public.sellers (created_at desc);
@@ -311,3 +317,47 @@ create policy "listing_photos_owner_delete"
 --
 -- To list photos publicly later, add a read policy scoped to approved
 -- listings only - do not flip the bucket to public.
+
+
+-- ============================================================
+--  FEATURED SLOT
+-- ------------------------------------------------------------
+--  One row, updated by hand. NVR picks what goes in it.
+--
+--  There is no auction here and no rank score. Premium sellers become
+--  ELIGIBLE to be featured; they do not buy the position. If this ever
+--  becomes "highest bidder wins", the promise that NVR curates the shop
+--  stops being true, and the whole premium tier stops making sense.
+-- ============================================================
+
+create table if not exists public.featured (
+  id          uuid        primary key default gen_random_uuid(),
+  listing_id  uuid        not null unique references public.listings (id) on delete cascade,
+  picked_by   text,                        -- a person, for the record
+  starts_at   timestamptz not null default now(),
+  ends_at     timestamptz not null,
+  note        text,
+  constraint featured_window_check check (ends_at > starts_at)
+);
+
+alter table public.featured enable row level security;
+
+drop policy if exists "featured_read_public" on public.featured;
+create policy "featured_read_public"
+  on public.featured for select
+  to anon, authenticated
+  using (
+    now() >= starts_at
+    and now() <= ends_at
+    and exists (
+      select 1 from public.listings l
+      where l.id = listing_id and l.status in ('listed', 'sold')
+    )
+  );
+
+drop policy if exists "featured_write_owner" on public.featured;
+create policy "featured_write_owner"
+  on public.featured for all
+  to authenticated
+  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' )
+  with check ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );

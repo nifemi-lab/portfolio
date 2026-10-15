@@ -327,6 +327,49 @@ var SELLING = {
 };
 
 /* ============================================================
+ * Premium tier
+ * ------------------------------------------------------------
+ * Premium sells WORK, not ATTENTION.
+ *
+ * The thing a buyer pays extra for is "someone looked at this and stood
+ * behind it". Selling visibility instead would quietly make that untrue: the
+ * top slots would stop being the best pieces and start being the ones that
+ * paid, and "curated by NVR" would become a claim rather than a fact.
+ *
+ * So premium unlocks:
+ *   - NVR photographs the piece (real work, done by us)
+ *   - eligibility for the weekly Featured slot, which NVR picks by hand
+ *   - first access to new drops, before they go public
+ *   - a lower commission rate
+ *
+ * It does NOT unlock rank inside search results or a higher position in the
+ * grid. Nothing on the storefront moves because of money.
+ * ============================================================ */
+
+var PREMIUM = {
+  label: 'NVR Studio',
+
+  /* Not yet purchasable. OPay has no recurring billing, so subscriptions
+     need Paystack or Flutterwave, which need KYC. Charging someone before
+     that exists means either a dead button or a hand-managed renewal list.
+     Set priceNaira when the rails are live. */
+  priceNaira: null,
+
+  commissionPct: 10,   // standard sellers pay 15
+
+  includes: [
+    { title: 'NVR photography', body: 'We shoot the piece ourselves, properly lit, and you get the files. Your listing uses them.' },
+    { title: 'First access to drops', body: 'New pieces reach premium sellers before they go public.' },
+    { title: 'Featured, by hand', body: 'One slot a week, picked by us for how good the piece is. Never sold, never auctioned.' },
+    { title: 'Lower commission', body: '10% instead of 15% on everything you sell through us.' }
+  ],
+
+  whatItIsNot: 'Premium does not buy a better position in the shop. Nothing ' +
+    'moves up the grid because of money — the featured slot is chosen by a ' +
+    'person, and search results are ordered the same for everyone.'
+};
+
+/* ============================================================
  * Storefront pricing
  * (charmPrice, priceRow and ORIGIN are defined above CATALOG, which uses them.)
  * ============================================================ */
