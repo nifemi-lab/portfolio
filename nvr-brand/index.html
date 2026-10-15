@@ -35,6 +35,7 @@
           <li><a class="nav-link" href="#mission">Mission</a></li>
           <li><a class="nav-link" href="#how">How it works</a></li>
           <li><a class="nav-link" href="#payment">Payment</a></li>
+          <li><a class="nav-link" href="#track">Track</a></li>
         </ul>
       </nav>
 
@@ -252,6 +253,34 @@
        aria-label="Ask about a piece on WhatsApp">
       <span class="enquiry-fab-label">Ask about a piece</span>
     </a>
+
+    <!-- ============ TRACK ============ -->
+    <section class="section" id="track">
+      <div class="wrap">
+        <h2 data-reveal>Track your order</h2>
+        <p class="hero-lede" data-reveal>
+          Your reference is in the message we sent you. Enter it with the phone
+          number you gave and we'll show you where it has got to.
+        </p>
+
+        <form class="track-form" id="trackForm" data-reveal novalidate>
+          <label class="details-field">
+            <span class="tag">Reference</span>
+            <input type="text" id="trackRef" name="reference" placeholder="NVR-7K4Q"
+                   autocomplete="off" spellcheck="false" autocapitalize="characters" />
+          </label>
+          <label class="details-field">
+            <span class="tag">Phone</span>
+            <input type="tel" id="trackPhone" name="tel" placeholder="0801 234 5678"
+                   autocomplete="tel" spellcheck="false" />
+          </label>
+          <button type="submit" class="btn btn--volt">Find my order</button>
+        </form>
+
+        <p class="status track-status" id="trackStatus" role="status" aria-live="polite"></p>
+        <div id="trackResult"></div>
+      </div>
+    </section>
 
     <script src="js/catalog.js"></script>
   <script src="js/app.js"></script>

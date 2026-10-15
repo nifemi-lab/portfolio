@@ -387,6 +387,115 @@ function money(n) {
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
 
+  /* ---------- order tracking ---------- */
+
+  var STATUS_COPY = {
+    'new': 'Received',
+    'confirmed': 'Confirmed',
+    'made': 'Being made',
+    'shipped': 'Dispatched',
+    'done': 'Delivered',
+    'cancelled': 'Cancelled'
+  };
+
+  function lookupOrder(ref, phone) {
+    if (!SUPABASE.supabaseUrl || !SUPABASE.supabaseAnonKey) {
+      return Promise.resolve({ unavailable: true });
+    }
+
+    return fetch(SUPABASE.supabaseUrl + '/rest/v1/rpc/lookup_order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE.supabaseAnonKey,
+        'Authorization': 'Bearer ' + SUPABASE.supabaseAnonKey
+      },
+      body: JSON.stringify({ p_reference: ref, p_phone: phone })
+    }).then(function (res) {
+      // The function lives in supabase.sql. Until it has been run, PostgREST
+      // answers 404 and we say so rather than leaving a form that does nothing.
+      if (res.status === 404) return { unavailable: true };
+      if (!res.ok) return { error: true, status: res.status };
+      return res.json();
+    }).catch(function () {
+      return { error: true, status: 0 };
+    });
+  }
+
+  function renderTrackedOrder(order) {
+    var items = Array.isArray(order.items) ? order.items : [];
+    var status = order.status || 'new';
+
+    var lines = items.map(function (it) {
+      return '<li class="track-line">' +
+        '<span>' + escapeHtml(it.code) + ' &middot; Size ' + escapeHtml(it.size) +
+          ' &times; ' + escapeHtml(String(it.qty)) + '</span>' +
+        '<span>' + money(it.line) + '</span>' +
+      '</li>';
+    }).join('');
+
+    var when = '';
+    if (order.created_at) {
+      var d = new Date(order.created_at);
+      if (!isNaN(d.getTime())) {
+        when = d.toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+    }
+
+    return '<div class="track-card">' +
+      '<div class="track-head">' +
+        '<div>' +
+          '<p class="tag" style="margin:0 0 .25rem">Reference</p>' +
+          '<p class="track-ref">' + escapeHtml(order.reference) + '</p>' +
+        '</div>' +
+        '<span class="track-status-pill" data-status="' + escapeHtml(status) + '">' +
+          escapeHtml(STATUS_COPY[status] || status) + '</span>' +
+      '</div>' +
+      '<ul class="track-lines">' + lines + '</ul>' +
+      '<div class="track-total"><span>Total</span><span>' + money(order.subtotal) + '</span></div>' +
+      (when ? '<p class="track-when">Ordered ' + escapeHtml(when) + '</p>' : '') +
+    '</div>';
+  }
+
+  function initTracking() {
+    var form = $('#trackForm');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var ref = ($('#trackRef').value || '').trim();
+      var phone = ($('#trackPhone').value || '').trim();
+      var status = $('#trackStatus');
+      var out = $('#trackResult');
+
+      if (!ref || !phone) {
+        if (status) status.textContent = 'Enter both your reference and your phone number.';
+        if (out) out.innerHTML = '';
+        return;
+      }
+
+      if (status) status.textContent = 'Looking...';
+      if (out) out.innerHTML = '';
+
+      lookupOrder(ref, phone).then(function (result) {
+        if (result && result.unavailable) {
+          if (status) status.textContent = 'Order tracking is not switched on yet. Message us on WhatsApp and we will check for you.';
+          return;
+        }
+        if (!result) {
+          if (status) status.textContent = 'We could not find that. Check the reference and phone number.';
+          return;
+        }
+        if (result.error) {
+          if (status) status.textContent = 'Something went wrong on our side. Message us on WhatsApp instead.';
+          return;
+        }
+        if (status) status.textContent = '';
+        if (out) out.innerHTML = renderTrackedOrder(result);
+      });
+    });
+  }
+
   /* ---------- payment + enquiries ---------- */
 
   function bankReady() {
@@ -906,6 +1015,7 @@ function money(n) {
       });
     });
 
+    initTracking();
     initReveal();
   }
 

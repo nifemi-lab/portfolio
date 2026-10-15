@@ -515,6 +515,92 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   margin-top: 2rem;
 }
 
+/* ---------- order tracking ---------- */
+
+.track-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  align-items: end;
+  margin-top: 2rem;
+}
+.track-form .btn { height: 44px; }
+
+.track-status { margin-top: 1rem; min-height: 1.25rem; }
+
+.track-card {
+  margin-top: 1rem;
+  border: 1px solid rgb(245 245 238 / .16);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+.track-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgb(245 245 238 / .12);
+  margin-bottom: 1rem;
+}
+
+.track-status-pill {
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  padding: .375rem .75rem;
+  border: 1px solid currentColor;
+}
+.track-status-pill[data-status='new']       { color: var(--volt); }
+.track-status-pill[data-status='confirmed'] { color: var(--volt); }
+.track-status-pill[data-status='made']      { color: var(--bone); }
+.track-status-pill[data-status='shipped']   { color: var(--volt); }
+.track-status-pill[data-status='done']      { color: var(--ash); }
+.track-status-pill[data-status='cancelled'] { color: #ff5c2b; }
+
+.track-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: .625rem; }
+.track-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .75rem;
+  font-family: var(--mono);
+  font-size: .8125rem;
+  letter-spacing: .04em;
+  color: var(--bone);
+}
+.track-line span:first-child { color: var(--ash); }
+
+.track-ref {
+  font-family: var(--mono);
+  font-size: 1.25rem;
+  letter-spacing: .12em;
+  color: var(--bone);
+  margin: 0;
+}
+
+.track-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(245 245 238 / .12);
+  font-family: var(--mono);
+  font-size: .9375rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.track-when {
+  margin-top: 1rem;
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ash);
+}
+
 /* ---------- customer details ---------- */
 
 .details { display: grid; gap: .75rem; margin-bottom: .5rem; }

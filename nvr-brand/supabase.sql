@@ -32,21 +32,59 @@ create policy "orders_insert_public"
   to anon, authenticated
   with check (true);
 
--- NOTE: these two let any signed-in Supabase user see and update every order.
--- That is fine while the only account is yours, but if you ever add customer
--- accounts to this project, lock these down first — otherwise any signed-in
--- customer could read your whole order book.
-drop policy if exists "orders_read_admin" on public.orders;
-create policy "orders_read_admin"
+-- Only YOU can read or change orders, matched on your Supabase account email.
+-- TODO: replace with the email address you sign in to Supabase with.
+-- Until this is your real email, nobody can read orders at all - which is
+-- safe, just inconvenient for you.
+drop policy if exists "orders_read_owner" on public.orders;
+create policy "orders_read_owner"
   on public.orders for select
   to authenticated
-  using (true);
+  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
 
-drop policy if exists "orders_update_admin" on public.orders;
-create policy "orders_update_admin"
+drop policy if exists "orders_update_owner" on public.orders;
+create policy "orders_update_owner"
   on public.orders for update
   to authenticated
-  using (true)
-  with check (true);
+  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' )
+  with check ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
 
 -- No delete policy on purpose: orders are a record. Cancel by setting status.
+
+
+-- ============================================================
+--  Customer order lookup
+-- ------------------------------------------------------------
+--  Lets a customer check on their own order without an account,
+--  by entering their reference AND the phone number they gave.
+--
+--  This is deliberately a function rather than a plain select:
+--  a reference is only 4 characters, so querying on it alone would
+--  let anyone enumerate your whole order book. RLS cannot compare
+--  the submitted phone to the stored one, so the match has to happen
+--  inside the database.
+--
+--  Phone is compared with non-digits stripped, so "0801 234 5678"
+--  matches "08012345678".
+-- ============================================================
+
+create or replace function public.lookup_order(p_reference text, p_phone text)
+returns jsonb
+language sql
+security definer
+set search_path = public
+as $$
+  select to_jsonb(o)
+  from public.orders o
+  where upper(o.reference) = upper(trim(p_reference))
+    and p_phone is not null
+    and regexp_replace(coalesce(o.phone, ''), '[^0-9]', '', 'g')
+      = regexp_replace(coalesce(p_phone, ''), '[^0-9]', '', 'g')
+  limit 1;
+$$;
+
+revoke all on function public.lookup_order(text, text) from public;
+grant execute on function public.lookup_order(text, text) to anon, authenticated;
+
+-- What a customer is allowed to change on their own order: nothing.
+-- They can look, not touch.

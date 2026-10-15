@@ -233,7 +233,13 @@ set up yet.)"
 
 1. Open your Supabase project → **SQL Editor** → **New query**
 2. Paste the whole of [`supabase.sql`](supabase.sql) and run it
-3. Done — new orders appear immediately
+3. Done — new orders appear immediately, and order tracking switches on
+
+> `supabase.sql` also **tightens the admin policies**. Before, any signed-in
+> Supabase user could read every order. It now matches on your Supabase account
+> email — so **replace `REPLACE-WITH-YOUR-SUPABASE-EMAIL`** with the address
+> you sign in to Supabase with. Until you do, nobody can read orders at all,
+> which is safe but inconvenient for you.
 
 To read them: Supabase → **Table editor** → `orders`. Or **Data** → **Orders**.
 
@@ -262,6 +268,35 @@ The bag asks for a name and phone number, both optional, remembered in
 matched to a WhatsApp message — which is most of the point of logging.
 
 Logging is fire-and-forget and can never block or delay the customer's order.
+
+## Order tracking
+
+A **Track your order** section where a customer enters their reference and the
+phone number they gave, and sees what they bought, the total and where it has
+got to — `Received` → `Confirmed` → `Being made` → `Dispatched` → `Delivered`,
+or `Cancelled`.
+
+No account needed. That is deliberate: the only question a clothing customer
+actually asks is "where's my parcel", and this answers it without passwords,
+email verification or recovery flows in front of a sale.
+
+### Why this is a database function, not a query
+
+A reference is only four characters — roughly a million combinations — so
+letting anyone `select` rows by reference alone would expose the entire order
+book. RLS cannot compare a submitted phone number against the stored one, so the
+match has to happen inside the database.
+
+`supabase.sql` creates `lookup_order(p_reference, p_phone)` as a
+`SECURITY DEFINER` function: it returns a row **only** when both match. Phone
+comparison strips non-digits, so `"0801 234 5678"` matches `"08012345678"`.
+Execution is granted to `anon` only; the function returns nothing else.
+
+Customer data is escaped on render — verified against injected markup.
+
+Until `supabase.sql` has been run the endpoint answers 404 and the form says
+*"Order tracking is not switched on yet. Message us on WhatsApp"* rather than
+failing silently.
 
 ## Behaviour
 
