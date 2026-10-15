@@ -28,7 +28,13 @@
         <img src="img/logo.svg" alt="NVR" width="220" height="80" />
       </a>
 
-      <nav aria-label="Primary">
+      <button type="button" class="nav-toggle" id="navToggle"
+              aria-expanded="false" aria-controls="primaryNav">
+        <span class="nav-toggle-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="skip-link">Menu</span>
+      </button>
+
+      <nav id="primaryNav" class="primary-nav" aria-label="Primary">
         <ul class="nav-list">
           <li><a class="nav-link" href="#collections">Collections</a></li>
           <li><a class="nav-link" href="#shop">Shop</a></li>
@@ -42,7 +48,8 @@
       </nav>
 
       <button type="button" class="bag-btn" id="bagOpen" aria-haspopup="dialog" aria-controls="bagDrawer">
-        Bag <span class="bag-count" id="bagCount">0</span>
+        <span class="bag-btn-label">Bag</span>
+        <span class="bag-count" id="bagCount">0</span>
       </button>
     </div>
   </header>

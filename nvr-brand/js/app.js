@@ -460,6 +460,51 @@ function money(n) {
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
 
+  /* ---------- responsive nav ---------- */
+
+  function initNav() {
+    var toggle = $('#navToggle');
+    var nav = $('#primaryNav');
+    if (!toggle || !nav) return;
+
+    function setOpen(open) {
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      nav.classList.toggle('is-open', open);
+    }
+
+    function isOpen() {
+      return toggle.getAttribute('aria-expanded') === 'true';
+    }
+
+    toggle.addEventListener('click', function () {
+      setOpen(!isOpen());
+    });
+
+    // Following a link should leave the menu closed behind you.
+    nav.addEventListener('click', function (e) {
+      if (e.target.closest('.nav-link')) setOpen(false);
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!isOpen()) return;
+      if (e.target.closest('#primaryNav') || e.target.closest('#navToggle')) return;
+      setOpen(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && isOpen()) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // A resize past the breakpoint hides the desktop nav again; make sure the
+    // panel does not stay "open" while it is hidden.
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 900 && isOpen()) setOpen(false);
+    });
+  }
+
   /* ---------- order tracking ---------- */
 
   var STATUS_COPY = {
@@ -1506,6 +1551,7 @@ function money(n) {
       });
     });
 
+    initNav();
     initTracking();
     initSelling();
     initPhotos();

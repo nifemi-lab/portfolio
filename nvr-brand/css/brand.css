@@ -41,6 +41,12 @@
 
 html { scroll-behavior: smooth; }
 
+/* The closed drawers sit translated off-canvas to the right, which makes the
+   document scroll sideways on narrow screens. `clip` contains that without
+   creating a scroll container, so the sticky header keeps working — `hidden`
+   would break it. */
+html { overflow-x: clip; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
@@ -129,9 +135,39 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   justify-content: space-between;
   gap: var(--gap);
   min-height: 64px;
+  position: relative;
 }
 
-.brand { display: flex; align-items: center; gap: .625rem; text-decoration: none; }
+/* Hamburger - hidden on desktop, shown from 900px down. */
+.nav-toggle {
+  display: none;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgb(245 245 238 / .25);
+  color: var(--bone);
+  cursor: pointer;
+}
+.nav-toggle:hover { border-color: var(--bone); }
+.nav-toggle:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
+
+.nav-toggle-bars { display: block; width: 18px; }
+.nav-toggle-bars i {
+  display: block;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform .22s ease, opacity .18s ease;
+}
+.nav-toggle-bars i + i { margin-top: 4px; }
+
+.nav-toggle[aria-expanded='true'] .nav-toggle-bars i:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.nav-toggle[aria-expanded='true'] .nav-toggle-bars i:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded='true'] .nav-toggle-bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
+.brand { display: flex; align-items: center; gap: .625rem; text-decoration: none; min-width: 0; }
 .brand img { height: 32px; width: auto; display: block; }
 
 .nav-list {
@@ -186,6 +222,10 @@ p { margin: 0 0 1rem; max-width: 60ch; }
 /* ---------- hero ---------- */
 
 .hero { padding-block: clamp(4rem, 12vw, 9rem); }
+
+/* The lockup ships with fixed width/height attributes, so it overflows on a
+   320px screen unless it is allowed to shrink. */
+.hero-lockup { width: min(320px, 100%); height: auto; display: block; margin-bottom: 2rem; }
 
 .hero .tag { display: block; margin-bottom: 1.25rem; }
 
@@ -543,6 +583,57 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   letter-spacing: .18em;
   color: var(--bone);
   margin-top: 2rem;
+}
+
+/* ---------- responsive nav ---------- */
+
+.primary-nav { min-width: 0; }
+
+@media (max-width: 900px) {
+  .nav-toggle { display: inline-flex; }
+  .header-inner { flex-wrap: wrap; }
+
+  .primary-nav {
+    flex: 1 0 100%;
+    order: 3;
+    max-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    /* visibility is discrete: delay it on close, apply it immediately on
+       open, otherwise the menu stays hidden while it animates in. */
+    transition: max-height .28s ease, visibility 0s linear .28s;
+  }
+  .primary-nav.is-open {
+    max-height: 30rem;
+    visibility: visible;
+    border-top: 1px solid rgb(245 245 238 / .12);
+    transition: max-height .28s ease, visibility 0s linear 0s;
+  }
+
+  .nav-list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-block: .5rem 1rem;
+  }
+
+  .nav-link {
+    display: block;
+    padding: .875rem 0;
+    font-size: .8125rem;
+    border-bottom: 1px solid rgb(245 245 238 / .1);
+  }
+  .nav-list li:last-child .nav-link { border-bottom: 0; }
+
+  .bag-btn { order: 2; }
+  .brand { order: 1; margin-right: auto; }
+}
+
+@media (max-width: 420px) {
+  .bag-btn-label { display: none; }
+  .bag-btn { padding-inline: .75rem; }
+  .brand img { height: 28px; }
+  .nav-link { padding: .75rem 0; }
 }
 
 /* ---------- NVR Studio / premium ---------- */
