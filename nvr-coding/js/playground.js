@@ -31,7 +31,7 @@ function highlight(code) {
   return esc
     .replace(/(\/\/.*$)/gm, '<span style="color:#64748b">$1</span>')
     .replace(/(".*?"|'.*?')/g, '<span style="color:#fcd34d">$1</span>')
-    .replace(/\b(const|let|var|function|return|if|else|for|while|new|=>|true|false|null|undefined|fetch|console|log)\b/g, '<span style="color:#a78bfa">$1</span>')
+    .replace(/\b(const|let|var|function|return|if|else|for|while|new|=>|true|false|null|undefined|fetch|console|log)\b/g, '<span style="color:#c7ff00">$1</span>')
     .replace(/\b(\d+)\b/g, '<span style="color:#34d399">$1</span>');
 }
 

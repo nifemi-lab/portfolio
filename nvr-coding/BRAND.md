@@ -1,5 +1,8 @@
 # NVR — Brand Bible
 
+> Supersedes the earlier draft. The palette below replaces the previous Void /
+> Ultraviolet / Cyan scheme, which is no longer used anywhere in NVR.
+
 ## Meaning
 **NVR = "NEVER."** Not a word. A stance.
 Expansion: **Never Evolve, Never Rest** — the internal meaning behind the three letters.
@@ -32,22 +35,52 @@ Short. Certain. Never salesy.
 - ❌ "Shop now! Limited stock!! Buy your dream life!"
 
 ## Logo
-- Wordmark: **NVR** — heavy geometric sans, wide tracking, all caps
-- Mark: brain-as-planet with an orbital ring (`logo-mark.svg`)
-- Lockup: mark left, wordmark right (`logo.svg`)
+- Wordmark: **NVR** — heavy geometric sans, all caps (`logo.svg`)
+- Mark: a bold **N** with a volt diamond at the top right (`logo-mark.svg`)
+- Hero lockup: mark above wordmark above `NEVER STOP.` (`logo-lockup.svg`)
 - Minimum size: 24px height. Never stretch. Never add effects.
 - Clear space: height of the "N" on all sides.
 
+The mark's `N` is drawn as an SVG path rather than set as text, so the volt
+diamond stays locked to the letterform in every renderer with no font
+dependency. Do not rebuild it as live text.
+
+### Divisions
+| Division | Role |
+|---|---|
+| **NVR Supply** | Clothing & products |
+| **NVR Academy** | Learning platform — this app |
+| **NVR Foundation** | Impact & community |
+
+### Taglines
+*Never stop.* · *Wear the mission.* · *Built for those still becoming.* ·
+*Learn. Build. Repeat.*
+
 ## Color
+Palette is set by the Figma brand board and is identical across every NVR
+property — this is the single source of truth.
+
 | Token | Hex | Use |
 |---|---|---|
-| Void | `#040817` | Primary background |
-| Bone | `#e6ecff` | Type |
-| Volt | `#c6f24e` | Signal collection, CTAs |
-| Ultraviolet | `#a78bfa` | Orbit collection, gradients |
-| Cyan | `#7dd3fc` | Links, data |
+| Obsidian | `#0a0a0a` | Primary background |
+| Bone | `#f5f5ee` | Type and logo |
+| Volt | `#c7ff00` | The only accent — CTAs, links, focus |
+| Ash | `#bbbbbb` | Supporting text |
+| Slate | `#666666` | Borders and rules — never small text |
 
-Rule: void background + ONE accent per piece. Never two accents together.
+Rule: obsidian background + ONE accent per piece. Never two accents together.
+
+Slate must not be used for small text: at `#666` on obsidian it reaches only
+about 3.5:1 and fails WCAG AA.
+
+### Light mode
+Volt on white is 1.18:1 and effectively unreadable, so light themes use a deep
+volt, `#5d7400`, which clears AA at 5.3:1 against white. Never carry the neon
+volt into a light background.
+
+### Collections
+Collections are told apart by the neutral ramp (bone / volt / ash), not by
+separate hues. A collection never introduces a second accent.
 
 ## Type
 - Headlines: Space Grotesk / any geometric grotesk, ALL CAPS, tight tracking

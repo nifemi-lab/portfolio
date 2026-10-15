@@ -95,7 +95,7 @@ function renderHeatmap() {
   for (let i = 27; i >= 0; i--) {
     const d = new Date(today - i * 864e5);
     const n = days[d.toDateString()] || 0;
-    const shade = n === 0 ? 'var(--surface2)' : n < 2 ? '#7dd3fc55' : n < 4 ? '#7dd3fc99' : '#7dd3fc';
+    const shade = n === 0 ? 'var(--surface2)' : n < 2 ? '#c7ff0033' : n < 4 ? '#c7ff0066' : '#c7ff00';
     html += `<span title="${d.toDateString()}: ${n} actions" style="width:16px;height:16px;border-radius:4px;background:${shade}"></span>`;
   }
   el.innerHTML = html;

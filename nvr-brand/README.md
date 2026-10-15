@@ -29,10 +29,9 @@ Volt is the single accent and is reserved. Collections are told apart by the
 neutral ramp (bone / volt / ash) rather than by five competing hues, so no two
 accents ever land on the same piece.
 
-> `BRAND.md` specifies a different palette (Void `#040817`, Bone `#e6ecff`,
-> Volt `#c6f24e`, plus Ultraviolet and Cyan). The Figma board wins here. Slate
-> is deliberately kept off small text: at `#666` on obsidian it only reaches
-> ~3.6:1 and fails WCAG AA.
+> `BRAND.md` was updated to match, so both NVR properties now read from the
+> same palette. Slate is deliberately kept off small text: at `#666` on
+> obsidian it only reaches ~3.5:1 and fails WCAG AA.
 
 ### Logo
 

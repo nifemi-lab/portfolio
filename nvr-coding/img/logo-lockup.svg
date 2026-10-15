@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 264" width="300" height="264" role="img" aria-label="NVR — Never stop.">
+  <!-- Hero lockup: mark, wordmark, tagline. -->
+  <g transform="translate(100 0) scale(0.62)">
+    <path d="M4 100 V0 H26 L74 64 V0 H96 V100 H74 L26 36 V100 Z" fill="#F5F5EE"/>
+    <path d="M84 6 L100 22 L84 38 L68 22 Z" fill="#C7FF00"/>
+  </g>
+
+  <text x="150" y="196"
+        text-anchor="middle"
+        font-family="'Space Grotesk', 'Segoe UI', Arial, sans-serif"
+        font-size="72"
+        font-weight="700"
+        letter-spacing="2"
+        fill="#F5F5EE">NVR</text>
+
+  <text x="150" y="238"
+        text-anchor="middle"
+        font-family="'Inter', Arial, sans-serif"
+        font-size="19"
+        font-weight="600"
+        letter-spacing="4"
+        fill="#C7FF00">NEVER STOP.</text>
+</svg>
