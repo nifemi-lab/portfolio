@@ -175,24 +175,31 @@ cached simply doesn't see the button instead of clicking into a broken dialog.
 > `CATALOG` (`js/catalog.js`) before you sell. Every figure is editable in
 > place.
 
-## Payment: bank transfer
+## Payment: OPay transfer
 
 There is no checkout gateway and no payment processor. The flow is:
 
 1. Customer sends their order (WhatsApp, email, or copy).
 2. NVR confirms stock, size and delivery by hand.
-3. NVR sends the account name and number.
-4. Customer transfers the exact amount and sends the receipt.
-5. NVR makes the piece and sends a dispatch update.
+3. Customer transfers to the OPay number, sending the receipt.
+4. NVR makes the piece and sends a dispatch update.
 
-The **How you pay** section states this in four steps. When `BANK` is filled in
-it also shows the bank name, account name and account number, with a copy
-button on the number.
+The **How you pay** section states this and shows the live details:
 
-> `BANK` in `js/catalog.js` is deliberately empty. Until all three fields are
-> filled the site shows "Transfer details are not published yet — ask on
-> WhatsApp" instead of a placeholder account number, so nobody can send money
-> to a fake account.
+| Label | Value |
+|---|---|
+| Pay to | OPay |
+| Account name | Monisola Omolabake Shodimu |
+| OPay number | `8106285867` |
+
+The number has a copy button. OPay receives to a phone number rather than a
+classic account number, so the labels are configurable in `BANK` — if you ever
+switch to a bank account, set `providerLabel` to `"Bank"` and `numberLabel` to
+`"Account number"`.
+
+`bankReady()` requires all three fields. If any is missing the site shows
+"Transfer details are not published yet — ask on WhatsApp" rather than
+rendering a half-filled block that could be paid to the wrong place.
 
 ## Enquiries
 
@@ -241,9 +248,7 @@ fails AA; 85% clears it at 4.92:1.
   garments that don't exist would break the brand's own third rule. Replace
   `.tile` with real imagery when there is real imagery.
 - **`CONTACT` is live** (WhatsApp + email). Supabase logging is still off.
-- **`BANK` is empty** — bank name, account name and account number all need
-  filling in `js/catalog.js`. Until then the site tells customers to ask on
-  WhatsApp rather than showing a placeholder account number.
+- **`BANK` is live** (OPay). Supabase logging is still off.
 - **People and logistics are described only where they're sourced.** The
   *How it works* copy comes from `BRAND.md` and the Figma board — garment
   weights, the boxy drop-shoulder cut, the division structure, the taglines. No

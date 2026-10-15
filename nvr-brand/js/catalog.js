@@ -237,18 +237,22 @@ var SUPABASE = {
 };
 
 /* ============================================================
- * Payment: bank transfer only.
+ * Payment: OPay transfer only.
  *
- * TODO: replace every placeholder below with your real details.
- * Until bankName and accountNumber are filled, the site hides the
- * transfer block entirely and tells customers to ask instead of
- * showing a fake account number.
+ * OPay receives to a phone number, not a classic account number, so the
+ * labels below are configurable. If you switch to a bank account, set
+ * providerLabel to 'Bank' and numberLabel to 'Account number'.
+ *
+ * The site hides this block entirely until all three are filled, so a
+ * placeholder can never be mistaken for a real destination.
  * ============================================================ */
 
 var BANK = {
-  bankName: '',
-  accountName: '',
-  accountNumber: ''
+  provider: 'OPay',
+  providerLabel: 'Pay to',
+  accountName: 'Monisola Omolabake Shodimu',
+  accountNumber: '8106285867',
+  numberLabel: 'OPay number'
 };
 
 /* How the money moves, stated plainly. */

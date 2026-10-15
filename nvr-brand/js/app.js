@@ -381,7 +381,7 @@ function money(n) {
   /* ---------- payment + enquiries ---------- */
 
   function bankReady() {
-    return !!(BANK.bankName && BANK.accountName && BANK.accountNumber);
+    return !!(BANK.provider && BANK.accountName && BANK.accountNumber);
   }
 
   function enquiryHref(message) {
@@ -408,7 +408,7 @@ function money(n) {
     if (!bankReady()) {
       block.innerHTML =
         '<div class="bank-inner">' +
-          '<span class="tag tag--accent">Bank transfer</span>' +
+          '<span class="tag tag--accent">How to pay</span>' +
           '<p class="bank-missing">Transfer details are not published yet. ' +
           'Ask on WhatsApp and we will send them with your order confirmation.</p>' +
         '</div>';
@@ -417,16 +417,21 @@ function money(n) {
 
     block.innerHTML =
       '<div class="bank-inner">' +
-        '<span class="tag tag--accent">Bank transfer</span>' +
+        '<span class="tag tag--accent">How to pay</span>' +
         '<dl class="bank-list">' +
-          '<div class="bank-row"><dt>Bank</dt><dd>' + escapeHtml(BANK.bankName) + '</dd></div>' +
-          '<div class="bank-row"><dt>Account name</dt><dd>' + escapeHtml(BANK.accountName) + '</dd></div>' +
-          '<div class="bank-row"><dt>Account number</dt><dd>' +
+          '<div class="bank-row"><dt>' + escapeHtml(BANK.providerLabel) + '</dt>' +
+            '<dd>' + escapeHtml(BANK.provider) + '</dd></div>' +
+          '<div class="bank-row"><dt>Account name</dt>' +
+            '<dd>' + escapeHtml(BANK.accountName) + '</dd></div>' +
+          '<div class="bank-row"><dt>' + escapeHtml(BANK.numberLabel) + '</dt><dd>' +
             '<span id="bankNumber">' + escapeHtml(BANK.accountNumber) + '</span>' +
             '<button type="button" class="bank-copy" id="copyBank">Copy</button>' +
           '</dd></div>' +
         '</dl>' +
-        '<p class="bank-note">Transfer the exact amount and send the receipt on WhatsApp so we can match it to your order.</p>' +
+        '<p class="bank-note">Transfer the exact amount to the ' +
+          escapeHtml(BANK.provider) + ' number above, then send the receipt on ' +
+          'WhatsApp so we can match it to your order. We only start once the ' +
+          'transfer shows.</p>' +
       '</div>';
   }
 
