@@ -40,14 +40,14 @@ drop policy if exists "orders_read_owner" on public.orders;
 create policy "orders_read_owner"
   on public.orders for select
   to authenticated
-  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+  using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
 
 drop policy if exists "orders_update_owner" on public.orders;
 create policy "orders_update_owner"
   on public.orders for update
   to authenticated
-  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' )
-  with check ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+  using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' )
+  with check ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
 
 -- No delete policy on purpose: orders are a record. Cancel by setting status.
 
@@ -137,14 +137,14 @@ drop policy if exists "sellers_read_owner" on public.sellers;
 create policy "sellers_read_owner"
   on public.sellers for select
   to authenticated
-  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+  using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
 
 drop policy if exists "sellers_update_owner" on public.sellers;
 create policy "sellers_update_owner"
   on public.sellers for update
   to authenticated
-  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' )
-  with check ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+  using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' )
+  with check ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
 
 
 -- One row per garment a seller wants to list.
@@ -190,14 +190,14 @@ drop policy if exists "listings_read_owner" on public.listings;
 create policy "listings_read_owner"
   on public.listings for select
   to authenticated
-  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+  using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
 
 drop policy if exists "listings_update_owner" on public.listings;
 create policy "listings_update_owner"
   on public.listings for update
   to authenticated
-  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' )
-  with check ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+  using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' )
+  with check ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
 
 -- Public can see only what has actually been listed, never pending work.
 drop policy if exists "listings_read_public" on public.listings;
@@ -241,7 +241,7 @@ drop policy if exists "payouts_read_owner" on public.payouts;
 create policy "payouts_read_owner"
   on public.payouts for select
   to authenticated
-  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+  using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
 
 -- Let a seller check their balance with reference + phone, same pattern
 -- as lookup_order. Aggregates only; no other seller's data are exposed.
@@ -359,5 +359,5 @@ drop policy if exists "featured_write_owner" on public.featured;
 create policy "featured_write_owner"
   on public.featured for all
   to authenticated
-  using ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' )
-  with check ( (auth.jwt() ->> 'email') = 'REPLACE-WITH-YOUR-SUPABASE-EMAIL' );
+  using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' )
+  with check ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
