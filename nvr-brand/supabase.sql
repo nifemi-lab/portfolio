@@ -179,15 +179,9 @@ create index if not exists listings_created_idx on public.listings (created_at d
 
 alter table public.listings enable row level security;
 
-drop policy if exists "listings_insert_owner" on public.listings;
-create policy "listings_insert_owner"
-  on public.listings for insert
-  to authenticated
-  using ( auth.uid() = seller_id )
-  with check ( auth.uid() = seller_id );
-
 drop policy if exists "listings_read_owner" on public.listings;
 create policy "listings_read_owner"
+  on public.listings for select
   on public.listings for select
   to authenticated
   using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
@@ -198,6 +192,14 @@ create policy "listings_update_owner"
   to authenticated
   using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' )
   with check ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
+
+-- An INSERT policy may only carry WITH CHECK - USING is not valid there and
+-- Postgres rejects the statement outright (42601).
+drop policy if exists "listings_insert_owner" on public.listings;
+create policy "listings_insert_owner"
+  on public.listings for insert
+  to authenticated
+  with check ( auth.uid() = seller_id );
 
 -- Public can see only what has actually been listed, never pending work.
 drop policy if exists "listings_read_public" on public.listings;
@@ -242,6 +244,21 @@ create policy "payouts_read_owner"
   on public.payouts for select
   to authenticated
   using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
+
+-- Sellers never insert payout rows. Only NVR does, so these are owner-scoped.
+-- They must come after the table exists or the statement fails.
+drop policy if exists "payouts_insert_owner" on public.payouts;
+create policy "payouts_insert_owner"
+  on public.payouts for insert
+  to authenticated
+  with check ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
+
+drop policy if exists "payouts_update_owner" on public.payouts;
+create policy "payouts_update_owner"
+  on public.payouts for update
+  to authenticated
+  using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' )
+  with check ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
 
 -- Let a seller check their balance with reference + phone, same pattern
 -- as lookup_order. Aggregates only; no other seller's data are exposed.
