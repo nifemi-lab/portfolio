@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="NVR owner console. Staff access only.">
+<title>NVR — Owner</title>
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- ============ SIGN IN ============ -->
+<main class="gate" id="gate">
+  <form class="gate-card" id="gateForm" novalidate>
+    <img src="img/logo-mark.svg" alt="" width="44" height="44">
+    <h1>NVR owner</h1>
+    <p class="gate-note">Staff access only. Everything here is scoped to your
+      Supabase account by row-level security.</p>
+    <label class="field">
+      <span>Email</span>
+      <input type="email" id="auEmail" autocomplete="username" required>
+    </label>
+    <label class="field">
+      <span>Password</span>
+      <input type="password" id="auPass" autocomplete="current-password" required>
+    </label>
+    <button type="submit" class="btn btn--volt btn--block">Sign in</button>
+    <p class="msg" id="gateMsg" role="alert"></p>
+  </form>
+</main>
+
+<!-- ============ APP ============ -->
+<div class="app" id="app" hidden>
+
+  <header class="bar">
+    <a class="bar-brand" href="index.html">
+      <img src="img/logo.svg" alt="NVR" width="88" height="32">
+      <span class="bar-tag">owner</span>
+    </a>
+    <div class="bar-right">
+      <span class="who" id="who"></span>
+      <button type="button" class="btn btn--ghost" id="refresh">Refresh</button>
+      <button type="button" class="btn btn--ghost" id="signOut">Sign out</button>
+    </div>
+  </header>
+
+  <p class="banner" id="banner" hidden></p>
+
+  <main class="wrap-main">
+
+    <!-- OVERVIEW -->
+    <section class="stats" id="stats">
+      <a class="stat" href="#sellers"><span class="stat-n" id="sPendingSellers">0</span><span class="stat-l">sellers pending</span></a>
+      <a class="stat" href="#listings"><span class="stat-n" id="sPendingListings">0</span><span class="stat-l">listings pending</span></a>
+      <a class="stat" href="#orders"><span class="stat-n" id="sOrders">0</span><span class="stat-l">orders</span></a>
+      <a class="stat stat--money" href="#payouts"><span class="stat-n" id="sOwed">₦0</span><span class="stat-l">owed to sellers</span></a>
+    </section>
+
+    <!-- SELLERS -->
+    <section id="sellers">
+      <h2>Sellers</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Ref</th><th>Name</th><th>Phone</th><th>City</th><th>Payout to</th><th>Status</th><th>Decide</th>
+          </tr></thead>
+          <tbody id="sellersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- LISTINGS -->
+    <section id="listings">
+      <h2>Listings</h2>
+      <p class="section-note">Approving makes a piece visible on the storefront.
+        Set the shelf price — the seller is paid their floor, the difference is
+        commission.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Ref</th><th>Seller</th><th>Piece</th><th>Size</th><th>Condition</th>
+            <th class="num">Asking</th><th class="num">Shelf</th><th>Status</th><th>Decide</th>
+          </tr></thead>
+          <tbody id="listingsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ORDERS -->
+    <section id="orders">
+      <h2>Orders</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Ref</th><th>Customer</th><th>Items</th><th class="num">Total</th>
+            <th>Channel</th><th>When</th><th>Status</th><th>Set</th>
+          </tr></thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PAYOUTS -->
+    <section id="payouts">
+      <h2>Payouts</h2>
+      <p class="section-note">What you hold that belongs to someone else. Mark
+        paid only after the transfer actually goes out.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Seller</th><th>Order</th><th class="num">Gross</th><th class="num">Cut</th>
+            <th class="num">Owed</th><th>Status</th><th></th>
+          </tr></thead>
+          <tbody id="payoutsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/catalog.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

@@ -438,6 +438,43 @@ hand-managed renewal list in a spreadsheet, is worse than no button at all.
 Set `priceNaira` once the rails exist and the CTA switches itself to show the
 price.
 
+## Owner console
+
+`admin.html` — sign in, and you get the four things that were previously
+manual Supabase table editing:
+
+| Section | What it does |
+|---|---|
+| **Overview** | pending sellers, pending listings, order count, total owed |
+| **Sellers** | approve or decline an application in one click |
+| **Listings** | set the shelf price and publish, or decline |
+| **Orders** | change status: new → confirmed → made → shipped → done |
+| **Payouts** | what you hold that belongs to a seller, mark paid |
+
+### There is no admin key
+
+The page uses the same **anon** key as the storefront and signs in as you
+through Supabase Auth. Every read and write is filtered by the RLS policies,
+which match on your account email. There is no `service_role` key in any file,
+and no bypass. Someone who finds the URL can sign in as themselves and see
+nothing — which is why the RLS policies must have your real email in them.
+
+The page is `noindex, nofollow` and **not linked from the storefront**.
+
+### The seller floor cannot be quietly broken
+
+`shelfFor(floor)` rounds the shelf price **up** to the next hundred, because
+rounding down would leave the seller short of what they agreed to. A ₦30,000
+floor becomes ₦35,300 at 15% commission, paying the seller ₦30,005.
+
+If you type a lower price, the console refuses and tells you the minimum:
+
+> At ₦31,000 the seller gets ₦26,350, below the ₦30,000 they asked for.
+> Raise it to at least ₦35,300.
+
+Publishing also writes `payout_amount` and `commission_pct` onto the listing so
+the payout ledger has a number to work from.
+
 ## Behaviour
 
 - **Bag** — add, change quantity, remove. Persists to `localStorage`
