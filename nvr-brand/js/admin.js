@@ -116,8 +116,17 @@
       headers: { 'apikey': SUPABASE.supabaseAnonKey, 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email, password: password })
     }).then(function (r) {
-      if (!r.ok) throw new Error('Wrong email or password.');
+      if (!r.ok) throw new Error('refused');
       return r.json();
+    }).catch(function () {
+      // Supabase returns an identical error whether the account is missing or
+      // the password is wrong, on purpose. So do not guess which - name both
+      // causes and let them check, rather than dead-ending on "wrong password".
+      throw new Error(
+        'Sign-in refused. Either the password is wrong, or no sign-in account ' +
+        'exists for this address yet. Create one at Supabase, Authentication, ' +
+        'Users, Add user - then come back.'
+      );
     });
   }
 
