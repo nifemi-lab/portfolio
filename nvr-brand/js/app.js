@@ -92,6 +92,7 @@ function money(n) {
   }
 
   function escapeHtml(str) {
+    if (str == null) return '';
     return String(str).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
@@ -976,16 +977,20 @@ function money(n) {
         uploadPending();
 
         // The seller row exists. The listing needs seller_id, which a minimal
-        // insert does not return, so read it back by reference.
-        fetch(SUPABASE.supabaseUrl + '/rest/v1/sellers?reference=eq.' + encodeURIComponent(sref) + '&select=id', {
+        // insert does not return, so read it back by reference through the
+        // lookup function - anon cannot read the sellers table (RLS).
+        fetch(SUPABASE.supabaseUrl + '/rest/v1/rpc/lookup_seller_id', {
+          method: 'POST',
           headers: {
+            'Content-Type': 'application/json',
             'apikey': SUPABASE.supabaseAnonKey,
             'Authorization': 'Bearer ' + SUPABASE.supabaseAnonKey
-          }
+          },
+          body: JSON.stringify({ p_reference: sref })
         }).then(function (r) { return r.ok ? r.json() : []; })
           .catch(function () { return []; })
           .then(function (rows) {
-            var sellerId = rows && rows[0] ? rows[0].id : null;
+            var sellerId = rows && rows[0] ? rows[0] : null;
             if (!sellerId) return null;
             return postJson('listings', {
               reference: shortRef('LST-'),

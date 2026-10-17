@@ -33,6 +33,10 @@ body {
 
 *, *::before, *::after { scrollbar-width: thin; scrollbar-color: var(--slate) transparent; }
 
+/* The JS toggles panels with the hidden attribute; without this guard a
+   display rule (e.g. .gate below) outranks hidden and the panel stays. */
+[hidden] { display: none !important; }
+
 h1, h2 { font-family: var(--head); text-transform: uppercase; letter-spacing: -.01em; }
 h1 { font-size: 1.25rem; margin: 0; }
 h2 { font-size: 1rem; margin: 0 0 .75rem; letter-spacing: .02em; }

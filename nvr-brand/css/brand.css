@@ -12,6 +12,8 @@
   --volt: #c7ff00;      /* Volt — the single accent, CTAs only */
   --ash: #bbbbbb;       /* Ash — supporting text */
   --slate: #666666;     /* Slate — muted, rules and borders */
+  --accent-2: #64f0c7;  /* Teal accent for lesson highlights */
+  --accent-ink: #0a0a0a; /* Dark text for accent backgrounds */
 
   /* type */
   --head: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
@@ -209,7 +211,7 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   cursor: pointer;
 }
 .bag-btn:hover { background: var(--bone); }
-.bag-btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.bag-btn:focus-visible { outline: 2px solid var(--volt); outline-offset: 3px; }
 
 .bag-count {
   min-width: 1.25rem;
@@ -256,7 +258,7 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   transition: background .18s ease, color .18s ease;
 }
 .btn:hover { background: var(--bone); color: var(--void); }
-.btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.btn:focus-visible { outline: 2px solid var(--volt); outline-offset: 3px; }
 
 .btn--volt { background: var(--volt); border-color: var(--volt); color: var(--void); }
 .btn--volt:hover { background: var(--bone); border-color: var(--bone); }
@@ -318,7 +320,7 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   cursor: pointer;
 }
 .filter:hover { border-color: var(--bone); }
-.filter:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.filter:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
 .filter[aria-pressed='true'] { background: var(--bone); color: var(--void); border-color: var(--bone); }
 
 .grid {
@@ -436,7 +438,7 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   cursor: pointer;
 }
 .size:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-.size:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.size:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
 .size[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--void); }
 .size:disabled { opacity: .3; cursor: not-allowed; text-decoration: line-through; }
 
@@ -463,7 +465,7 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   cursor: pointer;
 }
 .card-add:hover:not(:disabled) { background: var(--accent); color: var(--void); }
-.card-add:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.card-add:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
 .card-add:disabled { opacity: .35; cursor: not-allowed; }
 
 .stock { font-family: var(--mono); font-size: .625rem; letter-spacing: .14em; color: var(--ash); text-transform: uppercase; }
@@ -568,6 +570,83 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   font-size: .75rem;
   color: var(--volt);
   letter-spacing: .1em;
+}
+
+/* ---------- Learn / Lesson styles (textbook style) ---------- */
+
+.lesson-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.lesson-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.lesson-number {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent-2);
+}
+
+.lesson-content h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.lesson-content p {
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.lesson-example {
+  background: rgba(123, 156, 255, 0.08);
+  border-left: 3px solid var(--accent);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  margin: 1rem 0;
+}
+
+.lesson-example h4 {
+  color: var(--accent);
+  font-family: var(--font-display);
+  margin-bottom: 0.5rem;
+}
+
+.lesson-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.check-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--accent-2);
+  color: var(--accent-ink);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.check-text {
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
 /* ---------- tag line ---------- */
@@ -1278,7 +1357,7 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   line-height: 1;
 }
 .icon-btn:hover { border-color: var(--bone); }
-.icon-btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.icon-btn:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
 
 .drawer-body {
   flex: 1 1 auto;
@@ -1329,7 +1408,7 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   line-height: 1;
 }
 .qty button:hover { border-color: var(--bone); }
-.qty button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.qty button:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
 .qty span { font-family: var(--mono); font-size: .8125rem; min-width: 1.25rem; text-align: center; }
 
 .line-right { text-align: right; display: flex; flex-direction: column; gap: .5rem; align-items: flex-end; }
@@ -1347,7 +1426,7 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   padding: 0;
 }
 .line-remove:hover { color: var(--bone); }
-.line-remove:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.line-remove:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
 
 /* Footer keeps its natural height, then scrolls internally once the viewport
    is too short. Without the cap it overflowed the drawer and the order
@@ -1472,7 +1551,7 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   white-space: pre;
   overflow: auto;
 }
-.order-out:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.order-out:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
 
 /* ---------- footer ---------- */
 

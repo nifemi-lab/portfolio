@@ -146,6 +146,23 @@ create policy "sellers_update_owner"
   using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' )
   with check ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
 
+-- The sell form is anonymous, so it cannot SELECT sellers (that table holds
+-- phone and payout details). It only needs the id of the row it just created,
+-- matched by the reference it already knows, so it asks this instead.
+create or replace function public.lookup_seller_id(p_reference text)
+returns uuid
+language sql
+security definer
+set search_path = public
+as $$
+  select id from public.sellers
+  where upper(reference) = upper(trim(p_reference))
+  limit 1;
+$$;
+
+revoke all on function public.lookup_seller_id(text) from public;
+grant execute on function public.lookup_seller_id(text) to anon, authenticated;
+
 
 -- One row per garment a seller wants to list.
 create table if not exists public.listings (
@@ -182,7 +199,6 @@ alter table public.listings enable row level security;
 drop policy if exists "listings_read_owner" on public.listings;
 create policy "listings_read_owner"
   on public.listings for select
-  on public.listings for select
   to authenticated
   using ( lower(auth.jwt() ->> 'email') = 'ogiehenifemi@gmail.com' );
 
@@ -195,11 +211,14 @@ create policy "listings_update_owner"
 
 -- An INSERT policy may only carry WITH CHECK - USING is not valid there and
 -- Postgres rejects the statement outright (42601).
+-- Sellers apply from the public form with no account, so listings are
+-- inserted by anon - locked to 'pending' until NVR reviews them.
 drop policy if exists "listings_insert_owner" on public.listings;
-create policy "listings_insert_owner"
+drop policy if exists "listings_insert_public" on public.listings;
+create policy "listings_insert_public"
   on public.listings for insert
-  to authenticated
-  with check ( auth.uid() = seller_id );
+  to anon, authenticated
+  with check ( status = 'pending' );
 
 -- Public can see only what has actually been listed, never pending work.
 drop policy if exists "listings_read_public" on public.listings;
