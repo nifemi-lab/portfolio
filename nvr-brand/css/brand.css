@@ -265,6 +265,11 @@ p { margin: 0 0 1rem; max-width: 60ch; }
 
 .btn--block { width: 100%; justify-content: space-between; }
 
+.btn--sm {
+  font-size: .6875rem;
+  padding: .5rem .875rem;
+}
+
 /* ---------- collections ---------- */
 
 .collection-grid {
