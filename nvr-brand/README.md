@@ -63,9 +63,12 @@ platform), **NVR Foundation** (impact & community). Taglines: *Never stop.* ·
 ```
 nvr-brand/
   index.html      markup and the bag dialog
+  setup.html      one-click copier for supabase.sql
   css/brand.css   design tokens, layout, components
+  js/garments.js  garment drawings + the photo drop-in resolver
   js/catalog.js   collections, products, divisions, taglines, contact config
   js/app.js       rendering, filters, bag, order builder, order channels
+  img/products/   drop real photographs in here (see its own README)
   img/            wordmark, mark, lockup
   supabase.sql    orders table + RLS policies
   BRAND.md        the earlier brand bible (superseded on palette)
@@ -383,14 +386,39 @@ displays as ₦14,900. It never applies to a seller's agreed price.
 
 ## Photography
 
-There is no stock imagery and no AI-generated garment. Product tiles are
-**SVG garment outlines** — a tee, hoodie, pant, cap, shell, crew or fleece,
-matched to the product and tinted in its collection accent. They are honest
-illustrations, not photographs pretending to be the thing.
+There is no stock imagery and no AI-generated garment. Until a real photograph
+exists, a product tile shows an **SVG garment outline** — polo, tee, hoodie,
+crew, fleece, shell, pant or cap — matched to the product and tinted in its
+collection accent.
 
-The real fix is **seller uploads**. Sellers photographing the garment they
-actually own solves the cold start without a stock library or a licensing
-question, because the picture is guaranteed to be that exact piece.
+Every drawing carries a small **ILLUSTRATION** label. That is deliberate. A
+shopper must never be able to mistake a drawing for a photograph of the thing
+being sold, and an unlabelled placeholder is exactly how that happens by
+accident. The label sits bottom-right of the tile at 0.75 opacity, which is the
+smallest step that still clears 4.5:1 on the tile background.
+
+### Dropping in a real photo
+
+Save a file as `img/products/<product-id>.jpg` and it appears. No code change.
+
+```
+img/products/void-05.jpg   →   VOID/05, the heavyweight polo
+```
+
+`.jpg`, `.png` and `.webp` are all tried in turn, then a seller's stored
+`photoUrl`, and finally the drawing. `img/products/README.md` has the full
+product-id table and how to shoot each one.
+
+`PHOTOS_LIVE` in `js/garments.js` is `false` while no photos exist. That is
+what stops the site firing one 404 per product on every page load for files
+that were never going to be there. **Flip it to `true` when you commit your
+first real photo** and every product starts looking for its own.
+
+### Seller uploads
+
+The other half of the cold start. Sellers photographing the garment they
+actually own solves it without a stock library or a licensing question,
+because the picture is guaranteed to be that exact piece.
 
 `initPhotos()` handles drag-and-drop or file picking, up to 6 photos, 8MB
 each, JPEG/PNG/WebP. Type, size and count are all checked in the browser before

@@ -300,10 +300,10 @@ function money(n) {
           (s === chosen) + '">' + escapeHtml(s) + '</button>';
       }).join('');
 
-      var tileArt = p.photoUrl
-            ? '<img class="tile-photo" src="' + escapeHtml(p.photoUrl) + '" alt="' +
-              escapeHtml(p.name) + '" loading="lazy" decoding="async" />'
-            : silhouette(silhouetteFor(p), c.accentHex);
+      /* Real photo if there is one, drawing if there isn't. The label
+         on the drawing is deliberate: a shopper must never think an
+         illustration is a photograph of the thing being sold. */
+      var tileArt = productArt(p, c.accentHex);
 
       return '' +
           '<article class="card" style="--accent:' + c.accentHex + '" data-id="' + p.id + '">' +
@@ -764,52 +764,9 @@ function money(n) {
     }
   }
 
-  /* ---------- garment silhouettes ---------- */
-
-  /* Not photography, and not pretending to be. These are honest garment
-     outlines so a product card reads as clothing rather than an empty grey
-     box, until real photos arrive. Anything drawn from CSS tiles was the
-     weakest part of the storefront. */
-  function silhouette(kind, accent) {
-    var c = accent || '#f5f5ee';
-    var parts = {
-      tee: '<path d="M60 26 L86 38 L112 54 L100 78 L88 72 L88 150 L32 150 L32 72 L20 78 L8 54 L34 38 Z" ' +
-           'fill="' + c + '" opacity=".9"/><path d="M46 26 Q60 44 74 26" fill="none" stroke="#0a0a0a" stroke-width="4"/>',
-      hoodie: '<path d="M60 24 L88 38 L112 56 L100 80 L88 74 L88 152 L32 152 L32 74 L20 80 L8 56 L32 38 Z" ' +
-           'fill="' + c + '" opacity=".9"/>' +
-           '<path d="M44 26 Q60 46 76 26" fill="none" stroke="#0a0a0a" stroke-width="4"/>' +
-           '<path d="M40 96 L80 96 L74 128 L46 128 Z" fill="#0a0a0a" opacity=".35"/>' +
-           '<path d="M58 44 L54 76 M64 44 L68 76" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round"/>',
-      pant: '<path d="M36 40 L84 40 L88 70 L84 152 L64 152 L60 96 L56 152 L36 152 L32 70 Z" ' +
-           'fill="' + c + '" opacity=".9"/><path d="M36 50 L84 50" stroke="#0a0a0a" stroke-width="3" opacity=".4"/>',
-      cap: '<path d="M22 104 Q22 52 78 48 Q112 46 116 78 L116 92 L64 92 Z" fill="' + c + '" opacity=".9"/>' +
-           '<path d="M22 104 Q60 88 116 92 L116 106 Q60 100 22 116 Z" fill="' + c + '" opacity=".55"/>' +
-           '<circle cx="78" cy="48" r="5" fill="#0a0a0a" opacity=".5"/>',
-      shell: '<path d="M60 24 L88 38 L114 56 L102 82 L90 76 L90 150 L30 150 L30 76 L18 82 L6 56 L32 38 Z" ' +
-           'fill="' + c + '" opacity=".9"/>' +
-           '<path d="M60 26 L60 150" stroke="#0a0a0a" stroke-width="3" opacity=".35"/>' +
-           '<path d="M34 60 L86 60 M34 70 L86 70" stroke="#0a0a0a" stroke-width="2.5" opacity=".28"/>',
-      crew: '<path d="M60 24 L88 38 L112 56 L100 80 L88 74 L88 150 L32 150 L32 74 L20 80 L8 56 L32 38 Z" ' +
-           'fill="' + c + '" opacity=".9"/>' +
-           '<path d="M44 27 Q60 46 76 27" fill="none" stroke="#0a0a0a" stroke-width="6" opacity=".55"/>',
-      fleece: '<path d="M60 24 L88 38 L112 56 L100 80 L88 74 L88 152 L32 152 L32 74 L20 80 L8 56 L32 38 Z" ' +
-           'fill="' + c + '" opacity=".9"/>' +
-           '<path d="M42 28 Q60 50 78 28" fill="none" stroke="#0a0a0a" stroke-width="9" opacity=".55"/>' +
-           '<path d="M44 104 L76 104 L72 132 L48 132 Z" fill="#0a0a0a" opacity=".3"/>'
-    };
-    var shape = parts[kind] || parts.tee;
-    return '<svg class="tile-art" viewBox="0 0 120 176" width="120" height="176" aria-hidden="true" focusable="false">' +
-      shape + '</svg>';
-  }
-
-  function silhouetteFor(p) {
-    var n = (p.name || '').toLowerCase();
-    if (/cap|hat/.test(n)) return 'cap';
-    if (/hoodie|sweat|fleece|sweatshirt/.test(n)) return /fleece/.test(n) ? 'fleece' : (/hoodie/.test(n) ? 'hoodie' : 'crew');
-    if (/pant|trouser|jean/.test(n)) return 'pant';
-    if (/shell|jacket|coat/.test(n)) return 'shell';
-    return 'tee';
-  }
+  /* Garment artwork lives in js/garments.js now. One place decides
+     whether a product shows a real photograph or an honest drawing,
+     and a photo dropped into img/products/ appears with no code change. */
 
   /* ---------- premium / NVR Studio ---------- */
 

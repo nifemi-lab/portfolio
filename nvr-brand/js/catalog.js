@@ -181,6 +181,15 @@ var CATALOG = [
     measurements: topFit([54, 57, 60, 63], [64, 66, 68, 70], [61, 62, 63, 64], ['S', 'M', 'L', 'XL'])
   },
   {
+    id: 'void-05', code: 'VOID/05', name: 'Heavyweight polo', collection: 'void',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(23000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Ribbed collar holds its shape. Two buttons, boxy body, heavy enough to stand up on its own.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([55, 58, 61, 64], [71, 73, 75, 77], [24, 25, 26, 27], ['S', 'M', 'L', 'XL'])
+  },
+  {
     id: 'ascent-01', code: 'ASCENT/01', name: 'Numbered drop tee', collection: 'ascent',
     origin: ORIGIN.NVR, made: true, price: charmPrice(16000), weight: '290gsm', sizes: ['S', 'M', 'L'],
     stock: 'Numbered run',
