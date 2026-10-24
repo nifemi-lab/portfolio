@@ -31,6 +31,8 @@ var TOKENS = {
 var COLLECTIONS = [
   { id: 'void', name: 'VOID', vibe: 'Core, heavyweight basics',
     note: 'The foundation. 300gsm and up, cut boxy.', accent: 'bone', accentHex: TOKENS.bone },
+  { id: 'girls', name: 'Girls', vibe: "The women's line",
+    note: 'Twenty-four polos. Classic and cropped.', accent: 'bone', accentHex: TOKENS.bone },
   { id: 'signal', name: 'SIGNAL', vibe: 'High-vis, reflective, street',
     note: 'Seen before you are.', accent: 'volt', accentHex: TOKENS.volt },
   { id: 'orbit', name: 'ORBIT', vibe: 'Cosmic gradient, space prints',
@@ -38,10 +40,8 @@ var COLLECTIONS = [
   { id: 'static', name: 'STATIC', vibe: 'Noise, glitch, washed',
     note: 'Every print slightly wrong on purpose.', accent: 'ash', accentHex: TOKENS.ash },
   { id: 'ascent', name: 'ASCENT', vibe: 'Limited drops, numbers',
-    note: 'Numbered, then gone.', accent: 'ash', accentHex: TOKENS.ascent }
+    note: 'Numbered, then gone.', accent: 'ash', accentHex: TOKENS.ash }
 ];
-
-COLLECTIONS[4].accentHex = TOKENS.ash;
 
 /* Reusable measurement sets so identical cuts stay identical. */
 var FIT_TOP = 'Body width is measured flat across the chest, then doubled. Length is shoulder to hem, measured flat. Sleeve is shoulder to cuff. Model is 183cm and wears M.';
@@ -85,6 +85,165 @@ function priceRow(list, wasBefore) {
 var ORIGIN = { NVR: 'nvr', SELLER: 'seller' };
 
 var CATALOG = [
+  {
+    id: 'void-05', code: 'VOID/05', name: 'Heavyweight polo', collection: 'void',
+    photoUrl: 'img/products/void-05.jpg',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(23000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Ribbed collar holds its shape. Two buttons, boxy body, heavy enough to stand up on its own.',
+    guideNote: FIT_TOP,
+    metrics: ['Chest', 'Length', 'Sleeve'],
+    measurements: topFit([55, 58, 61, 64], [71, 73, 75, 77], [24, 25, 26, 27], ['S', 'M', 'L', 'XL'])
+  },
+  {
+    id: 'women-01', code: 'WOMEN/01', name: 'Classic black polo', collection: 'girls',
+    photoUrl: 'img/products/women-01.jpg',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(23000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Clean front, statement back: NVR on the chest, More Than Style across the back.'
+  },
+  {
+    id: 'crop-17', code: 'CROPPED/17', name: 'Peach cropped polo', collection: 'girls',
+    photoUrl: 'img/products/crop-17.jpg',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(19000), weight: 'Lightweight piqué', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Soft peach, cropped fit. Black NVR on the chest and across the back.'
+  },
+  {
+    id: 'crop-18', code: 'CROPPED/18', name: 'Lavender cropped polo', collection: 'girls',
+    photoUrl: 'img/products/crop-18.jpg',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(20000), weight: 'Lightweight piqué', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Soft lavender, cropped fit. Minimal back, bold NVR branding.'
+  },
+  {
+    id: 'crop-19', code: 'CROPPED/19', name: 'Olive cropped polo', collection: 'girls',
+    photoUrl: 'img/products/crop-19.jpg',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(21000), weight: 'Lightweight piqué', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Olive green, cropped fit. Clean front, NVR across the back.'
+  },
+  {
+    id: 'crop-20', code: 'CROPPED/20', name: 'Charcoal cropped polo', collection: 'girls',
+    photoUrl: 'img/products/crop-20.jpg',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(22000), weight: 'Lightweight piqué', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Charcoal, cropped fit. Tonal front logo, NVR across the back.'
+  },
+  {
+    id: 'women-02', code: 'WOMEN/02', name: 'Cream bone polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(22000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Cream bone. Soft tone, loud message.'
+  },
+  {
+    id: 'women-03', code: 'WOMEN/03', name: 'Dusty pink polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(22000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Dusty pink. Subtle, confident.'
+  },
+  {
+    id: 'women-04', code: 'WOMEN/04', name: 'Olive green polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(23000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Olive green. Minimal front, maximum back.'
+  },
+  {
+    id: 'women-05', code: 'WOMEN/05', name: 'Chocolate brown polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(24000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Chocolate brown. Earthy, effortless.'
+  },
+  {
+    id: 'women-06', code: 'WOMEN/06', name: 'Navy blue polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(23000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Navy blue. Clean, timeless.'
+  },
+  {
+    id: 'women-07', code: 'WOMEN/07', name: 'Heather grey polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(20000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Heather grey. The everyday essential.'
+  },
+  {
+    id: 'women-08', code: 'WOMEN/08', name: 'Off white polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(21000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Off white. Simple, elevated.'
+  },
+  {
+    id: 'women-09', code: 'WOMEN/09', name: 'Wine red polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(24000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Wine red. Bold but clean.'
+  },
+  {
+    id: 'women-10', code: 'WOMEN/10', name: 'Sky blue polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(21000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Sky blue. A fresh perspective.'
+  },
+  {
+    id: 'women-11', code: 'WOMEN/11', name: 'Sage green polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(23000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Sage green. Calm, different.'
+  },
+  {
+    id: 'women-12', code: 'WOMEN/12', name: 'Lilac polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(23000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Lilac. Soft, strong.'
+  },
+  {
+    id: 'women-13', code: 'WOMEN/13', name: 'Sand beige polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(22000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Sand beige. Neutral, versatile.'
+  },
+  {
+    id: 'women-14', code: 'WOMEN/14', name: 'Washed charcoal polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(25000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Washed charcoal. Understated edge.'
+  },
+  {
+    id: 'women-15', code: 'WOMEN/15', name: 'Butter yellow polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(21000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Butter yellow. Bright intent.'
+  },
+  {
+    id: 'women-16', code: 'WOMEN/16', name: 'Forest green polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(24000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Forest green. Rich, distinct.'
+  },
+  {
+    id: 'women-17', code: 'WOMEN/17', name: 'Baby pink polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(21000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Baby pink. Clean and playful.'
+  },
+  {
+    id: 'women-18', code: 'WOMEN/18', name: 'Deep purple polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(24000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Deep purple. Different by default.'
+  },
+  {
+    id: 'women-19', code: 'WOMEN/19', name: 'Mocha polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(25000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'Mocha. Warm and real.'
+  },
+  {
+    id: 'women-20', code: 'WOMEN/20', name: 'All black tonal polo', collection: 'girls',
+    origin: ORIGIN.NVR, made: true, price: charmPrice(26000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
+    stock: 'Small run',
+    blurb: 'All black, tonal. A quiet statement.'
+  },
   {
     id: 'void-01', code: 'VOID/01', name: 'Heavyweight tee', collection: 'void',
     origin: ORIGIN.NVR, made: true, price: charmPrice(15000), weight: '300gsm', sizes: ['S', 'M', 'L', 'XL'],
@@ -179,15 +338,6 @@ var CATALOG = [
     guideNote: FIT_TOP,
     metrics: ['Chest', 'Length', 'Sleeve'],
     measurements: topFit([54, 57, 60, 63], [64, 66, 68, 70], [61, 62, 63, 64], ['S', 'M', 'L', 'XL'])
-  },
-  {
-    id: 'void-05', code: 'VOID/05', name: 'Heavyweight polo', collection: 'void',
-    origin: ORIGIN.NVR, made: true, price: charmPrice(23000), weight: '320gsm', sizes: ['S', 'M', 'L', 'XL'],
-    stock: 'Small run',
-    blurb: 'Ribbed collar holds its shape. Two buttons, boxy body, heavy enough to stand up on its own.',
-    guideNote: FIT_TOP,
-    metrics: ['Chest', 'Length', 'Sleeve'],
-    measurements: topFit([55, 58, 61, 64], [71, 73, 75, 77], [24, 25, 26, 27], ['S', 'M', 'L', 'XL'])
   },
   {
     id: 'ascent-01', code: 'ASCENT/01', name: 'Numbered drop tee', collection: 'ascent',

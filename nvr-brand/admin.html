@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="NVR owner console. Staff access only.">
-<title>NVR — Owner</title>
+<meta name="description" content="NVR team console. Owner, staff and co-seller access.">
+<title>NVR — Team console</title>
 <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
@@ -14,9 +14,15 @@
 <main class="gate" id="gate">
   <form class="gate-card" id="gateForm" novalidate>
     <img src="img/logo-mark.svg" alt="" width="44" height="44">
-    <h1>NVR owner</h1>
-    <p class="gate-note">Staff access only. Everything here is scoped to your
-      Supabase account by row-level security.</p>
+    <p class="gate-kicker">NVR Supply</p>
+    <h1>Team console</h1>
+    <p class="gate-note">One sign-in for the owner, staff and co-sellers.
+      Your role decides what you can see and change here.</p>
+    <ul class="role-key">
+      <li><strong>Owner</strong><span>Everything, including money and the team.</span></li>
+      <li><strong>Staff</strong><span>Sellers, orders and listings. No payouts.</span></li>
+      <li><strong>Co-seller</strong><span>Your own pieces and what you are owed.</span></li>
+    </ul>
     <label class="field">
       <span>Email</span>
       <input type="email" id="auEmail" autocomplete="username" required>
@@ -27,7 +33,23 @@
     </label>
     <button type="submit" class="btn btn--volt btn--block">Sign in</button>
     <p class="msg" id="gateMsg" role="alert"></p>
+    <p class="gate-fine">No account yet? The owner adds your email under Team.
+      Co-sellers sign in with the email NVR has on file.</p>
   </form>
+</main>
+
+<!-- ============ NO ACCESS ============ -->
+<main class="gate" id="denied" hidden>
+  <div class="gate-card">
+    <img src="img/logo-mark.svg" alt="" width="44" height="44">
+    <p class="gate-kicker">NVR Supply</p>
+    <h1>No console access</h1>
+    <p class="gate-note"><strong id="deniedEmail"></strong> is signed in, but
+      this email is not on the NVR team.</p>
+    <p class="gate-note" id="deniedHelp">Ask the owner to add it under Team,
+      then sign in again.</p>
+    <button type="button" class="btn btn--ghost btn--block" id="deniedOut">Sign out</button>
+  </div>
 </main>
 
 <!-- ============ APP ============ -->
@@ -36,7 +58,7 @@
   <header class="bar">
     <a class="bar-brand" href="index.html">
       <img src="img/logo.svg" alt="NVR" width="88" height="32">
-      <span class="bar-tag">owner</span>
+      <span class="bar-tag" id="roleTag">console</span>
     </a>
     <div class="bar-right">
       <span class="who" id="who"></span>
@@ -50,20 +72,20 @@
   <main class="wrap-main">
 
     <!-- OVERVIEW -->
-    <section class="stats" id="stats">
-      <a class="stat" href="#sellers"><span class="stat-n" id="sPendingSellers">0</span><span class="stat-l">sellers pending</span></a>
-      <a class="stat" href="#listings"><span class="stat-n" id="sPendingListings">0</span><span class="stat-l">listings pending</span></a>
-      <a class="stat" href="#orders"><span class="stat-n" id="sOrders">0</span><span class="stat-l">orders</span></a>
-      <a class="stat stat--money" href="#payouts"><span class="stat-n" id="sOwed">₦0</span><span class="stat-l">owed to sellers</span></a>
+    <section class="overview" aria-label="Overview">
+      <div class="stats" id="stats"></div>
     </section>
 
     <!-- SELLERS -->
-    <section id="sellers">
+    <section id="sellers" data-roles="owner staff">
       <h2>Sellers</h2>
+      <p class="section-note" id="sellersNote"></p>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Ref</th><th>Name</th><th>Phone</th><th>City</th><th>Payout to</th><th>Status</th><th>Decide</th>
+            <th>Ref</th><th>Name</th><th>Phone</th><th>City</th>
+            <th class="owner-col">Payout to</th><th>Status</th>
+            <th class="seller-decide">Decide</th>
           </tr></thead>
           <tbody id="sellersBody"></tbody>
         </table>
@@ -71,16 +93,15 @@
     </section>
 
     <!-- LISTINGS -->
-    <section id="listings">
-      <h2>Listings</h2>
-      <p class="section-note">Approving makes a piece visible on the storefront.
-        Set the shelf price — the seller is paid their floor, the difference is
-        commission.</p>
+    <section id="listings" data-roles="owner staff co-seller">
+      <h2 id="listingsTitle">Listings</h2>
+      <p class="section-note" id="listingsNote"></p>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Ref</th><th>Seller</th><th>Piece</th><th>Size</th><th>Condition</th>
-            <th class="num">Asking</th><th class="num">Shelf</th><th>Status</th><th>Decide</th>
+            <th>Ref</th><th class="seller-col">Seller</th><th>Piece</th><th>Size</th>
+            <th>Condition</th><th class="num">Asking</th><th class="num">Shelf</th>
+            <th>Status</th><th class="staff-decide-col">Decide</th>
           </tr></thead>
           <tbody id="listingsBody"></tbody>
         </table>
@@ -88,8 +109,9 @@
     </section>
 
     <!-- ORDERS -->
-    <section id="orders">
+    <section id="orders" data-roles="owner staff">
       <h2>Orders</h2>
+      <p class="section-note" id="ordersNote"></p>
       <div class="table-wrap">
         <table>
           <thead><tr>
@@ -102,19 +124,65 @@
     </section>
 
     <!-- PAYOUTS -->
-    <section id="payouts">
+    <section id="payouts" data-roles="owner co-seller">
       <h2>Payouts</h2>
-      <p class="section-note">What you hold that belongs to someone else. Mark
-        paid only after the transfer actually goes out.</p>
+      <p class="section-note" id="payoutsNote"></p>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Seller</th><th>Order</th><th class="num">Gross</th><th class="num">Cut</th>
-            <th class="num">Owed</th><th>Status</th><th></th>
+            <th class="seller-col">Seller</th><th>Order</th><th class="num">Gross</th>
+            <th class="num">Cut</th><th class="num">Owed</th><th>Status</th><th class="staff-decide-col"></th>
           </tr></thead>
           <tbody id="payoutsBody"></tbody>
         </table>
       </div>
+    </section>
+
+    <!-- TEAM -->
+    <section id="team" data-roles="owner">
+      <h2>Team</h2>
+      <p class="section-note">Who can open this console. Staff handle orders and
+        listings. Co-sellers see only their own pieces and payouts.</p>
+
+      <div class="setup-note" id="teamSetup" hidden>
+        <strong>Roles are not installed on this database yet.</strong>
+        <p>Run <code>supabase-team.sql</code> in the Supabase SQL editor, then
+          refresh. Until then this console is owner-only.</p>
+      </div>
+
+      <form class="team-form" id="teamForm" hidden>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" id="teamEmail" autocomplete="off" required
+                 placeholder="name@example.com">
+        </label>
+        <label class="field">
+          <span>Role</span>
+          <select id="teamRole">
+            <option value="staff">Staff</option>
+            <option value="co-seller">Co-seller</option>
+            <option value="owner">Owner</option>
+          </select>
+        </label>
+        <label class="field" id="teamSellerField" hidden>
+          <span>Link to seller</span>
+          <select id="teamSeller"></select>
+        </label>
+        <button type="submit" class="btn btn--volt">Add to team</button>
+      </form>
+      <p class="section-note team-hint">Adding an email here does not create a
+        sign-in. Create their account in Supabase &rarr; Authentication &rarr;
+        Users first, then add the same email here.</p>
+
+      <div class="table-wrap" id="teamWrap" hidden>
+        <table>
+          <thead><tr>
+            <th>Email</th><th>Role</th><th>Linked seller</th><th>Remove</th>
+          </tr></thead>
+          <tbody id="teamBody"></tbody>
+        </table>
+      </div>
+      <p class="empty-note" id="teamEmpty" hidden>Only you so far.</p>
     </section>
 
   </main>

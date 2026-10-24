@@ -184,8 +184,8 @@
     var key = QUEUES.push({ list: list, tried: 0, kind: kind, accent: accent, name: p && p.name }) - 1;
     /* Eager, not lazy. A lazy image that never enters the viewport never
        fires its error event, so the fallback to the drawing never runs and
-       the tile stays an empty frame. Thirteen small product images at the
-       top of the page are not worth that trade. */
+       the tile stays an empty frame. Product images at the top of the
+       page are not worth that trade. */
     return '<img class="tile-photo" src="' + esc(list[0]) + '" alt="' + esc(p && p.name) + '" ' +
       'decoding="async" onerror="nvrPhotoFail(this,' + key + ')" />';
   }

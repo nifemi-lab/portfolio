@@ -849,12 +849,13 @@ function money(n) {
     var form = $('#sellForm');
     if (!form) return;
 
-    var photos = $('#sellPhotos');
-    if (photos) {
-      photos.innerHTML = SELLING.photosNeeded.map(function (p) {
-        return '<li>' + escapeHtml(p) + '</li>';
-      }).join('');
-    }
+    var photoItems = SELLING.photosNeeded.map(function (p) {
+      return '<li>' + escapeHtml(p) + '</li>';
+    }).join('');
+    ['#sellPhotoIntro', '#sellPhotos'].forEach(function (sel) {
+      var list = $(sel);
+      if (list) list.innerHTML = photoItems;
+    });
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();

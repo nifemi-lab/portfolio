@@ -51,7 +51,7 @@ h2 { font-size: 1rem; margin: 0 0 .75rem; letter-spacing: .02em; }
 }
 
 .gate-card {
-  width: min(360px, 100%);
+  width: min(390px, 100%);
   border: 1px solid var(--border);
   background: var(--surface);
   padding: 1.75rem;
@@ -60,6 +60,45 @@ h2 { font-size: 1rem; margin: 0 0 .75rem; letter-spacing: .02em; }
 }
 .gate-card img { display: block; }
 .gate-note { font-size: .8125rem; color: var(--ash); margin: 0; }
+.gate-note strong { color: var(--bone); word-break: break-word; }
+.gate-kicker {
+  font-family: var(--mono);
+  font-size: .5625rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--volt);
+  margin: 0;
+}
+.role-key {
+  list-style: none;
+  margin: 0;
+  padding: .75rem 0;
+  display: grid;
+  gap: .5rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.role-key li {
+  display: grid;
+  grid-template-columns: 4.75rem 1fr;
+  gap: .5rem;
+  align-items: baseline;
+}
+.role-key strong {
+  font-family: var(--mono);
+  font-size: .5625rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--volt);
+  font-weight: 400;
+}
+.role-key span { font-size: .75rem; color: var(--ash); }
+.gate-fine {
+  font-size: .6875rem;
+  line-height: 1.5;
+  color: var(--slate);
+  margin: 0;
+}
 
 .field { display: grid; gap: .375rem; }
 .field span {
@@ -70,8 +109,10 @@ h2 { font-size: 1rem; margin: 0 0 .75rem; letter-spacing: .02em; }
   color: var(--ash);
 }
 .field input,
+.field select,
 .shelf-input {
   width: 100%;
+  min-height: 38px;
   background: transparent;
   border: 1px solid var(--border);
   color: var(--bone);
@@ -79,7 +120,10 @@ h2 { font-size: 1rem; margin: 0 0 .75rem; letter-spacing: .02em; }
   font-size: .8125rem;
   padding: .625rem .75rem;
 }
+.field select { cursor: pointer; }
+.field select option { background: var(--surface); color: var(--bone); }
 .field input:focus-visible,
+.field select:focus-visible,
 .shelf-input:focus-visible { outline: 2px solid var(--volt); outline-offset: -1px; border-color: var(--volt); }
 
 .msg {
@@ -244,6 +288,7 @@ td.strong { color: var(--bone); }
 /* ---------- controls ---------- */
 
 .btn {
+  min-height: 34px;
   font-family: var(--mono);
   font-size: .625rem;
   letter-spacing: .14em;
@@ -275,6 +320,51 @@ td.strong { color: var(--bone); }
 .shelf-input { width: 7rem; padding: .375rem .5rem; font-size: .75rem; }
 .shelf-input::-webkit-outer-spin-button,
 .shelf-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* ---------- role visibility ---------- */
+
+body[data-role='staff'] .owner-col,
+body[data-role='staff'] .seller-decide { display: none; }
+
+body[data-role='co-seller'] .seller-col,
+body[data-role='co-seller'] .staff-decide-col { display: none; }
+
+/* ---------- team ---------- */
+
+.setup-note {
+  border: 1px solid var(--warn);
+  background: rgb(255 92 43 / .08);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.setup-note strong { color: var(--warn); }
+.setup-note p { margin: .375rem 0 0; font-size: .8125rem; color: var(--ash); }
+.setup-note code { color: var(--bone); }
+
+.team-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, .8fr) minmax(0, 1fr) auto;
+  gap: .75rem;
+  align-items: end;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 1rem;
+  margin-bottom: .75rem;
+}
+.team-form .field { min-width: 0; }
+.team-form .btn { min-height: 38px; white-space: nowrap; }
+.team-hint { margin: .75rem 0 1rem; color: var(--slate); }
+.empty-note {
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin: 0;
+}
+#teamBody .shelf-input { width: 15rem; max-width: 100%; }
+.team-role { width: 9rem; }
+.team-form + .team-hint + .table-wrap { margin-top: 0; }
 
 /* ---------- photos ---------- */
 
@@ -311,10 +401,81 @@ td.strong { color: var(--bone); }
 }
 .lightbox img { max-width: 100%; max-height: 90vh; border: 1px solid var(--border); }
 
-@media (max-width: 720px) {
+@media (max-width: 760px) {
   .bar { flex-wrap: wrap; }
   .who { display: none; }
+  .bar-right { gap: .5rem; }
+  .btn,
+  .bar .btn { min-height: 44px; }
   .stat-n { font-size: 1.375rem; }
+
+  .wrap-main { padding: .875rem; }
+  section { margin-bottom: 2.25rem; }
+
+  /* A phone should not have to scroll a 1000px table sideways to reach
+     Approve. Each row becomes its own card, with the column name above
+     the value. */
+  .table-wrap { border: 0; overflow: visible; }
+  table, tbody, tr, td { display: block; width: 100%; }
+  thead { display: none; }
+  tbody tr {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    margin-bottom: .75rem;
+    padding: .5rem .875rem;
+  }
+  tbody tr:hover { background: var(--surface); }
+  td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .45rem 0;
+    border: 0;
+    white-space: normal;
+    text-align: right;
+  }
+  td::before {
+    content: attr(data-label);
+    flex: 0 0 38%;
+    font-family: var(--mono);
+    font-size: .5625rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ash);
+    text-align: left;
+  }
+  td.strong { font-weight: 600; }
+
+  .empty-row { border: 1px dashed var(--border); background: transparent; }
+  .empty-row td { display: block; text-align: center; padding: 1.5rem .5rem; }
+  .empty-row td::before { content: none; }
+
+  td.seller-decide,
+  td.staff-decide-col {
+    display: block;
+    padding-top: .75rem;
+    margin-top: .35rem;
+    border-top: 1px dashed var(--border);
+  }
+  td.seller-decide::before,
+  td.staff-decide-col::before { display: block; margin-bottom: .4rem; }
+
+  .field input,
+  .field select,
+  .shelf-input { min-height: 44px; }
+
+  .row-actions { flex-wrap: wrap; }
+  .row-actions .btn { flex: 1 1 5.5rem; min-height: 44px; }
+  .row-actions .shelf-input { flex: 1 1 100%; width: 100%; min-height: 44px; }
+  td.staff-decide-col > .btn { width: 100%; min-height: 44px; }
+  td.staff-decide-col .shelf-input { width: 100%; min-height: 44px; }
+
+  .team-form { grid-template-columns: 1fr; }
+  .team-form .btn { width: 100%; min-height: 44px; }
+  #teamBody .shelf-input { width: 10rem; }
+  .team-role { width: 9rem; }
+  .stat { padding: 1rem .875rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

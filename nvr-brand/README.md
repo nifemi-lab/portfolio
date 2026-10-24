@@ -62,16 +62,20 @@ platform), **NVR Foundation** (impact & community). Taglines: *Never stop.* ·
 
 ```
 nvr-brand/
-  index.html      markup and the bag dialog
-  setup.html      one-click copier for supabase.sql
-  css/brand.css   design tokens, layout, components
-  js/garments.js  garment drawings + the photo drop-in resolver
-  js/catalog.js   collections, products, divisions, taglines, contact config
-  js/app.js       rendering, filters, bag, order builder, order channels
-  img/products/   drop real photographs in here (see its own README)
-  img/            wordmark, mark, lockup
-  supabase.sql    orders table + RLS policies
-  BRAND.md        the earlier brand bible (superseded on palette)
+  index.html        markup and the bag dialog
+  admin.html        team console (owner / staff / co-seller)
+  setup.html        one-click copier for both SQL files
+  css/brand.css     design tokens, layout, components
+  css/admin.css     console layout and mobile card tables
+  js/garments.js    garment drawings + the photo drop-in resolver
+  js/catalog.js     collections, products, divisions, taglines, contact config
+  js/app.js         rendering, filters, bag, order builder, order channels
+  js/admin.js       session, roles, data loading, console rendering
+  img/products/     drop real photographs in here (see its own README)
+  img/              wordmark, mark, lockup
+  supabase.sql      storefront tables + RLS policies
+  supabase-team.sql team roles + role-based RLS (run after supabase.sql)
+  BRAND.md          the earlier brand bible (superseded on palette)
   README.md
 ```
 
@@ -101,8 +105,8 @@ WhatsApp and email are **live**:
 var CONTACT = { whatsapp: '+2348106285867', email: 'gafarianimation@gmail.com' };
 ```
 
-Supabase logging is **off** (`supabaseUrl` empty) — orders still arrive by
-WhatsApp and email, they just aren't also stored in a database.
+Supabase is configured too (`SUPABASE` in `js/catalog.js`), so an order is
+written to the database as well as sent by WhatsApp or email.
 
 The number is pasted with a `+`, which is fine: `whatsappNumber()` strips
 non-digits before building the link, and prepends `234` to a bare 10-digit
@@ -114,7 +118,9 @@ bar. With an empty bag they carry `aria-disabled="true"` and do nothing.
 
 ### Turning on Supabase logging (optional)
 
-1. Run `supabase.sql` once in the Supabase SQL editor.
+1. Open `setup.html` and click **Copy SQL**. It loads `supabase.sql` and
+   `supabase-team.sql` and copies them as one script. Paste into the Supabase SQL
+   editor and run.
 2. Fill in `SUPABASE` in `js/catalog.js`:
 
 ```js
@@ -123,9 +129,12 @@ var SUPABASE = { supabaseUrl: 'https://xxx.supabase.co', supabaseAnonKey: 'eyJ..
 
 Use the **anon** key. Never put the `service_role` key in a public file.
 
-> The SQL grants `select`/`update` to any authenticated user. That is fine while
-> the only account is yours. If you ever add customer accounts to this project,
-> tighten those two policies first.
+> `setup.html` fetches the two `.sql` files, so it has to be opened through a web
+> server. Double-clicking it shows an error with the local-server command instead
+> of a half-empty box.
+
+Access is not granted to "any authenticated user". It is granted by role through
+`public.team` — see [Team console](#team-console).
 
 ## Pricing
 
@@ -236,15 +245,18 @@ set up yet.)"
 
 1. Open your Supabase project → **SQL Editor** → **New query**
 2. Paste the whole of [`supabase.sql`](supabase.sql) and run it
-3. Done — new orders appear immediately, and order tracking switches on
+3. Paste the whole of [`supabase-team.sql`](supabase-team.sql) and run it
+4. Done — new orders appear immediately, and order tracking switches on
 
-> `supabase.sql` also **tightens the admin policies**. Before, any signed-in
-> Supabase user could read every order. It now matches on your Supabase account
-> email — so **replace `REPLACE-WITH-YOUR-SUPABASE-EMAIL`** with the address
-> you sign in to Supabase with. Until you do, nobody can read orders at all,
-> which is safe but inconvenient for you.
+`setup.html` does steps 2 and 3 for you: it loads both files and copies them as
+one script.
 
-To read them: Supabase → **Table editor** → `orders`. Or **Data** → **Orders**.
+> The owner email is baked into both files (`ogiehenifemi@gmail.com`) and is
+> also the bootstrap owner in `public.team`. If you sign in to Supabase with a
+> different address, change it in both files before running them — otherwise
+> nobody can read orders or open the console. That fails closed, not open.
+
+To read them: Supabase → **Table editor** → `orders`. Or use the console.
 
 ### What gets stored
 
@@ -260,9 +272,8 @@ To read them: Supabase → **Table editor** → `orders`. Or **Data** → **Orde
 `status` has a check constraint, so typos are rejected rather than silently
 stored. There is no delete policy: orders are a record, cancel by status.
 
-> The SQL grants `select`/`update` to any authenticated Supabase user. That is
-> fine while the only account is yours. If you ever add customer accounts to
-> this project, tighten those two policies first.
+> Read and update are limited to the console team by `supabase-team.sql`. A
+> customer account, if you ever add one, gets nothing.
 
 ### Customer details
 
@@ -466,28 +477,62 @@ hand-managed renewal list in a spreadsheet, is worse than no button at all.
 Set `priceNaira` once the rails exist and the CTA switches itself to show the
 price.
 
-## Owner console
+## Team console
 
-`admin.html` — sign in, and you get the four things that were previously
-manual Supabase table editing:
+`admin.html` — one console, three roles, enforced in the database rather than
+only hidden in the page.
 
-| Section | What it does |
-|---|---|
-| **Overview** | pending sellers, pending listings, order count, total owed |
-| **Sellers** | approve or decline an application in one click |
-| **Listings** | set the shelf price and publish, or decline |
-| **Orders** | change status: new → confirmed → made → shipped → done |
-| **Payouts** | what you hold that belongs to a seller, mark paid |
+| Role | Sees | Can change |
+|---|---|---|
+| **Owner** | everything | sellers, listings, orders, payouts, team |
+| **Staff** | sellers, listings, orders | price and publish listings, move order status |
+| **Co-seller** | own listings and own payouts | nothing — it is a read-only view of their account |
+
+The sections are:
+
+| Section | Owner | Staff | Co-seller |
+|---|:---:|:---:|:---:|
+| **Overview** | yes | yes (orders + listings) | own pieces |
+| **Sellers** | yes | read-only directory, no payout account | no |
+| **Listings** | yes | price, publish, decline | own only |
+| **Orders** | yes | status changes | no |
+| **Payouts** | yes | no | own only |
+| **Team** | yes | no | no |
+
+Roles live in `public.team`, keyed by email. Two things follow from that:
+
+- the console hides sections a role has no business in, and
+- `supabase-team.sql` backs it with RLS, so the same restriction applies to
+  anyone calling the API directly. Hiding a table in CSS is not security.
+
+### Staff can see sellers without seeing payout accounts
+
+Staff need the seller's name, phone and city to judge an application. They do
+not need the OPay number. Reading the `sellers` table directly would hand it
+over, so staff read `public.sellers_directory` — a view that omits `payout_to`.
+Only the owner reads the real table.
+
+### Adding someone
+
+1. Supabase → **Authentication → Users → Add user**, with the email they will
+   sign in with.
+2. Sign in to `admin.html` as the owner, open **Team**, enter that email, pick
+   **staff** or **co-seller**.
+3. A co-seller must be linked to their seller row, or the console says so and
+   shows them nothing until it is. The link is part of the same Team row.
+
+An email in `public.team` is not login credentials — both must exist.
 
 ### There is no admin key
 
-The page uses the same **anon** key as the storefront and signs in as you
-through Supabase Auth. Every read and write is filtered by the RLS policies,
-which match on your account email. There is no `service_role` key in any file,
-and no bypass. Someone who finds the URL can sign in as themselves and see
-nothing — which is why the RLS policies must have your real email in them.
+The page uses the same **anon** key as the storefront and signs in through
+Supabase Auth. Every read and write is filtered by RLS, keyed to the role in
+`public.team`. There is no `service_role` key in any file, and no bypass.
+Someone who signs up on their own gets the "No console access" panel and
+nothing else.
 
-The page is `noindex, nofollow` and **not linked from the storefront**.
+The page is `noindex, nofollow`. The storefront header links it as **Team
+login**, so staff can find it without being sent a URL by hand.
 
 ### The seller floor cannot be quietly broken
 
@@ -535,9 +580,9 @@ fails AA; 85% clears it at 4.92:1.
   garments that don't exist would break the brand's own third rule. Replace
   `.tile` with real imagery when there is real imagery.
 - **`CONTACT` is live** (WhatsApp + email). **`BANK` is live** (OPay).
-- **Supabase is configured but the `orders` table does not exist yet.** Run
-  `supabase.sql` once. Until then logging fails silently and nothing is lost —
-  orders still arrive on WhatsApp.
+- **Supabase is configured; the tables and team roles come from the two SQL
+  files.** Open `setup.html` and copy them in once. Until then logging fails
+  silently and nothing is lost — orders still arrive on WhatsApp.
 - **People and logistics are described only where they're sourced.** The
   *How it works* copy comes from `BRAND.md` and the Figma board — garment
   weights, the boxy drop-shoulder cut, the division structure, the taglines. No
