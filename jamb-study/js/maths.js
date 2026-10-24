@@ -54,7 +54,8 @@
   /* ---- data ---- */
   const SYL = (window.SYLLABUS || {})[SUBJECT] || [];
   const Q_TOPIC = ((window.Q_TOPIC || {})[SUBJECT]) || {};
-  const BANK = (window.QUESTION_BANK || []).filter(q => q.s === SUBJECT);
+  /* Only syllabus-mapped questions: mixed-mode mastery and topic drills need a topic. */
+  const BANK = (window.QUESTION_BANK || []).filter(q => q.s === SUBJECT && Q_TOPIC[q.q]);
   const SOLS = (window.SOLUTIONS || {})[SUBJECT] || {};
   const LESSONS = (window.LESSONS || {})[SUBJECT] || {};
   const NOTES = (window.LESSON_NOTES || {})[SUBJECT] || {};
