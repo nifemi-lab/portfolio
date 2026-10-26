@@ -63,11 +63,15 @@ platform), **NVR Foundation** (impact & community). Taglines: *Never stop.* ·
 ```
 nvr-brand/
   index.html        markup and the bag dialog
+  lagos.html        The Lagos Collection index (20 pieces, WhatsApp enquiries)
+  bottoms.html      Bottoms & Shorts index (25 pieces, departments)
+  jorts.html        Jorts Collection index (25 pieces, departments)
   admin.html        team console (owner / staff / co-seller)
   setup.html        one-click copier for both SQL files
   css/brand.css     design tokens, layout, components
-  css/admin.css     console layout and mobile card tables
-  js/garments.js    garment drawings + the photo drop-in resolver
+  css/range.css     shared numbered-range layout (Lagos, Bottoms, Jorts)
+  css/admin.css     console desk, review queues, order board
+  js/garments.js    photo resolver + numbered "Photo on request" plate
   js/catalog.js     collections, products, divisions, taglines, contact config
   js/app.js         rendering, filters, bag, order builder, order channels
   js/admin.js       session, roles, data loading, console rendering
@@ -398,15 +402,20 @@ displays as ₦14,900. It never applies to a seller's agreed price.
 ## Photography
 
 There is no stock imagery and no AI-generated garment. Until a real photograph
-exists, a product tile shows an **SVG garment outline** — polo, tee, hoodie,
-crew, fleece, shell, pant or cap — matched to the product and tinted in its
-collection accent.
+exists, a product tile shows a **numbered plate** — the piece code split into
+prefix and number, set in the collection accent, plus a **Photo on request**
+label bottom-right.
 
-Every drawing carries a small **ILLUSTRATION** label. That is deliberate. A
-shopper must never be able to mistake a drawing for a photograph of the thing
-being sold, and an unlabelled placeholder is exactly how that happens by
-accident. The label sits bottom-right of the tile at 0.75 opacity, which is the
-smallest step that still clears 4.5:1 on the tile background.
+The site never draws a garment. An outline of "a hoodie" is not a photograph of
+*the* hoodie, and a shopper can mistake it for one. A numbered plate reads as a
+catalogue entry and can't be mistaken for the product, which is the honest
+option while the photograph is missing.
+
+The ranges are handled differently: Lagos, Bottoms & Shorts and the Jorts
+Collection each get a page showing the **full, uncropped studio sheet** with a
+numbered index beside it. Sheet cells are only a few hundred pixels wide, so
+cutting them into product cards would produce blurry, upscaled images. The sheet
+stays whole and every number has its own WhatsApp ask instead.
 
 ### Dropping in a real photo
 
@@ -417,8 +426,8 @@ img/products/void-05.jpg   →   VOID/05, the heavyweight polo
 ```
 
 `.jpg`, `.png` and `.webp` are all tried in turn, then a seller's stored
-`photoUrl`, and finally the drawing. `img/products/README.md` has the full
-product-id table and how to shoot each one.
+`photoUrl`, and finally the numbered plate. `img/products/README.md` has the
+full product-id table and how to shoot each one.
 
 `PHOTOS_LIVE` in `js/garments.js` is `false` while no photos exist. That is
 what stops the site firing one 404 per product on every page load for files
@@ -482,22 +491,49 @@ price.
 `admin.html` — one console, three roles, enforced in the database rather than
 only hidden in the page.
 
+The page is laid out like a shift desk, not a database admin. A role-aware
+**Today** panel says what needs attention, then the same six areas follow:
+
+| Area | Owner | Staff | Co-seller |
+|---|---|---|---|
+| **Today** | whole shop, money included | new orders, pieces to price, work in progress | own pieces and money |
+| **Sellers** | applications and the directory, payout account included | approved/paused directory, no payout account | no |
+| **Listings** | price, list, decline | price, list, decline | own pieces, read-only |
+| **Orders** | five-stage board | same board | no |
+| **Payouts** | grouped by seller, mark paid | no | own history |
+| **Team** | roster, roles, seller links | no | no |
+
 | Role | Sees | Can change |
 |---|---|---|
 | **Owner** | everything | sellers, listings, orders, payouts, team |
-| **Staff** | sellers, listings, orders | price and publish listings, move order status |
+| **Staff** | approved sellers, listings, orders | price and publish listings, move order status |
 | **Co-seller** | own listings and own payouts | nothing — it is a read-only view of their account |
 
-The sections are:
+### How the desk works
 
-| Section | Owner | Staff | Co-seller |
-|---|:---:|:---:|:---:|
-| **Overview** | yes | yes (orders + listings) | own pieces |
-| **Sellers** | yes | read-only directory, no payout account | no |
-| **Listings** | yes | price, publish, decline | own only |
-| **Orders** | yes | status changes | no |
-| **Payouts** | yes | no | own only |
-| **Team** | yes | no | no |
+- **Today** counts what is waiting, not everything ever loaded. Staff see
+  new orders, pieces to price and orders in progress; the owner also sees
+  applications and money owed; a co-seller sees own pieces and what is owed.
+- **Sellers** — applications arrive as review cards with phone, handle and
+  payout destination. The decision queue runs oldest first, so nothing gets
+  buried. Approving is one click. The directory below lists approved and
+  paused sellers.
+- **Listings** — a pending piece is a price card. The same oldest-first queue
+  keeps the shelf clear. The shelf input recalculates seller net and NVR cut
+  as you type, and listing is refused when the seller would clear less than
+  their floor. Recent decisions sit underneath.
+- **Orders** — five lanes from **new** to **done**, with back and next actions.
+  The board wraps to three columns on smaller laptops, two on tablets and one
+  on phones, so a stage is never pushed off-screen. Cancel is available only
+  before **shipped**, needs a second click, and cancelled orders move to a
+  drawer.
+- **Money out** — grouped per seller with open money first. Mark paid also
+  needs a second click; paid history stays in place as the record.
+- **Team** — each member gets a permission line, a role control and, for
+  co-sellers, a linked seller. Your own role is locked, the last owner cannot
+  be demoted or removed, and removal needs a second click. If `public.team`
+  is missing, the console names the SQL file to run instead of showing a form
+  that cannot save.
 
 Roles live in `public.team`, keyed by email. Two things follow from that:
 
@@ -516,12 +552,14 @@ Only the owner reads the real table.
 
 1. Supabase → **Authentication → Users → Add user**, with the email they will
    sign in with.
-2. Sign in to `admin.html` as the owner, open **Team**, enter that email, pick
-   **staff** or **co-seller**.
+2. Sign in to `admin.html` as the owner, open **Team**, enter that email and
+   pick a role card. Each card says what that role can see and change.
 3. A co-seller must be linked to their seller row, or the console says so and
    shows them nothing until it is. The link is part of the same Team row.
 
-An email in `public.team` is not login credentials — both must exist.
+An email in `public.team` is not login credentials — both must exist. Until
+`supabase-team.sql` has been run, **Team** shows a setup note naming that file
+and keeps the rest of the console owner-only.
 
 ### There is no admin key
 
@@ -576,9 +614,11 @@ fails AA; 85% clears it at 4.92:1.
 
 ## Known gaps
 
-- **Product tiles are drawn in CSS**, not photographed. Placeholder photos of
-  garments that don't exist would break the brand's own third rule. Replace
-  `.tile` with real imagery when there is real imagery.
+- **Product tiles without a photograph show a numbered plate**, not a drawing.
+  The plates are honest but they are not a shop: a customer cannot judge cut or
+  colour from one. Real `img/products/<id>.jpg` files are the fix, and three of
+  the studio sheets (Lagos, Bottoms, Jorts) are live as numbered range pages in
+  the meantime.
 - **`CONTACT` is live** (WhatsApp + email). **`BANK` is live** (OPay).
 - **Supabase is configured; the tables and team roles come from the two SQL
   files.** Open `setup.html` and copy them in once. Until then logging fails

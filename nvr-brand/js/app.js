@@ -300,14 +300,13 @@ function money(n) {
           (s === chosen) + '">' + escapeHtml(s) + '</button>';
       }).join('');
 
-      /* Real photo if there is one, drawing if there isn't. The label
-         on the drawing is deliberate: a shopper must never think an
-         illustration is a photograph of the thing being sold. */
-      var tileArt = productArt(p, c.accentHex);
+      /* Real photo if there is one, numbered "Photo on request" plate if
+         there isn't. No fake garment art is drawn. */
+      var tileArt = productArt(p);
 
       return '' +
           '<article class="card" style="--accent:' + c.accentHex + '" data-id="' + p.id + '">' +
-            '<div class="tile-wrap">' +
+            '<div class="tile-wrap' + (needsPhoto(p) ? ' tile-wrap--pending' : '') + '">' +
               '<div class="tile">' + tileArt + '</div>' +
               '<span class="tile-code">' + escapeHtml(p.code) + '</span>' +
               originBadge(p) +

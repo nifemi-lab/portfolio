@@ -425,6 +425,103 @@ p { margin: 0 0 1rem; max-width: 60ch; }
 .sheet-feature-body h3 { margin: 0; }
 .sheet-feature-body p { margin: 0; max-width: 42ch; }
 
+.sheet-feature--new { border-color: rgb(199 255 0 / .26); }
+.sheet-feature--new .sheet-feature-body {
+  background: radial-gradient(circle at 82% 16%, rgb(199 255 0 / .06), transparent 55%);
+}
+.sheet-feature--new .tag--accent { color: var(--volt); }
+.sheet-depts {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ash);
+  line-height: 1.6;
+}
+
+/* ---------- numbered ranges ---------- */
+
+.range-block {
+  margin-top: 1.5rem;
+  border: 1px solid rgb(245 245 238 / .14);
+  background: #060b1c;
+}
+
+.range-head {
+  padding: 1.75rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  border-bottom: 1px solid rgb(245 245 238 / .1);
+}
+.range-head h3 { font-size: clamp(1.125rem, 2vw, 1.375rem); }
+.range-head .tag--accent { color: var(--volt); }
+.range-head p { margin: 0; max-width: 52ch; }
+
+.range-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: rgb(245 245 238 / .1);
+}
+
+.range-card {
+  position: relative;
+  background: var(--void);
+  padding: 1.75rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: .625rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background .18s ease;
+}
+.range-card:hover,
+.range-card:focus-visible { background: #070d20; }
+.range-card:focus-visible { outline: 2px solid var(--volt); outline-offset: -2px; }
+
+.range-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--volt);
+}
+
+.range-n {
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .24em;
+  color: var(--volt);
+}
+.range-card h4 {
+  font-family: var(--head);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -.01em;
+  font-size: clamp(1.375rem, 2.6vw, 1.75rem);
+  line-height: 1.05;
+  margin: 0;
+}
+.range-card p { margin: 0; font-size: .875rem; color: var(--ash); line-height: 1.6; }
+
+.range-cta {
+  margin-top: auto;
+  padding-top: 1rem;
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+.range-card:hover .range-cta,
+.range-card:focus-visible .range-cta { color: var(--volt); }
+
+@media (max-width: 640px) {
+  .range-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 1000px) {
   .lookbook {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1381,16 +1478,37 @@ p { margin: 0 0 1rem; max-width: 60ch; }
 
 /* ---------- size guide ---------- */
 
-/* Garment outline used until a real photo is uploaded. */
-.tile-art { width: 62%; height: auto; max-height: 76%; display: block; }
+/* Numbered plate used until a real photo exists. It reads as a catalogue
+   entry, not as a drawing of the garment. */
+.tile-pending {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .45rem;
+  line-height: .85;
+}
+.tile-pending-prefix {
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--ash);
+}
+.tile-pending-num {
+  font-family: var(--head);
+  font-weight: 700;
+  font-size: clamp(3.75rem, 6vw, 5rem);
+  letter-spacing: -.05em;
+  color: var(--accent, var(--bone));
+  opacity: .92;
+}
 
-/* Never let a drawing be mistaken for a photograph of the garment.
-   Anchored bottom-right: origin-badge owns top-left, tile-code sits
-   where it sits, and the bottom-right corner is otherwise empty.
+/* Never let a placeholder be mistaken for a photograph of the garment.
+   Anchored bottom-right; the origin badge owns the top-left corner.
 
    Opacity 0.75, not lower. This is a small label at 10px, so it has to
    clear 4.5:1 against the tile; at 0.6 it lands around 3.9:1 and fails. */
-.tile-art-note {
+.tile-pending-note {
   position: absolute;
   right: .625rem;
   bottom: .625rem;
@@ -1402,6 +1520,10 @@ p { margin: 0 0 1rem; max-width: 60ch; }
   opacity: .75;
   pointer-events: none;
 }
+
+/* The plate already carries the code, so the corner label would print it
+   twice. The code label only has a job on a real photograph. */
+.tile-wrap--pending .tile-code { display: none; }
 
 .tile-photo {
   width: 100%;

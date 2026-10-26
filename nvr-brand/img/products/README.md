@@ -8,8 +8,9 @@ img/products/void-05.jpg   →   VOID/05, the heavyweight polo
 ```
 
 `.jpg`, `.png` and `.webp` are all tried. Until a file exists, that
-product shows a drawn garment outline labelled **Illustration** — never
-a fake photo. Put a real file here and the label disappears.
+product shows a numbered plate — its code and a **Photo on request**
+label, never a drawing of some other garment. Put a real file here and
+the plate disappears.
 
 `js/garments.js` holds the logic.
 
