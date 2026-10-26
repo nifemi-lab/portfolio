@@ -4,8 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
 <meta name="description" content="NVR team console. Owner, staff and co-seller access.">
 <title>NVR — Team console</title>
+<link rel="icon" href="img/logo-mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
@@ -13,8 +18,10 @@
 <!-- ============ SIGN IN ============ -->
 <main class="gate" id="gate">
   <form class="gate-card" id="gateForm" novalidate>
-    <img src="img/logo-mark.svg" alt="" width="44" height="44">
-    <p class="gate-kicker">NVR Supply</p>
+    <div class="gate-brand">
+      <img src="img/logo-mark.svg" alt="" width="40" height="40">
+      <p class="gate-kicker">NVR Supply</p>
+    </div>
     <h1>Team console</h1>
     <p class="gate-note">One sign-in for the owner, staff and co-sellers.
       Your role decides what you can see and change here.</p>
@@ -41,8 +48,10 @@
 <!-- ============ NO ACCESS ============ -->
 <main class="gate" id="denied" hidden>
   <div class="gate-card">
-    <img src="img/logo-mark.svg" alt="" width="44" height="44">
-    <p class="gate-kicker">NVR Supply</p>
+    <div class="gate-brand">
+      <img src="img/logo-mark.svg" alt="" width="40" height="40">
+      <p class="gate-kicker">NVR Supply</p>
+    </div>
     <h1>No console access</h1>
     <p class="gate-note"><strong id="deniedEmail"></strong> is signed in, but
       this email is not on the NVR team.</p>
@@ -56,7 +65,7 @@
 <div class="app" id="app" hidden>
 
   <header class="bar">
-    <a class="bar-brand" href="index.html">
+    <a class="bar-brand" href="index.html" aria-label="NVR Supply home">
       <img src="img/logo.svg" alt="NVR" width="88" height="32">
       <span class="bar-tag" id="roleTag">console</span>
     </a>
@@ -71,78 +80,127 @@
 
   <main class="wrap-main">
 
-    <!-- OVERVIEW -->
-    <section class="overview" aria-label="Overview">
+    <section class="desk" aria-labelledby="deskTitle">
+      <div class="desk-main">
+        <p class="kicker">NVR Supply <span class="slash">/</span> Console</p>
+        <h1 id="deskTitle">Console</h1>
+        <p class="desk-meta">
+          <span id="deskEmail"></span>
+          <span class="sep">/</span>
+          <span id="synced">Not synced yet</span>
+        </p>
+      </div>
+      <p class="desk-state" id="deskState">Checking access…</p>
+      <nav class="console-nav" id="deskNav" aria-label="Console sections"></nav>
+    </section>
+
+    <section class="today" aria-labelledby="todayTitle">
+      <div class="today-head">
+        <p class="kicker">Shift</p>
+        <h2 id="todayTitle">Today</h2>
+        <p class="section-note" id="todayNote"></p>
+      </div>
       <div class="stats" id="stats"></div>
     </section>
 
     <!-- SELLERS -->
-    <section id="sellers" data-roles="owner staff">
-      <h2>Sellers</h2>
-      <p class="section-note" id="sellersNote"></p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Ref</th><th>Name</th><th>Phone</th><th>City</th>
-            <th class="owner-col">Payout to</th><th>Status</th>
-            <th class="seller-decide">Decide</th>
-          </tr></thead>
-          <tbody id="sellersBody"></tbody>
-        </table>
+    <section id="sellers" class="console-section" data-roles="owner staff">
+      <div class="section-head">
+        <p class="kicker">01 <span class="slash">/</span> Sellers</p>
+        <div class="section-title">
+          <h2 id="sellersTitle">Sellers</h2>
+          <span class="count-badge" id="sellerCount"></span>
+        </div>
+        <p class="section-note" id="sellersNote"></p>
       </div>
+
+      <div id="sellerApplications">
+        <div class="subhead">
+          <h3>Decision queue</h3>
+          <span class="count-badge" id="sellerPendingCount"></span>
+        </div>
+        <div class="review-grid" id="sellerQueue"></div>
+        <p class="empty-note" id="sellerQueueEmpty" hidden></p>
+      </div>
+
+      <div class="subhead">
+        <h3>Seller directory</h3>
+        <span class="count-badge" id="sellerDirectoryCount"></span>
+      </div>
+      <div class="roster" id="sellerDirectory"></div>
+      <p class="empty-note" id="sellerDirectoryEmpty" hidden></p>
     </section>
 
     <!-- LISTINGS -->
-    <section id="listings" data-roles="owner staff co-seller">
-      <h2 id="listingsTitle">Listings</h2>
-      <p class="section-note" id="listingsNote"></p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Ref</th><th class="seller-col">Seller</th><th>Piece</th><th>Size</th>
-            <th>Condition</th><th class="num">Asking</th><th class="num">Shelf</th>
-            <th>Status</th><th class="staff-decide-col">Decide</th>
-          </tr></thead>
-          <tbody id="listingsBody"></tbody>
-        </table>
+    <section id="listings" class="console-section" data-roles="owner staff co-seller">
+      <div class="section-head">
+        <p class="kicker">02 <span class="slash">/</span> Listings</p>
+        <div class="section-title">
+          <h2 id="listingsTitle">Listings</h2>
+          <span class="count-badge" id="listingCount"></span>
+        </div>
+        <p class="section-note" id="listingsNote"></p>
+      </div>
+
+      <div class="review-grid" id="listingQueue"></div>
+      <p class="empty-note" id="listingQueueEmpty" hidden></p>
+
+      <div id="listingArchiveWrap">
+        <div class="subhead">
+          <h3 id="listingArchiveTitle">Recent decisions</h3>
+          <span class="count-badge" id="listingArchiveCount"></span>
+        </div>
+        <div class="archive-list" id="listingArchive"></div>
       </div>
     </section>
 
     <!-- ORDERS -->
-    <section id="orders" data-roles="owner staff">
-      <h2>Orders</h2>
-      <p class="section-note" id="ordersNote"></p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Ref</th><th>Customer</th><th>Items</th><th class="num">Total</th>
-            <th>Channel</th><th>When</th><th>Status</th><th>Set</th>
-          </tr></thead>
-          <tbody id="ordersBody"></tbody>
-        </table>
+    <section id="orders" class="console-section" data-roles="owner staff">
+      <div class="section-head">
+        <p class="kicker">03 <span class="slash">/</span> Orders</p>
+        <div class="section-title">
+          <h2>Orders</h2>
+          <span class="count-badge" id="orderCount"></span>
+        </div>
+        <p class="section-note" id="ordersNote"></p>
       </div>
+
+      <div class="order-board" id="orderBoard"></div>
+      <p class="empty-note" id="orderEmpty" hidden>No orders yet.</p>
+
+      <details class="cancelled-drawer" id="cancelledDrawer" hidden>
+        <summary>Cancelled <span class="count-badge" id="cancelledCount">0</span></summary>
+        <div class="archive-list" id="cancelledList"></div>
+      </details>
     </section>
 
     <!-- PAYOUTS -->
-    <section id="payouts" data-roles="owner co-seller">
-      <h2>Payouts</h2>
-      <p class="section-note" id="payoutsNote"></p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th class="seller-col">Seller</th><th>Order</th><th class="num">Gross</th>
-            <th class="num">Cut</th><th class="num">Owed</th><th>Status</th><th class="staff-decide-col"></th>
-          </tr></thead>
-          <tbody id="payoutsBody"></tbody>
-        </table>
+    <section id="payouts" class="console-section" data-roles="owner co-seller">
+      <div class="section-head">
+        <p class="kicker">04 <span class="slash">/</span> Payouts</p>
+        <div class="section-title">
+          <h2 id="payoutsTitle">Money out</h2>
+          <span class="count-badge" id="payoutCount"></span>
+        </div>
+        <p class="section-note" id="payoutsNote"></p>
       </div>
+
+      <div class="stats stats--ledger" id="payoutSummary"></div>
+      <div class="payout-board" id="payoutBoard"></div>
+      <p class="empty-note" id="payoutEmpty" hidden></p>
     </section>
 
     <!-- TEAM -->
-    <section id="team" data-roles="owner">
-      <h2>Team</h2>
-      <p class="section-note">Who can open this console. Staff handle orders and
-        listings. Co-sellers see only their own pieces and payouts.</p>
+    <section id="team" class="console-section" data-roles="owner">
+      <div class="section-head">
+        <p class="kicker">05 <span class="slash">/</span> Team</p>
+        <div class="section-title">
+          <h2>Team</h2>
+          <span class="count-badge" id="teamCount"></span>
+        </div>
+        <p class="section-note">Who can open this console, and what each role
+          can touch. The database enforces the same limits.</p>
+      </div>
 
       <div class="setup-note" id="teamSetup" hidden>
         <strong>Roles are not installed on this database yet.</strong>
@@ -150,40 +208,68 @@
           refresh. Until then this console is owner-only.</p>
       </div>
 
-      <form class="team-form" id="teamForm" hidden>
+      <form class="team-add" id="teamForm" hidden>
+        <div class="team-add-head">
+          <h3>Add someone</h3>
+          <p>Create their sign-in in Supabase &rarr; Authentication &rarr;
+            Users first, then add the same email here.</p>
+        </div>
+
         <label class="field">
           <span>Email</span>
           <input type="email" id="teamEmail" autocomplete="off" required
                  placeholder="name@example.com">
         </label>
-        <label class="field">
-          <span>Role</span>
-          <select id="teamRole">
-            <option value="staff">Staff</option>
-            <option value="co-seller">Co-seller</option>
-            <option value="owner">Owner</option>
-          </select>
-        </label>
+
+        <fieldset class="role-cards">
+          <legend>Role</legend>
+          <label class="role-card">
+            <input type="radio" name="teamRole" value="staff" checked>
+            <span class="role-card-body">
+              <span class="role-card-title">Staff</span>
+              <span class="role-card-copy">Reviews listings and moves orders. No payouts, no team.</span>
+            </span>
+          </label>
+          <label class="role-card">
+            <input type="radio" name="teamRole" value="co-seller">
+            <span class="role-card-body">
+              <span class="role-card-title">Co-seller</span>
+              <span class="role-card-copy">Sees only their own pieces and what they are owed.</span>
+            </span>
+          </label>
+          <label class="role-card">
+            <input type="radio" name="teamRole" value="owner">
+            <span class="role-card-body">
+              <span class="role-card-title">Owner</span>
+              <span class="role-card-copy">Full control, including money and this team.</span>
+            </span>
+          </label>
+        </fieldset>
+
         <label class="field" id="teamSellerField" hidden>
           <span>Link to seller</span>
           <select id="teamSeller"></select>
         </label>
-        <button type="submit" class="btn btn--volt">Add to team</button>
-      </form>
-      <p class="section-note team-hint">Adding an email here does not create a
-        sign-in. Create their account in Supabase &rarr; Authentication &rarr;
-        Users first, then add the same email here.</p>
 
-      <div class="table-wrap" id="teamWrap" hidden>
-        <table>
-          <thead><tr>
-            <th>Email</th><th>Role</th><th>Linked seller</th><th>Remove</th>
-          </tr></thead>
-          <tbody id="teamBody"></tbody>
-        </table>
+        <div class="team-add-actions">
+          <button type="submit" class="btn btn--volt">Add to team</button>
+          <p class="team-hint" id="teamHint">An email here does not create a
+            sign-in. Both must exist.</p>
+        </div>
+      </form>
+
+      <div class="subhead">
+        <h3>Roster</h3>
+        <span class="count-badge" id="teamRosterCount"></span>
       </div>
+      <div class="roster roster--team" id="teamRoster"></div>
       <p class="empty-note" id="teamEmpty" hidden>Only you so far.</p>
     </section>
+
+    <footer class="footer-line">
+      <span><strong>Never stop.</strong></span>
+      <span>NVR Supply &middot; team console</span>
+    </footer>
 
   </main>
 </div>
