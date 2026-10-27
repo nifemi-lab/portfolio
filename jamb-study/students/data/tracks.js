@@ -220,6 +220,18 @@ window.LEARN_TRACKS = {
         id: 'computing',
         label: 'Computing',
         description: 'Parts, typing, online safety, and simple programs for young learners.'
+      }, {
+        id: 'art',
+        label: 'Art & Design',
+        description: 'Colour, drawing, sculpture, and design for young artists.'
+      }, {
+        id: 'music',
+        label: 'Music',
+        description: 'Pulse, rhythm, singing, instruments, and listening.'
+      }, {
+        id: 'pe',
+        label: 'Physical Education',
+        description: 'Movement, ball skills, balance, team games, and health.'
       }]
     },
     {
@@ -453,6 +465,18 @@ window.LEARN_TRACKS = {
         id: 'religious-education',
         label: 'Religious Education',
         description: 'Beliefs, practices, and living well together across world faiths.'
+      }, {
+        id: 'art',
+        label: 'Art & Design',
+        description: 'Line, tone, colour, texture, design, and sculpture.'
+      }, {
+        id: 'music',
+        label: 'Music',
+        description: 'Pulse, melody, harmony, orchestral instruments, and composing.'
+      }, {
+        id: 'pe',
+        label: 'Physical Education',
+        description: 'Fitness, invasion games, gymnastics, teamwork, and swimming.'
       }]
     },
     {
@@ -704,6 +728,18 @@ window.LEARN_TRACKS = {
         id: 'religious-education',
         label: 'Religious Education',
         description: 'World religions, philosophy, and ethics in a plural society.'
+      }, {
+        id: 'art',
+        label: 'Art & Design',
+        description: 'Formal elements, observation, composition, and design practice.'
+      }, {
+        id: 'music',
+        label: 'Music',
+        description: 'Theory, form, culture, performance, and music technology.'
+      }, {
+        id: 'pe',
+        label: 'Physical Education',
+        description: 'Fitness components, training, psychology, nutrition, and society.'
       }]
     }
   ]

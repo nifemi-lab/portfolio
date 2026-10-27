@@ -5,7 +5,7 @@
    offline (including on a flaky campus connection).
    ========================================================= */
 
-const CACHE = 'jamb-study-v19';
+const CACHE = 'jamb-study-v20';
 
 const ASSETS = [
   './',
@@ -91,6 +91,15 @@ const ASSETS = [
   './students/data/upper-secondary/citizenship.js',
   './students/data/lower-secondary/religious-education.js',
   './students/data/upper-secondary/religious-education.js',
+  './students/data/primary/art.js',
+  './students/data/primary/music.js',
+  './students/data/primary/pe.js',
+  './students/data/lower-secondary/art.js',
+  './students/data/lower-secondary/music.js',
+  './students/data/lower-secondary/pe.js',
+  './students/data/upper-secondary/art.js',
+  './students/data/upper-secondary/music.js',
+  './students/data/upper-secondary/pe.js',
   './students/assets/3d/abacus-3d.png',
   './students/assets/3d/thermometer-3d.png',
   './students/assets/3d/pizza-3d.png',
@@ -123,6 +132,23 @@ const ASSETS = [
   './students/assets/3d/world-map-3d.png',
   './students/assets/3d/bookmark-3d.png',
   './students/assets/3d/microphone-3d.png',
+  './students/assets/3d/framed-picture-3d.png',
+  './students/assets/3d/moai-3d.png',
+  './students/assets/3d/drum-3d.png',
+  './students/assets/3d/musical-notes-3d.png',
+  './students/assets/3d/musical-score-3d.png',
+  './students/assets/3d/guitar-3d.png',
+  './students/assets/3d/headphone-3d.png',
+  './students/assets/3d/violin-3d.png',
+  './students/assets/3d/soccer-ball-3d.png',
+  './students/assets/3d/basketball-3d.png',
+  './students/assets/3d/running-shoe-3d.png',
+  './students/assets/3d/ballet-shoes-3d.png',
+  './students/assets/3d/skateboard-3d.png',
+  './students/assets/3d/handshake-3d.png',
+  './students/assets/3d/diving-mask-3d.png',
+  './students/assets/3d/1st-place-medal-3d.png',
+  './students/assets/3d/trophy-3d.png',
   './manifest.webmanifest',
   './icon.svg'
 ];

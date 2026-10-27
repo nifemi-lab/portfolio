@@ -28,15 +28,24 @@ require('../../students/data/lower-secondary/citizenship.js');
 require('../../students/data/upper-secondary/citizenship.js');
 require('../../students/data/lower-secondary/religious-education.js');
 require('../../students/data/upper-secondary/religious-education.js');
+require('../../students/data/primary/art.js');
+require('../../students/data/primary/music.js');
+require('../../students/data/primary/pe.js');
+require('../../students/data/lower-secondary/art.js');
+require('../../students/data/lower-secondary/music.js');
+require('../../students/data/lower-secondary/pe.js');
+require('../../students/data/upper-secondary/art.js');
+require('../../students/data/upper-secondary/music.js');
+require('../../students/data/upper-secondary/pe.js');
 
 test('content loads and passes validation', () => {
   const result = core.validateTracks(global.window.LEARN_TRACKS);
   assert.deepEqual(result.errors, []);
   assert.equal(result.stats.tracks, 3);
-  assert.equal(result.stats.subjects, 25);
-  assert.equal(result.stats.modules, 50);
-  assert.equal(result.stats.lessons, 150);
-  assert.equal(result.stats.questions, 450);
+  assert.equal(result.stats.subjects, 34);
+  assert.equal(result.stats.modules, 68);
+  assert.equal(result.stats.lessons, 204);
+  assert.equal(result.stats.questions, 612);
 });
 
 test('every track starts at Module 1, Lesson 1 with a playable lesson', () => {
@@ -186,6 +195,32 @@ test('computing, citizenship, and RE subjects have two modules of three lessons'
     ['upper-secondary', 'citizenship'],
     ['lower-secondary', 'religious-education'],
     ['upper-secondary', 'religious-education']
+  ];
+  entries.forEach(([trackId, subjectId]) => {
+    const subject = core.getSubject(index, trackId, subjectId);
+    assert.ok(subject, trackId + '/' + subjectId + ' exists');
+    assert.equal(subject.modules.length, 2);
+    subject.modules.forEach((mod, mi) => {
+      assert.equal(mod.order, mi + 1);
+      assert.equal(mod.lessons.length, 3);
+      mod.lessons.forEach((lesson, li) => assert.equal(lesson.order, li + 1));
+    });
+    assert.equal(core.orderedLessons(index, trackId, subjectId).length, 6);
+  });
+});
+
+test('art, music, and PE subjects have two modules of three lessons', () => {
+  const index = core.createIndex(global.window.LEARN_TRACKS);
+  const entries = [
+    ['primary', 'art'],
+    ['primary', 'music'],
+    ['primary', 'pe'],
+    ['lower-secondary', 'art'],
+    ['lower-secondary', 'music'],
+    ['lower-secondary', 'pe'],
+    ['upper-secondary', 'art'],
+    ['upper-secondary', 'music'],
+    ['upper-secondary', 'pe']
   ];
   entries.forEach(([trackId, subjectId]) => {
     const subject = core.getSubject(index, trackId, subjectId);

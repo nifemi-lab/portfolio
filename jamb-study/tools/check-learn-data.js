@@ -30,6 +30,15 @@ require('../students/data/lower-secondary/citizenship.js');
 require('../students/data/upper-secondary/citizenship.js');
 require('../students/data/lower-secondary/religious-education.js');
 require('../students/data/upper-secondary/religious-education.js');
+require('../students/data/primary/art.js');
+require('../students/data/primary/music.js');
+require('../students/data/primary/pe.js');
+require('../students/data/lower-secondary/art.js');
+require('../students/data/lower-secondary/music.js');
+require('../students/data/lower-secondary/pe.js');
+require('../students/data/upper-secondary/art.js');
+require('../students/data/upper-secondary/music.js');
+require('../students/data/upper-secondary/pe.js');
 
 const result = core.validateTracks(window.LEARN_TRACKS);
 result.errors.forEach((message) => console.error('FAIL: ' + message));
