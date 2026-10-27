@@ -21,15 +21,22 @@ require('../../students/data/lower-secondary/history.js');
 require('../../students/data/lower-secondary/geography.js');
 require('../../students/data/upper-secondary/history.js');
 require('../../students/data/upper-secondary/geography.js');
+require('../../students/data/primary/computing.js');
+require('../../students/data/lower-secondary/computing.js');
+require('../../students/data/upper-secondary/computing.js');
+require('../../students/data/lower-secondary/citizenship.js');
+require('../../students/data/upper-secondary/citizenship.js');
+require('../../students/data/lower-secondary/religious-education.js');
+require('../../students/data/upper-secondary/religious-education.js');
 
 test('content loads and passes validation', () => {
   const result = core.validateTracks(global.window.LEARN_TRACKS);
   assert.deepEqual(result.errors, []);
   assert.equal(result.stats.tracks, 3);
-  assert.equal(result.stats.subjects, 18);
-  assert.equal(result.stats.modules, 36);
-  assert.equal(result.stats.lessons, 108);
-  assert.equal(result.stats.questions, 324);
+  assert.equal(result.stats.subjects, 25);
+  assert.equal(result.stats.modules, 50);
+  assert.equal(result.stats.lessons, 150);
+  assert.equal(result.stats.questions, 450);
 });
 
 test('every track starts at Module 1, Lesson 1 with a playable lesson', () => {
@@ -155,6 +162,30 @@ test('history and geography subjects have two modules of three lessons', () => {
     ['lower-secondary', 'geography'],
     ['upper-secondary', 'history'],
     ['upper-secondary', 'geography']
+  ];
+  entries.forEach(([trackId, subjectId]) => {
+    const subject = core.getSubject(index, trackId, subjectId);
+    assert.ok(subject, trackId + '/' + subjectId + ' exists');
+    assert.equal(subject.modules.length, 2);
+    subject.modules.forEach((mod, mi) => {
+      assert.equal(mod.order, mi + 1);
+      assert.equal(mod.lessons.length, 3);
+      mod.lessons.forEach((lesson, li) => assert.equal(lesson.order, li + 1));
+    });
+    assert.equal(core.orderedLessons(index, trackId, subjectId).length, 6);
+  });
+});
+
+test('computing, citizenship, and RE subjects have two modules of three lessons', () => {
+  const index = core.createIndex(global.window.LEARN_TRACKS);
+  const entries = [
+    ['primary', 'computing'],
+    ['lower-secondary', 'computing'],
+    ['upper-secondary', 'computing'],
+    ['lower-secondary', 'citizenship'],
+    ['upper-secondary', 'citizenship'],
+    ['lower-secondary', 'religious-education'],
+    ['upper-secondary', 'religious-education']
   ];
   entries.forEach(([trackId, subjectId]) => {
     const subject = core.getSubject(index, trackId, subjectId);

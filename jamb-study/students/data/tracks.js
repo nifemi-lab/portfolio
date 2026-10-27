@@ -216,6 +216,10 @@ window.LEARN_TRACKS = {
         id: 'geography',
         label: 'Geography',
         description: 'Maps, continents, and weather: the basics of our world.'
+      }, {
+        id: 'computing',
+        label: 'Computing',
+        description: 'Parts, typing, online safety, and simple programs for young learners.'
       }]
     },
     {
@@ -437,6 +441,18 @@ window.LEARN_TRACKS = {
         id: 'geography',
         label: 'Geography',
         description: 'Tectonics, rivers, and climate: the forces that shape the planet.'
+      }, {
+        id: 'computing',
+        label: 'Computing',
+        description: 'Hardware, data, networks, algorithms, code, and online safety.'
+      }, {
+        id: 'citizenship',
+        label: 'Citizenship',
+        description: 'Rights, duties, law, local democracy, and community action.'
+      }, {
+        id: 'religious-education',
+        label: 'Religious Education',
+        description: 'Beliefs, practices, and living well together across world faiths.'
       }]
     },
     {
@@ -676,6 +692,18 @@ window.LEARN_TRACKS = {
         id: 'geography',
         label: 'Geography',
         description: 'Tectonics, coasts, and ice: processes that shape physical landscapes.'
+      }, {
+        id: 'computing',
+        label: 'Computing',
+        description: 'Processors, data, networks, programming, and cybersecurity.'
+      }, {
+        id: 'citizenship',
+        label: 'Citizenship',
+        description: 'Democracy, Parliament, rights, media, protest, and global citizenship.'
+      }, {
+        id: 'religious-education',
+        label: 'Religious Education',
+        description: 'World religions, philosophy, and ethics in a plural society.'
       }]
     }
   ]

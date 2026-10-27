@@ -93,7 +93,9 @@ lesson at a time.
 - Subjects: Mathematics in every track; English in Primary and Lower
   Secondary; GCSE English Language and Literature; Science in Primary and
   Lower Secondary; GCSE Biology, Chemistry, and Physics; History and
-  Geography in every track. More subjects follow in packs.
+  Geography in every track; Computing in every track; Citizenship and
+  Religious Education in Lower and Upper Secondary. More subjects follow in
+  packs.
 - No account, no name, no email. Progress is saved in this browser, then
   optionally synced to the `learn_progress` table.
 - The section is separate from the exam tracker: separate storage keys,
