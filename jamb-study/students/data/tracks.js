@@ -409,6 +409,10 @@ window.LEARN_TRACKS = {
             ]
           }]
         }]
+      }, {
+        id: 'english',
+        label: 'English',
+        description: 'Reading for meaning, inference, and writing with purpose.'
       }]
     },
     {
