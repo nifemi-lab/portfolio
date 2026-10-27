@@ -17,6 +17,12 @@ require('../students/data/lower-secondary/science.js');
 require('../students/data/upper-secondary/biology.js');
 require('../students/data/upper-secondary/chemistry.js');
 require('../students/data/upper-secondary/physics.js');
+require('../students/data/primary/history.js');
+require('../students/data/primary/geography.js');
+require('../students/data/lower-secondary/history.js');
+require('../students/data/lower-secondary/geography.js');
+require('../students/data/upper-secondary/history.js');
+require('../students/data/upper-secondary/geography.js');
 
 const result = core.validateTracks(window.LEARN_TRACKS);
 result.errors.forEach((message) => console.error('FAIL: ' + message));

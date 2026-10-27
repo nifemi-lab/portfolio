@@ -15,15 +15,21 @@ require('../../students/data/lower-secondary/science.js');
 require('../../students/data/upper-secondary/biology.js');
 require('../../students/data/upper-secondary/chemistry.js');
 require('../../students/data/upper-secondary/physics.js');
+require('../../students/data/primary/history.js');
+require('../../students/data/primary/geography.js');
+require('../../students/data/lower-secondary/history.js');
+require('../../students/data/lower-secondary/geography.js');
+require('../../students/data/upper-secondary/history.js');
+require('../../students/data/upper-secondary/geography.js');
 
 test('content loads and passes validation', () => {
   const result = core.validateTracks(global.window.LEARN_TRACKS);
   assert.deepEqual(result.errors, []);
   assert.equal(result.stats.tracks, 3);
-  assert.equal(result.stats.subjects, 12);
-  assert.equal(result.stats.modules, 24);
-  assert.equal(result.stats.lessons, 72);
-  assert.equal(result.stats.questions, 216);
+  assert.equal(result.stats.subjects, 18);
+  assert.equal(result.stats.modules, 36);
+  assert.equal(result.stats.lessons, 108);
+  assert.equal(result.stats.questions, 324);
 });
 
 test('every track starts at Module 1, Lesson 1 with a playable lesson', () => {
@@ -126,6 +132,29 @@ test('science subjects have two modules of three lessons', () => {
     ['upper-secondary', 'biology'],
     ['upper-secondary', 'chemistry'],
     ['upper-secondary', 'physics']
+  ];
+  entries.forEach(([trackId, subjectId]) => {
+    const subject = core.getSubject(index, trackId, subjectId);
+    assert.ok(subject, trackId + '/' + subjectId + ' exists');
+    assert.equal(subject.modules.length, 2);
+    subject.modules.forEach((mod, mi) => {
+      assert.equal(mod.order, mi + 1);
+      assert.equal(mod.lessons.length, 3);
+      mod.lessons.forEach((lesson, li) => assert.equal(lesson.order, li + 1));
+    });
+    assert.equal(core.orderedLessons(index, trackId, subjectId).length, 6);
+  });
+});
+
+test('history and geography subjects have two modules of three lessons', () => {
+  const index = core.createIndex(global.window.LEARN_TRACKS);
+  const entries = [
+    ['primary', 'history'],
+    ['primary', 'geography'],
+    ['lower-secondary', 'history'],
+    ['lower-secondary', 'geography'],
+    ['upper-secondary', 'history'],
+    ['upper-secondary', 'geography']
   ];
   entries.forEach(([trackId, subjectId]) => {
     const subject = core.getSubject(index, trackId, subjectId);

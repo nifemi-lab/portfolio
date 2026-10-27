@@ -92,8 +92,8 @@ lesson at a time.
 - English and Mathematics first: 2 modules × 3 lessons per subject, per track.
 - Subjects: Mathematics in every track; English in Primary and Lower
   Secondary; GCSE English Language and Literature; Science in Primary and
-  Lower Secondary; GCSE Biology, Chemistry, and Physics. More subjects
-  follow in packs.
+  Lower Secondary; GCSE Biology, Chemistry, and Physics; History and
+  Geography in every track. More subjects follow in packs.
 - No account, no name, no email. Progress is saved in this browser, then
   optionally synced to the `learn_progress` table.
 - The section is separate from the exam tracker: separate storage keys,

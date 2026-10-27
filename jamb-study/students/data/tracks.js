@@ -208,6 +208,14 @@ window.LEARN_TRACKS = {
         id: 'science',
         label: 'Science',
         description: 'Plants, animals, materials, weather, and forces for young scientists.'
+      }, {
+        id: 'history',
+        label: 'History',
+        description: 'Stone Age life, the Romans, and castles: how people lived long ago.'
+      }, {
+        id: 'geography',
+        label: 'Geography',
+        description: 'Maps, continents, and weather: the basics of our world.'
       }]
     },
     {
@@ -421,6 +429,14 @@ window.LEARN_TRACKS = {
         id: 'science',
         label: 'Science',
         description: 'Cells, ecosystems, body systems, particles, forces, and energy.'
+      }, {
+        id: 'history',
+        label: 'History',
+        description: 'Conquest, belief, and new ideas: Europe from the Middle Ages to the Renaissance.'
+      }, {
+        id: 'geography',
+        label: 'Geography',
+        description: 'Tectonics, rivers, and climate: the forces that shape the planet.'
       }]
     },
     {
@@ -652,6 +668,14 @@ window.LEARN_TRACKS = {
         id: 'physics',
         label: 'Physics',
         description: 'Energy, forces, waves, circuits, magnetism, and the universe.'
+      }, {
+        id: 'history',
+        label: 'History',
+        description: 'World wars and the Cold War: causes, experience, and consequences.'
+      }, {
+        id: 'geography',
+        label: 'Geography',
+        description: 'Tectonics, coasts, and ice: processes that shape physical landscapes.'
       }]
     }
   ]
