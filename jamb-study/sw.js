@@ -5,7 +5,7 @@
    offline (including on a flaky campus connection).
    ========================================================= */
 
-const CACHE = 'jamb-study-v15';
+const CACHE = 'jamb-study-v16';
 
 const ASSETS = [
   './',
@@ -69,6 +69,10 @@ const ASSETS = [
   './students/cloud.js',
   './students/learn.js',
   './students/data/tracks.js',
+  './students/data/primary/english.js',
+  './students/data/lower-secondary/english.js',
+  './students/data/upper-secondary/english-language.js',
+  './students/data/upper-secondary/english-literature.js',
   './students/assets/3d/abacus-3d.png',
   './students/assets/3d/thermometer-3d.png',
   './students/assets/3d/pizza-3d.png',
@@ -86,6 +90,21 @@ const ASSETS = [
   './students/assets/3d/chocolate-bar-3d.png',
   './students/assets/3d/coin-3d.png',
   './students/assets/3d/counterclockwise-arrows-button-3d.png',
+  './students/assets/3d/open_book-3d.png',
+  './students/assets/3d/books-3d.png',
+  './students/assets/3d/memo-3d.png',
+  './students/assets/3d/pencil-3d.png',
+  './students/assets/3d/label-3d.png',
+  './students/assets/3d/scroll-3d.png',
+  './students/assets/3d/magnifying-glass-tilted-left-3d.png',
+  './students/assets/3d/thought-balloon-3d.png',
+  './students/assets/3d/speech-balloon-3d.png',
+  './students/assets/3d/envelope-3d.png',
+  './students/assets/3d/artist-palette-3d.png',
+  './students/assets/3d/performing-arts-3d.png',
+  './students/assets/3d/world-map-3d.png',
+  './students/assets/3d/bookmark-3d.png',
+  './students/assets/3d/microphone-3d.png',
   './manifest.webmanifest',
   './icon.svg'
 ];

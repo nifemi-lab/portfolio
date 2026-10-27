@@ -418,7 +418,7 @@ window.LEARN_TRACKS = {
     {
       id: 'upper-secondary',
       label: 'Upper Secondary',
-      stage: 'GCSE Foundation · Maths & Science',
+      stage: 'GCSE Foundation',
       ages: '14–16',
       usEquivalent: 'High School (grades 9–10)',
       tone: 'Focused, encouraging, no hype',
@@ -628,6 +628,10 @@ window.LEARN_TRACKS = {
         id: 'english-language',
         label: 'English Language',
         description: 'Close reading, analysis, comparison, and purposeful writing.'
+      }, {
+        id: 'english-literature',
+        label: 'English Literature',
+        description: 'Poetry, Shakespeare, the novel, and essay craft.'
       }]
     }
   ]

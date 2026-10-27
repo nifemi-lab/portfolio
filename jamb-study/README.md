@@ -88,8 +88,10 @@ or international student. It starts at Module 1, Lesson 1 and unlocks one
 lesson at a time.
 
 - Three tracks: Primary (Key Stage 1–2), Lower Secondary (Key Stage 3), and
-  Upper Secondary (GCSE Foundation Maths & Science).
-- Mathematics first: 2 modules × 3 lessons per track.
+  Upper Secondary (GCSE Foundation).
+- English and Mathematics first: 2 modules × 3 lessons per subject, per track.
+- Subjects: English (Primary and Lower Secondary), GCSE English Language,
+  GCSE English Literature, and Mathematics. More subjects follow in packs.
 - No account, no name, no email. Progress is saved in this browser, then
   optionally synced to the `learn_progress` table.
 - The section is separate from the exam tracker: separate storage keys,

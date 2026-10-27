@@ -11,6 +11,7 @@ require('../students/data/tracks.js');
 require('../students/data/primary/english.js');
 require('../students/data/lower-secondary/english.js');
 require('../students/data/upper-secondary/english-language.js');
+require('../students/data/upper-secondary/english-literature.js');
 
 const result = core.validateTracks(window.LEARN_TRACKS);
 result.errors.forEach((message) => console.error('FAIL: ' + message));
