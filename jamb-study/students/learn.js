@@ -44,7 +44,9 @@
     progress: progressStore.read(),
     settings: readSettings(),
     memoryOnly: !storage,
-    route: null
+    route: null,
+    sync: 'saved locally',
+    syncReady: false
   };
 
   function saveSettings(patch) {
@@ -346,11 +348,184 @@
   function persistProgress(next) {
     state.progress = next;
     progressStore.write(next);
+    schedulePush();
   }
 
   function recordLessonOpen(lesson) {
     persistProgress(core.markInProgress(
       state.progress, lesson.id, new Date().toISOString()));
+  }
+
+  const PENDING_DELETE_KEY = 'learnstack.v1.pending-delete';
+  let pushTimer = null;
+  let syncInFlight = false;
+
+  function cloudOn() {
+    return !!(window.LearnCloud && window.LearnCloud.enabled);
+  }
+
+  function syncFailureLabel() {
+    return typeof navigator !== 'undefined' && navigator.onLine === false
+      ? 'offline'
+      : 'saved locally';
+  }
+
+  function syncTitle(label) {
+    if (label === 'synced') {
+      return 'Progress is saved in this browser and backed up.';
+    }
+    if (label === 'saving…') {
+      return 'Progress is saved in this browser. A backup is in progress.';
+    }
+    if (label === 'connecting…') {
+      return 'Progress is saved in this browser. Checking the backup.';
+    }
+    if (label === 'offline') {
+      return 'Progress is saved in this browser. The backup will retry when you are online.';
+    }
+    return 'Progress is saved in this browser only.';
+  }
+
+  function setSyncStatus(label) {
+    state.sync = label;
+    const chip = document.getElementById('learnSyncChip');
+    if (chip) {
+      chip.textContent = label;
+      chip.setAttribute('title', syncTitle(label));
+    }
+    const settingsText = document.getElementById('settingsSyncText');
+    if (settingsText) {
+      settingsText.textContent =
+        'Progress is saved in this browser. Status: ' + label + '.';
+    }
+  }
+
+  function rowsToProgress(rows) {
+    const lessons = {};
+    rows.forEach((row) => {
+      lessons[row.lessonId] = {
+        status: row.status,
+        bestScore: row.bestScore,
+        attempts: row.attempts,
+        lastSeenAt: row.lastSeenAt,
+        reviewStage: row.reviewStage,
+        nextReviewAt: row.nextReviewAt
+      };
+    });
+    return core.normalizeProgress({
+      version: 1,
+      updatedAt: new Date().toISOString(),
+      lessons
+    });
+  }
+
+  function readPendingDelete() {
+    if (!storage) return false;
+    try {
+      return storage.getItem(PENDING_DELETE_KEY) === '1';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function queuePendingDelete() {
+    if (!storage) return;
+    try {
+      storage.setItem(PENDING_DELETE_KEY, '1');
+    } catch (e) { /* storage blocked */ }
+  }
+
+  function clearPendingDelete() {
+    if (!storage) return;
+    try {
+      storage.removeItem(PENDING_DELETE_KEY);
+    } catch (e) { /* storage blocked */ }
+  }
+
+  async function pushNow() {
+    if (!cloudOn()) return;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      setSyncStatus('offline');
+      return;
+    }
+    setSyncStatus('saving…');
+    try {
+      await window.LearnCloud.pushProgress(state.progress);
+      setSyncStatus('synced');
+    } catch (e) {
+      setSyncStatus(syncFailureLabel());
+    }
+  }
+
+  function schedulePush() {
+    if (!cloudOn() || !state.syncReady) return;
+    setSyncStatus('saving…');
+    if (pushTimer) clearTimeout(pushTimer);
+    pushTimer = setTimeout(() => {
+      pushTimer = null;
+      pushNow();
+    }, 1500);
+  }
+
+  async function initSync() {
+    if (syncInFlight) return;
+    if (!cloudOn()) {
+      state.syncReady = true;
+      setSyncStatus('saved locally');
+      return;
+    }
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      state.syncReady = true;
+      setSyncStatus('offline');
+      return;
+    }
+
+    syncInFlight = true;
+    setSyncStatus('connecting…');
+    try {
+      await window.LearnCloud.ensureSession();
+
+      if (readPendingDelete()) {
+        await window.LearnCloud.deleteProgress();
+        clearPendingDelete();
+        state.syncReady = true;
+        setSyncStatus('saved locally');
+        return;
+      }
+
+      const remoteRows = await window.LearnCloud.pullProgress();
+      const merged = core.mergeProgress(state.progress, rowsToProgress(remoteRows));
+      state.progress = merged;
+      progressStore.write(merged);
+
+      await window.LearnCloud.pushProgress(merged);
+      state.syncReady = true;
+      setSyncStatus('synced');
+      if (!state.lesson) route();
+    } catch (e) {
+      state.syncReady = true;
+      setSyncStatus(syncFailureLabel());
+    } finally {
+      syncInFlight = false;
+    }
+  }
+
+  async function deleteAllData() {
+    deleteLocalData();
+    if (!cloudOn()) {
+      setSyncStatus('saved locally');
+      return 'local';
+    }
+    try {
+      await window.LearnCloud.deleteProgress();
+      clearPendingDelete();
+      setSyncStatus('saved locally');
+      return 'all';
+    } catch (e) {
+      queuePendingDelete();
+      setSyncStatus('offline');
+      return 'pending';
+    }
   }
 
   function buildSteps(lesson) {
@@ -1097,6 +1272,9 @@
       [KEYS.progress, KEYS.settings].forEach((key) => {
         try { storage.removeItem(key); } catch (e) { /* storage blocked */ }
       });
+      if (!cloudOn()) {
+        try { storage.removeItem('learnstack.v1.session'); } catch (e) { /* ignore */ }
+      }
     }
     state.progress = core.emptyProgress();
     state.settings = {
@@ -1192,8 +1370,9 @@
       el('h2', { text: 'Saving' }),
       el('p', {
         className: 'lesson-muted',
-        text: 'Progress is saved in this browser. ' +
-          'Status: ' + (chip ? chip.textContent : 'saved locally') + '.'
+        attrs: { id: 'settingsSyncText' },
+        text: 'Progress is saved in this browser. Status: ' +
+          (chip ? chip.textContent : state.sync) + '.'
       })
     ]));
 
@@ -1217,11 +1396,14 @@
       attrs: { type: 'button' },
       text: 'Yes, delete everything'
     });
-    yes.addEventListener('click', () => {
-      deleteLocalData();
+    yes.addEventListener('click', async () => {
       confirmBox.hidden = true;
-      status.textContent = 'Your LearnStack data has been deleted.';
-      announce('Your LearnStack data has been deleted.');
+      status.textContent = 'Deleting…';
+      const outcome = await deleteAllData();
+      status.textContent = outcome === 'pending'
+        ? 'Deleted from this browser. The cloud copy will be removed when you are online.'
+        : 'Your LearnStack data has been deleted.';
+      announce(status.textContent);
     });
     const cancel = el('button', {
       className: 'learn-btn is-ghost',
@@ -1353,6 +1535,14 @@
 
   window.addEventListener('hashchange', route);
 
+  window.addEventListener('online', () => {
+    if (cloudOn()) initSync();
+  });
+  window.addEventListener('offline', () => {
+    if (cloudOn()) setSyncStatus('offline');
+  });
+
   applyDisplaySettings();
   route();
+  initSync();
 })();
