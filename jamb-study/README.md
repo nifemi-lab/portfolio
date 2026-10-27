@@ -101,6 +101,14 @@ lesson at a time.
   (MIT licence, text in `students/assets/3d/LICENSE-fluentui-emoji.txt`). Put a
   new file in `students/assets/3d/` and point the lesson's `image` field at it;
   `check-learn-data.js` fails if the file is missing.
+- Module descriptions carry a visible **Draft content.** marker until an adult
+  reviews the lessons.
+
+**Cloud sync setup.** Run `supabase-learn-schema.sql` once in the Supabase SQL
+editor and turn on Anonymous sign-ins under Authentication → Providers. The
+script creates `public.learn_progress` with row-level security. Until both
+steps are done, LearnStack stays in the local fallback and the chip reads
+"saved locally".
 
 Run it locally:
 
