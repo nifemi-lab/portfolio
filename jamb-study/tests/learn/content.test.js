@@ -37,15 +37,21 @@ require('../../students/data/lower-secondary/pe.js');
 require('../../students/data/upper-secondary/art.js');
 require('../../students/data/upper-secondary/music.js');
 require('../../students/data/upper-secondary/pe.js');
+require('../../students/data/primary/design-technology.js');
+require('../../students/data/lower-secondary/design-technology.js');
+require('../../students/data/primary/french.js');
+require('../../students/data/lower-secondary/french.js');
+require('../../students/data/upper-secondary/french.js');
+require('../../students/data/upper-secondary/business-studies.js');
 
 test('content loads and passes validation', () => {
   const result = core.validateTracks(global.window.LEARN_TRACKS);
   assert.deepEqual(result.errors, []);
   assert.equal(result.stats.tracks, 3);
-  assert.equal(result.stats.subjects, 34);
-  assert.equal(result.stats.modules, 68);
-  assert.equal(result.stats.lessons, 204);
-  assert.equal(result.stats.questions, 612);
+  assert.equal(result.stats.subjects, 40);
+  assert.equal(result.stats.modules, 80);
+  assert.equal(result.stats.lessons, 240);
+  assert.equal(result.stats.questions, 720);
 });
 
 test('every track starts at Module 1, Lesson 1 with a playable lesson', () => {
@@ -221,6 +227,29 @@ test('art, music, and PE subjects have two modules of three lessons', () => {
     ['upper-secondary', 'art'],
     ['upper-secondary', 'music'],
     ['upper-secondary', 'pe']
+  ];
+  entries.forEach(([trackId, subjectId]) => {
+    const subject = core.getSubject(index, trackId, subjectId);
+    assert.ok(subject, trackId + '/' + subjectId + ' exists');
+    assert.equal(subject.modules.length, 2);
+    subject.modules.forEach((mod, mi) => {
+      assert.equal(mod.order, mi + 1);
+      assert.equal(mod.lessons.length, 3);
+      mod.lessons.forEach((lesson, li) => assert.equal(lesson.order, li + 1));
+    });
+    assert.equal(core.orderedLessons(index, trackId, subjectId).length, 6);
+  });
+});
+
+test('French, design and technology, and business subjects are complete', () => {
+  const index = core.createIndex(global.window.LEARN_TRACKS);
+  const entries = [
+    ['primary', 'design-technology'],
+    ['lower-secondary', 'design-technology'],
+    ['primary', 'french'],
+    ['lower-secondary', 'french'],
+    ['upper-secondary', 'french'],
+    ['upper-secondary', 'business-studies']
   ];
   entries.forEach(([trackId, subjectId]) => {
     const subject = core.getSubject(index, trackId, subjectId);

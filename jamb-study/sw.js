@@ -5,7 +5,7 @@
    offline (including on a flaky campus connection).
    ========================================================= */
 
-const CACHE = 'jamb-study-v20';
+const CACHE = 'jamb-study-v21';
 
 const ASSETS = [
   './',
@@ -100,6 +100,12 @@ const ASSETS = [
   './students/data/upper-secondary/art.js',
   './students/data/upper-secondary/music.js',
   './students/data/upper-secondary/pe.js',
+  './students/data/primary/design-technology.js',
+  './students/data/lower-secondary/design-technology.js',
+  './students/data/primary/french.js',
+  './students/data/lower-secondary/french.js',
+  './students/data/upper-secondary/french.js',
+  './students/data/upper-secondary/business-studies.js',
   './students/assets/3d/abacus-3d.png',
   './students/assets/3d/thermometer-3d.png',
   './students/assets/3d/pizza-3d.png',
@@ -149,6 +155,12 @@ const ASSETS = [
   './students/assets/3d/diving-mask-3d.png',
   './students/assets/3d/1st-place-medal-3d.png',
   './students/assets/3d/trophy-3d.png',
+  './students/assets/3d/wood-3d.png',
+  './students/assets/3d/screwdriver-3d.png',
+  './students/assets/3d/gear-3d.png',
+  './students/assets/3d/croissant-3d.png',
+  './students/assets/3d/luggage-3d.png',
+  './students/assets/3d/briefcase-3d.png',
   './manifest.webmanifest',
   './icon.svg'
 ];

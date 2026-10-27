@@ -90,12 +90,13 @@ lesson at a time.
 - Three tracks: Primary (Key Stage 1–2), Lower Secondary (Key Stage 3), and
   Upper Secondary (GCSE Foundation).
 - English and Mathematics first: 2 modules × 3 lessons per subject, per track.
-- Subjects: Mathematics in every track; English in Primary and Lower
+- Subjects: Mathematics, History, Geography, Computing, Art & Design, Music,
+  Physical Education, and French in every track; English in Primary and Lower
   Secondary; GCSE English Language and Literature; Science in Primary and
-  Lower Secondary; GCSE Biology, Chemistry, and Physics; History,
-  Geography, Computing, Art & Design, Music, and Physical Education in
-  every track; Citizenship and Religious Education in Lower and Upper
-  Secondary. More subjects follow in packs.
+  Lower Secondary; GCSE Biology, Chemistry, and Physics; Design & Technology
+  in Primary and Lower Secondary; Citizenship and Religious Education in
+  Lower and Upper Secondary; GCSE Business Studies. That is 40 subject
+  entries: 240 lessons and 720 quiz questions.
 - No account, no name, no email. Progress is saved in this browser, then
   optionally synced to the `learn_progress` table.
 - The section is separate from the exam tracker: separate storage keys,

@@ -39,6 +39,12 @@ require('../students/data/lower-secondary/pe.js');
 require('../students/data/upper-secondary/art.js');
 require('../students/data/upper-secondary/music.js');
 require('../students/data/upper-secondary/pe.js');
+require('../students/data/primary/design-technology.js');
+require('../students/data/lower-secondary/design-technology.js');
+require('../students/data/primary/french.js');
+require('../students/data/lower-secondary/french.js');
+require('../students/data/upper-secondary/french.js');
+require('../students/data/upper-secondary/business-studies.js');
 
 const result = core.validateTracks(window.LEARN_TRACKS);
 result.errors.forEach((message) => console.error('FAIL: ' + message));

@@ -225,6 +225,10 @@ window.LEARN_TRACKS = {
         label: 'Art & Design',
         description: 'Colour, drawing, sculpture, and design for young artists.'
       }, {
+        id: 'design-technology',
+        label: 'Design & Technology',
+        description: 'Designing, materials, wheels, and simple structures.'
+      }, {
         id: 'music',
         label: 'Music',
         description: 'Pulse, rhythm, singing, instruments, and listening.'
@@ -232,6 +236,10 @@ window.LEARN_TRACKS = {
         id: 'pe',
         label: 'Physical Education',
         description: 'Movement, ball skills, balance, team games, and health.'
+      }, {
+        id: 'french',
+        label: 'French',
+        description: 'Greetings, numbers, colours, and everyday French words.'
       }]
     },
     {
@@ -470,6 +478,10 @@ window.LEARN_TRACKS = {
         label: 'Art & Design',
         description: 'Line, tone, colour, texture, design, and sculpture.'
       }, {
+        id: 'design-technology',
+        label: 'Design & Technology',
+        description: 'The design cycle, materials, mechanisms, and evaluation.'
+      }, {
         id: 'music',
         label: 'Music',
         description: 'Pulse, melody, harmony, orchestral instruments, and composing.'
@@ -477,6 +489,10 @@ window.LEARN_TRACKS = {
         id: 'pe',
         label: 'Physical Education',
         description: 'Fitness, invasion games, gymnastics, teamwork, and swimming.'
+      }, {
+        id: 'french',
+        label: 'French',
+        description: 'Introductions, food, shopping, directions, and hobbies.'
       }]
     },
     {
@@ -740,6 +756,14 @@ window.LEARN_TRACKS = {
         id: 'pe',
         label: 'Physical Education',
         description: 'Fitness components, training, psychology, nutrition, and society.'
+      }, {
+        id: 'french',
+        label: 'French',
+        description: 'Describing people, daily life, travel, and French culture.'
+      }, {
+        id: 'business-studies',
+        label: 'Business Studies',
+        description: 'Ownership, markets, costs, marketing, and finance.'
       }]
     }
   ]
