@@ -247,6 +247,162 @@ window.LEARN_TRACKS = {
               { type: 'multiple_choice', question: 'Which is greater, negative 3 or negative 7?', options: ['-3', '-7', 'They are equal'], answer: 0, why: 'On a number line, negative 3 is to the right of negative 7.' },
               { type: 'multiple_choice', question: 'Start at 0 and move 4 places left. Where are you?', options: ['4', '-4', '0'], answer: 1, why: 'Moving left from zero gives a negative number: negative 4.' }
             ]
+          }, {
+            id: 'lower-secondary-maths-m1-l2',
+            order: 2,
+            title: 'Order of Operations',
+            objective: 'I can evaluate expressions using the order of operations.',
+            minutes: 8,
+            recap: 'You used brackets, then multiplication and division, then addition and subtraction.',
+            blocks: [
+              { type: 'text', body: 'Some expressions have more than one operation. The order changes the answer.' },
+              { type: 'text', body: 'Work through brackets first. Then do multiplication and division, left to right.' },
+              { type: 'text', body: 'Finally, do addition and subtraction, also left to right.' },
+              { type: 'tip', body: 'Brackets group a calculation so you do it before anything else.' },
+              {
+                type: 'illustration',
+                alt: 'A model of a human brain.',
+                image: 'assets/3d/brain-3d.png',
+                placeholder: 'Order of operations ladder: brackets, multiply and divide, add and subtract.'
+              },
+              { type: 'example', steps: ['Work out 2 + 3 × 4.', 'Multiplication comes first: 3 × 4 = 12.', 'Then add 2: 2 + 12 = 14.'] }
+            ],
+            vocabulary: [
+              { word: 'operation', meaning: 'A process such as add, subtract, multiply, or divide.', example: 'Multiplication is an operation.' },
+              { word: 'brackets', meaning: 'Symbols that group part of an expression.', example: 'In (2 + 3) × 4, add first.' },
+              { word: 'evaluate', meaning: 'Work out the value of an expression.', example: 'Evaluate 2 + 3 × 4 to get 14.' }
+            ],
+            quiz: [
+              { type: 'multiple_choice', question: 'What is 2 + 3 × 4?', options: ['14', '20', '24'], answer: 0, why: 'Multiply first: 3 × 4 = 12. Then add 2 to get 14.' },
+              { type: 'multiple_choice', question: 'What is (2 + 3) × 4?', options: ['14', '20', '24'], answer: 1, why: 'Brackets first: 2 + 3 = 5. Then 5 × 4 = 20.' },
+              { type: 'multiple_choice', question: 'What is 12 ÷ 3 + 2?', options: ['6', '8', '18'], answer: 0, why: 'Divide first: 12 ÷ 3 = 4. Then add 2 to get 6.' }
+            ]
+          }, {
+            id: 'lower-secondary-maths-m1-l3',
+            order: 3,
+            title: 'Factors, Multiples, and Primes',
+            objective: 'I can identify factors, multiples, and prime numbers.',
+            minutes: 8,
+            recap: 'You found factors and multiples and recognised prime numbers.',
+            blocks: [
+              { type: 'text', body: 'A factor divides a number exactly, with no remainder.' },
+              { type: 'text', body: 'A multiple is what you get when you multiply a number by a whole number.' },
+              { type: 'text', body: 'A prime number has exactly two factors: 1 and itself.' },
+              { type: 'tip', body: '1 is not prime because it has only one factor.' },
+              {
+                type: 'illustration',
+                alt: 'A stack of bricks, like the building blocks of a number.',
+                image: 'assets/3d/brick-3d.png',
+                placeholder: 'Factor pairs for 12: 1×12, 2×6, 3×4.'
+              },
+              { type: 'example', steps: ['List the factors of 18.', '1 × 18, 2 × 9, and 3 × 6 work.', 'The factors are 1, 2, 3, 6, 9, and 18.'] }
+            ],
+            vocabulary: [
+              { word: 'factor', meaning: 'A number that divides another exactly.', example: '6 is a factor of 18.' },
+              { word: 'multiple', meaning: 'The result of multiplying by a whole number.', example: '20 is a multiple of 5.' },
+              { word: 'prime', meaning: 'A number with exactly two factors.', example: '11 is prime.' }
+            ],
+            quiz: [
+              { type: 'multiple_choice', question: 'Which number is a factor of 18?', options: ['4', '6', '8'], answer: 1, why: '18 ÷ 6 = 3 exactly, so 6 is a factor.' },
+              { type: 'multiple_choice', question: 'Which number is a multiple of 5?', options: ['12', '20', '24'], answer: 1, why: '5 × 4 = 20, so 20 is a multiple of 5.' },
+              { type: 'multiple_choice', question: 'Which number is prime?', options: ['9', '11', '15'], answer: 1, why: '11 has only two factors: 1 and 11.' }
+            ]
+          }]
+        }, {
+          id: 'm2',
+          order: 2,
+          title: 'Algebra Foundations',
+          description: 'Write and use expressions, substitute values, and solve one-step equations.',
+          lessons: [{
+            id: 'lower-secondary-maths-m2-l1',
+            order: 1,
+            title: 'Writing Expressions',
+            objective: 'I can write a simple algebraic expression from words.',
+            minutes: 8,
+            recap: 'You turned words into expressions using a letter for the unknown.',
+            blocks: [
+              { type: 'text', body: 'Algebra uses letters to stand for numbers we do not know yet.' },
+              { type: 'text', body: 'A letter next to a number means multiply. 3y means 3 times y.' },
+              { type: 'text', body: 'Addition and subtraction keep their signs. 4 more than x is x + 4.' },
+              { type: 'tip', body: 'Write the letter after the number, so 3y rather than y3.' },
+              {
+                type: 'illustration',
+                alt: 'A keypad showing the letters A, B, C, and D.',
+                image: 'assets/3d/input-latin-letters-3d.png',
+                placeholder: 'Bar diagram: an unknown bar x plus a bar of 4.'
+              },
+              { type: 'example', steps: ['Write an expression for 5 more than n.', 'More than means add.', 'Start with n and add 5.', 'The expression is n + 5.'] }
+            ],
+            vocabulary: [
+              { word: 'expression', meaning: 'A maths phrase with numbers, letters, and operations.', example: '3y is an expression.' },
+              { word: 'variable', meaning: 'A letter that stands for an unknown number.', example: 'In 2x + 1, x is a variable.' },
+              { word: 'term', meaning: 'A part of an expression separated by plus or minus.', example: '2x and 1 are terms.' }
+            ],
+            quiz: [
+              { type: 'multiple_choice', question: 'Which expression means 4 more than x?', options: ['x + 4', '4x', 'x - 4'], answer: 0, why: 'More than means add, so the expression is x + 4.' },
+              { type: 'multiple_choice', question: 'Which expression means 3 times y?', options: ['y + 3', '3y', 'y - 3'], answer: 1, why: '3 times y is written as 3y.' },
+              { type: 'multiple_choice', question: 'Which expression means 2 less than m?', options: ['m + 2', '2m', 'm - 2'], answer: 2, why: 'Less than means subtract, so the expression is m - 2.' }
+            ]
+          }, {
+            id: 'lower-secondary-maths-m2-l2',
+            order: 2,
+            title: 'Substitution',
+            objective: 'I can substitute a value into an expression and evaluate it.',
+            minutes: 8,
+            recap: 'You replaced letters with values and worked out the expression.',
+            blocks: [
+              { type: 'text', body: 'Substitution means replacing a letter with a number.' },
+              { type: 'text', body: 'Put the number in place of the letter, then use the order of operations.' },
+              { type: 'text', body: 'If a letter appears twice, use the same value both times.' },
+              { type: 'tip', body: 'Use brackets when substituting a negative number to avoid sign errors.' },
+              {
+                type: 'illustration',
+                alt: 'A puzzle piece: one value slots in for a letter.',
+                image: 'assets/3d/puzzle-piece-3d.png',
+                placeholder: 'Expression 4y with a value card showing y = 3.'
+              },
+              { type: 'example', steps: ['Evaluate 2n + 1 when n = 6.', 'Replace n with 6: 2 × 6 + 1.', 'Multiply first: 12 + 1.', 'The value is 13.'] }
+            ],
+            vocabulary: [
+              { word: 'substitute', meaning: 'Replace a letter with a number.', example: 'Substitute 5 for x.' },
+              { word: 'evaluate', meaning: 'Work out the value.', example: 'Evaluate the expression to get 12.' },
+              { word: 'value', meaning: 'The number a letter stands for.', example: 'The value of y is 3.' }
+            ],
+            quiz: [
+              { type: 'multiple_choice', question: 'If x = 5, what is x + 7?', options: ['10', '12', '57'], answer: 1, why: 'Replace x with 5, then 5 + 7 = 12.' },
+              { type: 'multiple_choice', question: 'If y = 3, what is 4y?', options: ['7', '12', '43'], answer: 1, why: '4y means 4 × y. With y = 3, that is 12.' },
+              { type: 'multiple_choice', question: 'If n = 6, what is 2n + 1?', options: ['12', '13', '14'], answer: 1, why: '2 × 6 = 12, then add 1 to get 13.' }
+            ]
+          }, {
+            id: 'lower-secondary-maths-m2-l3',
+            order: 3,
+            title: 'Solving One-Step Equations',
+            objective: 'I can solve a one-step equation by doing the inverse operation.',
+            minutes: 8,
+            recap: 'You solved one-step equations using the inverse operation.',
+            blocks: [
+              { type: 'text', body: 'An equation says two sides are equal. The letter is the unknown.' },
+              { type: 'text', body: 'To keep both sides equal, do the same thing to both sides.' },
+              { type: 'text', body: 'Undo addition with subtraction. Undo multiplication with division.' },
+              { type: 'tip', body: 'Check your answer by substituting it back into the equation.' },
+              {
+                type: 'illustration',
+                alt: 'A balance scale with two equal pans.',
+                image: 'assets/3d/balance-scale-3d.png',
+                placeholder: 'Balance scale: x + 5 balances 12.'
+              },
+              { type: 'example', steps: ['Solve x + 5 = 12.', 'Subtract 5 from both sides.', 'x = 12 - 5.', 'So x = 7. Check: 7 + 5 = 12.'] }
+            ],
+            vocabulary: [
+              { word: 'equation', meaning: 'A statement that two expressions are equal.', example: 'x + 5 = 12 is an equation.' },
+              { word: 'inverse', meaning: 'The operation that undoes another.', example: 'Subtraction is the inverse of addition.' },
+              { word: 'solve', meaning: 'Find the value that makes an equation true.', example: 'Solve x + 5 = 12 to get 7.' }
+            ],
+            quiz: [
+              { type: 'multiple_choice', question: 'Solve x + 5 = 12.', options: ['6', '7', '17'], answer: 1, why: 'Subtract 5 from both sides: x = 7.' },
+              { type: 'multiple_choice', question: 'Solve 3x = 15.', options: ['4', '5', '12'], answer: 1, why: 'Divide both sides by 3: x = 5.' },
+              { type: 'multiple_choice', question: 'Solve x - 4 = 9.', options: ['5', '13', '36'], answer: 1, why: 'Add 4 to both sides: x = 13.' }
+            ]
           }]
         }]
       }]
