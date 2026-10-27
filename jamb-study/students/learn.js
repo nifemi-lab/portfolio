@@ -938,7 +938,9 @@
       text: result.passed ? 'Lesson complete' : 'Not yet'
     }));
     const heading = el('h1', {
-      text: result.passed ? 'Lesson complete' : 'Not yet — try once more'
+      text: result.passed
+        ? (session.review ? 'Review complete' : 'Lesson complete')
+        : 'Not yet — try once more'
     });
     panel.appendChild(heading);
     panel.appendChild(el('p', {
@@ -955,7 +957,7 @@
     const pos = core.lessonPosition(index, lesson.id);
     const next = pos ? neighbourLessons(lesson).next : null;
 
-    if (result.passed && next && pos) {
+    if (result.passed && !session.review && next && pos) {
       row.appendChild(el('a', {
         className: 'learn-btn',
         attrs: { href: lessonHash(pos.trackId, pos.subjectId, pos.moduleId, next) },
@@ -963,13 +965,15 @@
       }));
     }
 
-    const again = el('button', {
-      className: 'learn-btn is-ghost',
-      attrs: { type: 'button' },
-      text: result.passed ? 'Review this lesson' : 'Read the lesson again'
-    });
-    again.addEventListener('click', restartLesson);
-    row.appendChild(again);
+    if (!session.review) {
+      const again = el('button', {
+        className: 'learn-btn is-ghost',
+        attrs: { type: 'button' },
+        text: result.passed ? 'Review this lesson' : 'Read the lesson again'
+      });
+      again.addEventListener('click', restartLesson);
+      row.appendChild(again);
+    }
 
     if (!result.passed) {
       const retry = el('button', {
@@ -981,7 +985,13 @@
       row.appendChild(retry);
     }
 
-    if (pos) {
+    if (session.review) {
+      row.appendChild(el('a', {
+        className: 'learn-btn is-ghost',
+        attrs: { href: '#/review' },
+        text: 'Back to review'
+      }));
+    } else if (pos) {
       row.appendChild(el('a', {
         className: 'learn-btn is-ghost',
         attrs: { href: core.buildHash([pos.trackId, pos.subjectId, pos.moduleId]) },
@@ -997,6 +1007,251 @@
     announce(result.passed
       ? 'Lesson complete. ' + result.correct + ' of ' + result.total + ' correct.'
       : 'Not yet. ' + result.correct + ' of ' + result.total + ' correct. Try once more.');
+  }
+
+  function dueLabel(iso, nowIso) {
+    const days = Math.floor((Date.parse(nowIso) - Date.parse(iso)) / core.DAY_MS);
+    if (days <= 0) return 'Due today';
+    if (days === 1) return 'Due yesterday';
+    return 'Due ' + days + ' days ago';
+  }
+
+  function renderReview(main) {
+    const now = new Date().toISOString();
+    const due = core.dueReviews(state.progress, now)
+      .map((row) => ({
+        entry: row.entry,
+        lesson: core.getLesson(index, row.lessonId)
+      }))
+      .filter((row) => row.lesson);
+
+    main.appendChild(el('section', { className: 'learn-hero' }, [
+      el('p', { className: 'learn-eyebrow', text: 'Review' }),
+      el('h1', { text: 'Keep the ideas strong' }),
+      el('p', {
+        className: 'learn-lede',
+        text: 'A short review helps you remember. It does not unlock new lessons.'
+      })
+    ]));
+
+    if (!due.length) {
+      main.appendChild(el('section', { className: 'learn-empty' }, [
+        el('p', { text: 'Nothing to review today. Pick a lesson to keep going.' }),
+        el('a', {
+          className: 'learn-btn',
+          attrs: { href: '#/' },
+          text: 'Choose a track'
+        })
+      ]));
+      return;
+    }
+
+    const list = el('div', { className: 'review-list' });
+    due.forEach((row) => {
+      const pos = core.lessonPosition(index, row.lesson.id);
+      const track = pos ? core.getTrack(index, pos.trackId) : null;
+      list.appendChild(el('a', {
+        className: 'review-row',
+        attrs: { href: core.buildHash(['review', row.lesson.id]) }
+      }, [
+        el('span', { className: 'review-copy' }, [
+          el('strong', { text: row.lesson.title }),
+          el('span', {
+            className: 'review-due',
+            text: (track ? track.label + ' · ' : '') +
+              dueLabel(row.entry.nextReviewAt, now)
+          })
+        ]),
+        el('span', { className: 'learn-status is-in-progress', text: 'Review' })
+      ]));
+    });
+    main.appendChild(list);
+  }
+
+  function startReview(route) {
+    const lesson = core.getLesson(index, route.lessonId);
+    if (!lesson || !core.isCompleted(state.progress.lessons[lesson.id])) {
+      return false;
+    }
+    const pos = core.lessonPosition(index, lesson.id);
+    if (!pos) return false;
+    const track = core.getTrack(index, pos.trackId);
+    const subject = core.getSubject(index, pos.trackId, pos.subjectId);
+    const mod = core.getModule(index, pos.trackId, pos.subjectId, pos.moduleId);
+    if (!track || !subject || !mod) return false;
+
+    renderLessonPlayer(
+      document.getElementById('app'), track, subject, mod, lesson);
+    state.lesson.review = true;
+    const back = document.querySelector('.learn-backline');
+    if (back) {
+      back.setAttribute('href', '#/review');
+      back.textContent = 'Back to review';
+    }
+    startQuiz();
+    return true;
+  }
+
+  function deleteLocalData() {
+    if (storage) {
+      [KEYS.progress, KEYS.settings].forEach((key) => {
+        try { storage.removeItem(key); } catch (e) { /* storage blocked */ }
+      });
+    }
+    state.progress = core.emptyProgress();
+    state.settings = {
+      theme: 'system', easyRead: false, nickname: '', confidence: {}
+    };
+    applyDisplaySettings();
+  }
+
+  function renderSettings(main) {
+    main.appendChild(el('section', { className: 'learn-hero' }, [
+      el('p', { className: 'learn-eyebrow', text: 'Settings' }),
+      el('h1', { text: 'Make LearnStack yours' }),
+      el('p', {
+        className: 'learn-lede',
+        text: 'These settings stay on this device. You can change them at any time.'
+      })
+    ]));
+
+    const grid = el('div', { className: 'settings-grid' });
+
+    const nickname = el('input', {
+      className: 'settings-input',
+      attrs: {
+        type: 'text', id: 'nickname', maxlength: '24',
+        autocomplete: 'off', placeholder: 'Optional'
+      }
+    });
+    nickname.value = state.settings.nickname;
+    nickname.addEventListener('input', () => {
+      saveSettings({ nickname: nickname.value.trim().slice(0, 24) });
+    });
+
+    grid.appendChild(el('section', { className: 'settings-card' }, [
+      el('h2', { text: 'Your name on this device' }),
+      el('p', {
+        className: 'lesson-muted',
+        text: 'Optional. It is not sent anywhere and you can leave it blank.'
+      }),
+      el('label', {
+        className: 'settings-label',
+        attrs: { for: 'nickname' },
+        text: 'Nickname'
+      }),
+      nickname
+    ]));
+
+    const theme = el('select', {
+      className: 'settings-input',
+      attrs: { id: 'themeSelect' }
+    });
+    [['system', 'Match my device'], ['light', 'Light'], ['dark', 'Dark']]
+      .forEach((pair) => {
+        theme.appendChild(el('option', {
+          attrs: { value: pair[0] },
+          text: pair[1]
+        }));
+      });
+    theme.value = state.settings.theme;
+    theme.addEventListener('change', () => saveSettings({ theme: theme.value }));
+
+    grid.appendChild(el('section', { className: 'settings-card' }, [
+      el('h2', { text: 'Theme' }),
+      el('label', {
+        className: 'settings-label',
+        attrs: { for: 'themeSelect' },
+        text: 'Colour theme'
+      }),
+      theme
+    ]));
+
+    const easy = el('input', {
+      attrs: { type: 'checkbox', id: 'easyRead' }
+    });
+    easy.checked = !!state.settings.easyRead;
+    easy.addEventListener('change', () => {
+      saveSettings({ easyRead: easy.checked });
+    });
+
+    grid.appendChild(el('section', { className: 'settings-card' }, [
+      el('h2', { text: 'Reading' }),
+      el('div', { className: 'settings-row' }, [
+        easy,
+        el('label', {
+          className: 'settings-label',
+          attrs: { for: 'easyRead' },
+          text: 'Easy-read mode: larger text, more spacing'
+        })
+      ])
+    ]));
+
+    const chip = document.getElementById('learnSyncChip');
+    grid.appendChild(el('section', { className: 'settings-card' }, [
+      el('h2', { text: 'Saving' }),
+      el('p', {
+        className: 'lesson-muted',
+        text: 'Progress is saved in this browser. ' +
+          'Status: ' + (chip ? chip.textContent : 'saved locally') + '.'
+      })
+    ]));
+
+    const status = el('p', {
+      className: 'settings-status',
+      attrs: { role: 'status', 'aria-live': 'polite' }
+    });
+    const confirmBox = el('div', {
+      className: 'settings-danger',
+      attrs: { hidden: 'hidden' }
+    }, [
+      el('p', {
+        text: 'This removes your lesson progress, scores, review dates, ' +
+          'nickname, and display settings from this browser. ' +
+          'It cannot be undone.'
+      })
+    ]);
+
+    const yes = el('button', {
+      className: 'learn-btn is-danger',
+      attrs: { type: 'button' },
+      text: 'Yes, delete everything'
+    });
+    yes.addEventListener('click', () => {
+      deleteLocalData();
+      confirmBox.hidden = true;
+      status.textContent = 'Your LearnStack data has been deleted.';
+      announce('Your LearnStack data has been deleted.');
+    });
+    const cancel = el('button', {
+      className: 'learn-btn is-ghost',
+      attrs: { type: 'button' },
+      text: 'Cancel'
+    });
+    cancel.addEventListener('click', () => {
+      confirmBox.hidden = true;
+    });
+    confirmBox.appendChild(el('div', { className: 'result-actions' }, [yes, cancel]));
+
+    const deleteButton = el('button', {
+      className: 'learn-btn is-danger',
+      attrs: { type: 'button' },
+      text: 'Delete my LearnStack data'
+    });
+    deleteButton.addEventListener('click', () => {
+      confirmBox.hidden = false;
+      status.textContent = 'Please confirm below.';
+      yes.focus();
+    });
+
+    grid.appendChild(el('section', { className: 'settings-card' }, [
+      el('h2', { text: 'Delete my data' }),
+      deleteButton,
+      confirmBox,
+      status
+    ]));
+
+    main.appendChild(grid);
   }
 
   function renderNotFound(main) {
@@ -1035,6 +1290,16 @@
         break;
       case 'modules':
         renderLessons(app, parsed);
+        break;
+      case 'review':
+        renderReview(app);
+        break;
+      case 'review-lesson': {
+        if (!startReview(parsed)) renderNotFound(app);
+        break;
+      }
+      case 'settings':
+        renderSettings(app);
         break;
       case 'lesson': {
         const track = core.getTrack(index, parsed.trackId);

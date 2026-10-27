@@ -372,3 +372,9 @@ test('validateTracks rejects gaps, duplicates, and over-long blocks', () => {
   assert.ok(errors.some(e => /order/i.test(e)));
   assert.ok(errors.some(e => /word limit/i.test(e)));
 });
+
+test('parseHash recognises a review lesson deep link', () => {
+  const route = core.parseHash('#/review/primary-maths-m1-l1');
+  assert.equal(route.kind, 'review-lesson');
+  assert.equal(route.lessonId, 'primary-maths-m1-l1');
+});

@@ -707,3 +707,95 @@ html[data-theme="light"] .learn-app .learn-status.is-in-progress { color: #92400
 }
 
 .learn-app .lesson-actions[hidden] { display: none; }
+
+.learn-app .review-list {
+  display: grid;
+  gap: 10px;
+  max-width: 720px;
+}
+
+.learn-app .review-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-elev);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.learn-app .review-row:hover { border-color: var(--learn-accent); }
+
+.learn-app .review-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 220px;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.learn-app .review-copy strong { font-weight: 600; }
+.learn-app .review-due { color: var(--text-muted); font-size: 0.85rem; }
+
+.learn-app .settings-grid {
+  display: grid;
+  gap: 16px;
+  max-width: 720px;
+}
+
+.learn-app .settings-card {
+  display: grid;
+  gap: 10px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-elev);
+}
+
+.learn-app .settings-card h2 { margin: 0; }
+.learn-app .settings-label { font-weight: 600; }
+
+.learn-app .settings-input {
+  width: 100%;
+  max-width: 420px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.learn-app .settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.learn-app .settings-row input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--learn-accent);
+}
+
+.learn-app .settings-danger {
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px solid rgba(185, 28, 28, 0.5);
+  border-radius: 12px;
+  background: rgba(185, 28, 28, 0.08);
+}
+
+.learn-app .settings-danger p { margin: 0 0 12px; line-height: 1.6; }
+.learn-app .settings-status { margin: 0; color: var(--text-muted); }
+
+.learn-app .learn-btn.is-danger {
+  border-color: #b91c1c;
+  background: #b91c1c;
+  color: #ffffff;
+}

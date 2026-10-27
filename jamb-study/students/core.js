@@ -101,6 +101,9 @@
       if (segments[0] === 'not-found') return { kind: 'not-found', segments };
       return { kind: 'track', trackId: segments[0], segments };
     }
+    if (segments.length === 2 && segments[0] === 'review') {
+      return { kind: 'review-lesson', lessonId: segments[1], segments };
+    }
     if (segments.length === 2) {
       return { kind: 'subject', trackId: segments[0], subjectId: segments[1], segments };
     }
