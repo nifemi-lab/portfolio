@@ -523,6 +523,14 @@
     }));
     holder.appendChild(grid);
     holder.appendChild(note);
+
+    const startButton = el('button', {
+      className: 'learn-btn',
+      attrs: { type: 'button' },
+      text: 'Start quiz'
+    });
+    startButton.addEventListener('click', startQuiz);
+    holder.appendChild(startButton);
   }
 
   function renderStep(focus) {
@@ -574,7 +582,10 @@
 
   function renderLessonPlayer(main, track, subject, mod, lesson) {
     const steps = buildSteps(lesson);
-    state.lesson = { lesson, steps, step: 0 };
+    state.lesson = {
+      lesson, steps, step: 0, mode: 'steps',
+      quiz: null, result: null, review: false
+    };
 
     const top = el('div', { className: 'lesson-top' }, [
       el('a', {
@@ -666,6 +677,326 @@
     }));
 
     main.appendChild(el('section', { className: 'learn-empty' }, children));
+  }
+
+  function neighbourLessons(lesson) {
+    const pos = core.lessonPosition(index, lesson.id);
+    if (!pos) return { previous: null, next: null };
+    const ordered = core.orderedLessons(index, pos.trackId, pos.subjectId);
+    return {
+      previous: ordered[pos.index - 1] || null,
+      next: ordered[pos.index + 1] || null
+    };
+  }
+
+  function setProgressBar(current, total) {
+    const bar = document.querySelector('.learn-progress');
+    if (bar) {
+      bar.setAttribute('aria-valuemax', String(total));
+      bar.setAttribute('aria-valuenow', String(current));
+    }
+    const fill = document.querySelector('.learn-progress-fill');
+    if (fill) fill.style.width = ((current / total) * 100) + '%';
+  }
+
+  function hasAnswer(question, answer) {
+    if (question.type === 'numeric') {
+      return answer !== null && answer !== undefined && String(answer).trim() !== '';
+    }
+    return Number.isInteger(answer);
+  }
+
+  function startQuiz() {
+    if (!state.lesson) return;
+    const lesson = state.lesson.lesson;
+    state.lesson.mode = 'quiz';
+    state.lesson.step = state.lesson.steps.length - 1;
+    state.lesson.quiz = {
+      index: 0,
+      checked: false,
+      answers: lesson.quiz.map(() => null)
+    };
+    state.lesson.result = null;
+    renderQuiz(false);
+  }
+
+  function updateQuizButton() {
+    const session = state.lesson;
+    if (!session || !session.quiz) return;
+    const button = document.getElementById('quizCheck');
+    if (!button) return;
+    const quiz = session.quiz;
+    const question = session.lesson.quiz[quiz.index];
+    if (quiz.checked) {
+      button.textContent = quiz.index === session.lesson.quiz.length - 1
+        ? 'See result'
+        : 'Next question';
+      button.disabled = false;
+    } else {
+      button.textContent = 'Check';
+      button.disabled = !hasAnswer(question, quiz.answers[quiz.index]);
+    }
+  }
+
+  function renderQuiz(focus) {
+    const session = state.lesson;
+    if (!session) return;
+    const lesson = session.lesson;
+    const quiz = session.quiz;
+    const question = lesson.quiz[quiz.index];
+    const panel = document.getElementById('lessonStep');
+    if (!panel) return;
+
+    const actions = document.querySelector('.lesson-actions');
+    if (actions) actions.hidden = true;
+
+    const count = document.getElementById('stepCount');
+    if (count) count.textContent = 'Question ' + (quiz.index + 1) + ' of ' + lesson.quiz.length;
+    setProgressBar(quiz.index + 1, lesson.quiz.length);
+
+    panel.replaceChildren();
+    const heading = el('h1', {
+      text: 'Question ' + (quiz.index + 1) + ' of ' + lesson.quiz.length
+    });
+    panel.appendChild(el('p', { className: 'learn-eyebrow', text: 'Quick check' }));
+    panel.appendChild(heading);
+    panel.appendChild(el('p', {
+      className: 'quiz-question',
+      text: question.question
+    }));
+
+    if (question.type === 'numeric') {
+      const input = el('input', {
+        className: 'quiz-input',
+        attrs: {
+          type: 'text',
+          inputmode: 'decimal',
+          autocomplete: 'off',
+          id: 'quizNumeric',
+          'aria-label': question.question
+        }
+      });
+      input.value = quiz.answers[quiz.index] === null
+        ? ''
+        : String(quiz.answers[quiz.index]);
+      input.disabled = quiz.checked;
+      input.addEventListener('input', () => {
+        quiz.answers[quiz.index] = input.value;
+        updateQuizButton();
+      });
+      panel.appendChild(el('label', {
+        className: 'lesson-muted',
+        attrs: { for: 'quizNumeric' },
+        text: 'Type your answer'
+      }));
+      panel.appendChild(input);
+    } else {
+      const fieldset = el('fieldset', { className: 'quiz-options' });
+      fieldset.appendChild(el('legend', {
+        className: 'sr-only',
+        text: question.question
+      }));
+      question.options.forEach((option, i) => {
+        const input = el('input', {
+          attrs: {
+            type: 'radio',
+            name: 'quizAnswer',
+            value: String(i),
+            id: 'quizOption' + i
+          }
+        });
+        input.checked = quiz.answers[quiz.index] === i;
+        input.disabled = quiz.checked;
+        input.addEventListener('change', () => {
+          quiz.answers[quiz.index] = i;
+          updateQuizButton();
+        });
+        fieldset.appendChild(el('label', {
+          className: 'quiz-option',
+          attrs: { for: 'quizOption' + i }
+        }, [
+          input,
+          el('span', { text: option })
+        ]));
+      });
+      panel.appendChild(fieldset);
+    }
+
+    const check = el('button', {
+      className: 'learn-btn',
+      attrs: { type: 'button', id: 'quizCheck' },
+      text: 'Check'
+    });
+    check.addEventListener('click', onQuizButton);
+    panel.appendChild(el('div', { className: 'quiz-actions' }, [check]));
+    panel.appendChild(el('div', { attrs: { id: 'quizFeedback' } }));
+    updateQuizButton();
+
+    if (focus) {
+      heading.setAttribute('tabindex', '-1');
+      heading.focus({ preventScroll: true });
+      window.scrollTo(0, 0);
+    }
+  }
+
+  function checkAnswer() {
+    const session = state.lesson;
+    if (!session || !session.quiz) return;
+    const lesson = session.lesson;
+    const quiz = session.quiz;
+    const question = lesson.quiz[quiz.index];
+    const correct = core.isAnswerCorrect(question, quiz.answers[quiz.index]);
+    quiz.checked = true;
+
+    const panel = document.getElementById('lessonStep');
+    if (panel) {
+      Array.prototype.forEach.call(panel.querySelectorAll('input'), (input) => {
+        input.disabled = true;
+      });
+    }
+
+    const host = document.getElementById('quizFeedback');
+    if (host) {
+      host.replaceChildren();
+      const feedback = el('div', {
+        className: 'quiz-feedback ' + (correct ? 'is-correct' : 'is-needs-work'),
+        attrs: { 'aria-live': 'polite' }
+      }, [
+        el('strong', {
+          text: correct ? 'Yes — that’s right.' : 'Not yet. Here’s the idea.'
+        }),
+        el('p', { text: question.why })
+      ]);
+      host.appendChild(feedback);
+    }
+
+    announce(correct
+      ? 'Correct. ' + question.why
+      : 'Not yet. ' + question.why);
+    updateQuizButton();
+    const button = document.getElementById('quizCheck');
+    if (button) button.focus();
+  }
+
+  function onQuizButton() {
+    const session = state.lesson;
+    if (!session || !session.quiz) return;
+    const quiz = session.quiz;
+    if (!quiz.checked) {
+      checkAnswer();
+      return;
+    }
+    if (quiz.index < session.lesson.quiz.length - 1) {
+      quiz.index += 1;
+      quiz.checked = false;
+      renderQuiz(true);
+      return;
+    }
+    finishQuiz();
+  }
+
+  function finishQuiz() {
+    const session = state.lesson;
+    if (!session || !session.quiz) return;
+    const lesson = session.lesson;
+    const result = core.scoreQuiz(lesson.quiz, session.quiz.answers);
+    persistProgress(core.applyAttempt(
+      state.progress, lesson.id, result, new Date().toISOString()));
+    session.result = result;
+    renderResult();
+  }
+
+  function restartLesson() {
+    if (!state.lesson) return;
+    state.lesson.mode = 'steps';
+    state.lesson.step = 0;
+    state.lesson.quiz = null;
+    state.lesson.result = null;
+    const actions = document.querySelector('.lesson-actions');
+    if (actions) actions.hidden = false;
+    renderStep(true);
+  }
+
+  function renderResult() {
+    const session = state.lesson;
+    if (!session || !session.result) return;
+    const lesson = session.lesson;
+    const result = session.result;
+    const panel = document.getElementById('lessonStep');
+    if (!panel) return;
+
+    const actions = document.querySelector('.lesson-actions');
+    if (actions) actions.hidden = true;
+
+    const count = document.getElementById('stepCount');
+    if (count) count.textContent = 'Result';
+    setProgressBar(lesson.quiz.length, lesson.quiz.length);
+
+    panel.replaceChildren();
+    panel.appendChild(el('p', {
+      className: 'learn-eyebrow',
+      text: result.passed ? 'Lesson complete' : 'Not yet'
+    }));
+    const heading = el('h1', {
+      text: result.passed ? 'Lesson complete' : 'Not yet — try once more'
+    });
+    panel.appendChild(heading);
+    panel.appendChild(el('p', {
+      className: 'quiz-score',
+      text: result.correct + ' of ' + result.total + ' correct (' + result.percent + '%)'
+    }));
+    panel.appendChild(el('p', {
+      text: result.passed
+        ? 'You worked through the steps and checked your understanding. That is how learning sticks.'
+        : 'A mistake is a clue. Read the explanations again, then try once more when you are ready.'
+    }));
+
+    const row = el('div', { className: 'result-actions' });
+    const pos = core.lessonPosition(index, lesson.id);
+    const next = pos ? neighbourLessons(lesson).next : null;
+
+    if (result.passed && next && pos) {
+      row.appendChild(el('a', {
+        className: 'learn-btn',
+        attrs: { href: lessonHash(pos.trackId, pos.subjectId, pos.moduleId, next) },
+        text: 'Next lesson'
+      }));
+    }
+
+    const again = el('button', {
+      className: 'learn-btn is-ghost',
+      attrs: { type: 'button' },
+      text: result.passed ? 'Review this lesson' : 'Read the lesson again'
+    });
+    again.addEventListener('click', restartLesson);
+    row.appendChild(again);
+
+    if (!result.passed) {
+      const retry = el('button', {
+        className: 'learn-btn',
+        attrs: { type: 'button' },
+        text: 'Retry quiz'
+      });
+      retry.addEventListener('click', startQuiz);
+      row.appendChild(retry);
+    }
+
+    if (pos) {
+      row.appendChild(el('a', {
+        className: 'learn-btn is-ghost',
+        attrs: { href: core.buildHash([pos.trackId, pos.subjectId, pos.moduleId]) },
+        text: 'Back to lessons'
+      }));
+    }
+
+    panel.appendChild(row);
+
+    heading.setAttribute('tabindex', '-1');
+    heading.focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+    announce(result.passed
+      ? 'Lesson complete. ' + result.correct + ' of ' + result.total + ' correct.'
+      : 'Not yet. ' + result.correct + ' of ' + result.total + ' correct. Try once more.');
   }
 
   function renderNotFound(main) {

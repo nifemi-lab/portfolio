@@ -613,3 +613,97 @@ html[data-theme="light"] .learn-app .learn-status.is-in-progress { color: #92400
 @media (max-width: 560px) {
   .learn-app .lesson-actions { padding-bottom: 16px; }
 }
+
+.learn-app .quiz-question {
+  margin: 0 0 18px;
+  font-size: 1.12rem;
+  line-height: 1.6;
+}
+
+.learn-app .quiz-options {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 0;
+  border: 0;
+}
+
+.learn-app .quiz-option {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-elev);
+  cursor: pointer;
+}
+
+.learn-app .quiz-option:hover { border-color: var(--learn-accent); }
+
+.learn-app .quiz-option input {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  accent-color: var(--learn-accent);
+}
+
+.learn-app .quiz-option:has(input:checked) {
+  border-color: var(--learn-accent);
+  background: var(--learn-accent-soft);
+}
+
+.learn-app .quiz-input {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 6px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.learn-app .quiz-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.learn-app .quiz-feedback {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-elev);
+}
+
+.learn-app .quiz-feedback strong { display: block; margin-bottom: 6px; }
+.learn-app .quiz-feedback p { margin: 0; line-height: 1.65; }
+
+.learn-app .quiz-feedback.is-correct {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.learn-app .quiz-feedback.is-needs-work {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.learn-app .quiz-score {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.learn-app .result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.learn-app .lesson-actions[hidden] { display: none; }
