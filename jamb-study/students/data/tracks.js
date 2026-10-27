@@ -204,6 +204,10 @@ window.LEARN_TRACKS = {
         id: 'english',
         label: 'English',
         description: 'Letters, reading, sentences, and writing a short story.'
+      }, {
+        id: 'science',
+        label: 'Science',
+        description: 'Plants, animals, materials, weather, and forces for young scientists.'
       }]
     },
     {
@@ -413,6 +417,10 @@ window.LEARN_TRACKS = {
         id: 'english',
         label: 'English',
         description: 'Reading for meaning, inference, and writing with purpose.'
+      }, {
+        id: 'science',
+        label: 'Science',
+        description: 'Cells, ecosystems, body systems, particles, forces, and energy.'
       }]
     },
     {
@@ -632,6 +640,18 @@ window.LEARN_TRACKS = {
         id: 'english-literature',
         label: 'English Literature',
         description: 'Poetry, Shakespeare, the novel, and essay craft.'
+      }, {
+        id: 'biology',
+        label: 'Biology',
+        description: 'Cells, enzymes, transport, inheritance, natural selection, and ecosystems.'
+      }, {
+        id: 'chemistry',
+        label: 'Chemistry',
+        description: 'Atomic structure, bonding, reactions, acids, and rates of reaction.'
+      }, {
+        id: 'physics',
+        label: 'Physics',
+        description: 'Energy, forces, waves, circuits, magnetism, and the universe.'
       }]
     }
   ]

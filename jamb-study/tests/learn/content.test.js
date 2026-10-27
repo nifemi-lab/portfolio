@@ -10,15 +10,20 @@ require('../../students/data/primary/english.js');
 require('../../students/data/lower-secondary/english.js');
 require('../../students/data/upper-secondary/english-language.js');
 require('../../students/data/upper-secondary/english-literature.js');
+require('../../students/data/primary/science.js');
+require('../../students/data/lower-secondary/science.js');
+require('../../students/data/upper-secondary/biology.js');
+require('../../students/data/upper-secondary/chemistry.js');
+require('../../students/data/upper-secondary/physics.js');
 
 test('content loads and passes validation', () => {
   const result = core.validateTracks(global.window.LEARN_TRACKS);
   assert.deepEqual(result.errors, []);
   assert.equal(result.stats.tracks, 3);
-  assert.equal(result.stats.subjects, 7);
-  assert.equal(result.stats.modules, 14);
-  assert.equal(result.stats.lessons, 42);
-  assert.equal(result.stats.questions, 126);
+  assert.equal(result.stats.subjects, 12);
+  assert.equal(result.stats.modules, 24);
+  assert.equal(result.stats.lessons, 72);
+  assert.equal(result.stats.questions, 216);
 });
 
 test('every track starts at Module 1, Lesson 1 with a playable lesson', () => {
@@ -99,6 +104,28 @@ test('english subjects have two modules of three lessons', () => {
     ['lower-secondary', 'english'],
     ['upper-secondary', 'english-language'],
     ['upper-secondary', 'english-literature']
+  ];
+  entries.forEach(([trackId, subjectId]) => {
+    const subject = core.getSubject(index, trackId, subjectId);
+    assert.ok(subject, trackId + '/' + subjectId + ' exists');
+    assert.equal(subject.modules.length, 2);
+    subject.modules.forEach((mod, mi) => {
+      assert.equal(mod.order, mi + 1);
+      assert.equal(mod.lessons.length, 3);
+      mod.lessons.forEach((lesson, li) => assert.equal(lesson.order, li + 1));
+    });
+    assert.equal(core.orderedLessons(index, trackId, subjectId).length, 6);
+  });
+});
+
+test('science subjects have two modules of three lessons', () => {
+  const index = core.createIndex(global.window.LEARN_TRACKS);
+  const entries = [
+    ['primary', 'science'],
+    ['lower-secondary', 'science'],
+    ['upper-secondary', 'biology'],
+    ['upper-secondary', 'chemistry'],
+    ['upper-secondary', 'physics']
   ];
   entries.forEach(([trackId, subjectId]) => {
     const subject = core.getSubject(index, trackId, subjectId);
