@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LearnStack — learn one step at a time</title>
+  <meta name="description" content="A calm place to learn school Mathematics from the beginning, one short lesson at a time." />
+  <meta name="theme-color" content="#0a0c11" />
+  <link rel="stylesheet" href="../css/app.css" />
+  <link rel="stylesheet" href="learn.css" />
+</head>
+<body class="learn-app">
+  <a class="skip-link" href="#learnMain">Skip to content</a>
+
+  <header class="learn-header">
+    <div class="learn-wrap learn-header-inner">
+      <a class="learn-brand" href="#/">LearnStack</a>
+      <nav class="learn-nav" aria-label="LearnStack">
+        <span class="sync-chip" id="learnSyncChip" title="Where your progress is saved">saved locally</span>
+        <button class="learn-chip" id="themeToggle" type="button" aria-label="Switch theme">Theme</button>
+        <a class="learn-chip" href="../index.html">Back to study tracker</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="learnMain" class="learn-wrap learn-main">
+    <p class="learn-notice" id="storageNotice" hidden>Progress will not be saved in this browser.</p>
+    <div id="app"></div>
+  </main>
+
+  <footer class="learn-footer">
+    <div class="learn-wrap">
+      <p>LearnStack · Learn one step at a time.</p>
+    </div>
+  </footer>
+
+  <div id="learnAnnouncer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="data/tracks.js"></script>
+  <script src="core.js"></script>
+  <script src="learn.js"></script>
+</body>
+</html>
