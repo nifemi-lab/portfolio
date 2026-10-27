@@ -29,8 +29,9 @@ window.LEARN_TRACKS = {
               { type: 'tip', body: 'Touch each object once as you say a number.' },
               {
                 type: 'illustration',
-                alt: 'Two ten frames. The first is full with 10 dots. The second has 4 dots.',
-                placeholder: 'Two ten frames: one full with 10 dots, one with 4 dots.'
+                alt: 'A wooden abacus with rows of counting beads.',
+                image: 'assets/3d/abacus-3d.png',
+                placeholder: 'Abacus: rows of beads, counted one by one.'
               },
               { type: 'example', steps: ['Start at 10.', 'Say 11, 12, 13, 14.', 'There are 14 dots.'] }
             ],
@@ -77,8 +78,9 @@ window.LEARN_TRACKS = {
               { type: 'tip', body: 'Zero is neither positive nor negative.' },
               {
                 type: 'illustration',
-                alt: 'A number line from negative 5 to 5 with zero marked in the middle.',
-                placeholder: 'Number line: negative 5 to 5, with zero in the middle.'
+                alt: 'A thermometer with a scale above and below zero.',
+                image: 'assets/3d/thermometer-3d.png',
+                placeholder: 'Thermometer: a mark below zero is a negative number.'
               },
               { type: 'example', steps: ['Start at 0.', 'Move 4 places to the left.', 'You land on negative 4.', 'So negative 4 is less than 0.'] }
             ],
@@ -126,8 +128,9 @@ window.LEARN_TRACKS = {
               { type: 'tip', body: '0.75 and 75% mean the same as three quarters.' },
               {
                 type: 'illustration',
-                alt: 'A square split into four equal parts, with three parts shaded.',
-                placeholder: 'A square split into four equal parts: three parts shaded.'
+                alt: 'A slice of pizza: one part of a whole pizza.',
+                image: 'assets/3d/pizza-3d.png',
+                placeholder: 'Pizza slice: one part of a whole pizza.'
               },
               { type: 'example', steps: ['Take three quarters.', 'Divide 3 by 4 to get 0.75.', 'Multiply 0.75 by 100 to get 75.', 'So three quarters equals 0.75 or 75%.'] }
             ],

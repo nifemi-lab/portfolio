@@ -518,10 +518,18 @@
         } else {
           validateString(errors, bp + '.alt', block.alt, 40, true);
         }
+        const hasImage = typeof block.image === 'string' && block.image.trim();
         const hasSvg = typeof block.svg === 'string' && block.svg.trim();
         const hasPlate = typeof block.placeholder === 'string' && block.placeholder.trim();
-        if (!hasSvg && !hasPlate) {
-          pushError(errors, bp, 'needs an svg or a placeholder description');
+        if (!hasImage && !hasSvg) {
+          pushError(errors, bp, 'needs a 3D image or an svg');
+        }
+        if (!hasPlate) {
+          pushError(errors, bp + '.placeholder', 'needs a placeholder description');
+        }
+        if (hasImage &&
+            !/^assets\/3d\/[a-z0-9][a-z0-9._-]*\.(png|webp)$/i.test(block.image)) {
+          pushError(errors, bp + '.image', 'must be a local assets/3d image');
         }
         if (hasSvg) {
           if (/<script/i.test(block.svg)) pushError(errors, bp + '.svg', 'contains a script tag');

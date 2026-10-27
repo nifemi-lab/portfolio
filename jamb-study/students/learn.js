@@ -563,11 +563,36 @@
     });
   }
 
+  function illustrationPlate(block) {
+    return el('div', { className: 'illustration-plate' }, [
+      el('span', { className: 'plate-label', text: 'Diagram' }),
+      el('p', { text: block.placeholder || block.alt })
+    ]);
+  }
+
   function renderIllustration(block) {
     const figure = el('figure', { className: 'lesson-figure' });
     let inserted = false;
 
-    if (typeof block.svg === 'string' && block.svg.trim()) {
+    if (typeof block.image === 'string' && block.image.trim()) {
+      const img = el('img', {
+        className: 'illustration-image',
+        attrs: {
+          src: block.image,
+          alt: '',
+          width: '256',
+          height: '256',
+          decoding: 'async'
+        }
+      });
+      img.addEventListener('error', () => {
+        img.replaceWith(illustrationPlate(block));
+      });
+      figure.appendChild(img);
+      inserted = true;
+    }
+
+    if (!inserted && typeof block.svg === 'string' && block.svg.trim()) {
       try {
         const doc = new DOMParser().parseFromString(block.svg, 'image/svg+xml');
         const svg = doc.documentElement;
@@ -585,10 +610,7 @@
     }
 
     if (!inserted) {
-      figure.appendChild(el('div', { className: 'illustration-plate' }, [
-        el('span', { className: 'plate-label', text: 'Diagram' }),
-        el('p', { text: block.placeholder || block.alt })
-      ]));
+      figure.appendChild(illustrationPlate(block));
     }
     figure.appendChild(el('figcaption', { text: block.alt }));
     return figure;

@@ -503,6 +503,13 @@ html[data-theme="light"] .learn-app .learn-status.is-in-progress { color: #92400
 
 .learn-app .lesson-figure svg { max-width: 100%; height: auto; }
 
+.learn-app .lesson-figure .illustration-image {
+  display: block;
+  width: min(256px, 100%);
+  height: auto;
+  margin-inline: auto;
+}
+
 .learn-app .illustration-plate {
   display: flex;
   min-height: 180px;

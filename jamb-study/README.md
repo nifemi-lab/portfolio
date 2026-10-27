@@ -96,6 +96,11 @@ lesson at a time.
   separate anonymous session, separate table.
 - LearnStack contains no JAMB, UTME, WAEC, or NECO content, and no exam-board
   branding.
+- Every lesson carries a 3D illustration. The images come from Microsoft's
+  open-source [fluentui-emoji](https://github.com/microsoft/fluentui-emoji) set
+  (MIT licence, text in `students/assets/3d/LICENSE-fluentui-emoji.txt`). Put a
+  new file in `students/assets/3d/` and point the lesson's `image` field at it;
+  `check-learn-data.js` fails if the file is missing.
 
 Run it locally:
 

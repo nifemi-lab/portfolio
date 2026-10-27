@@ -299,7 +299,7 @@ const validLesson = () => ({
     { type: 'text', body: 'We count in order. Each number is one more than the one before.' },
     { type: 'text', body: 'Say one number for each object you count.' },
     { type: 'tip', body: 'Touch each object once as you count it.' },
-    { type: 'illustration', alt: 'Two ten frames showing 14 dots.', placeholder: 'Ten dots and four dots.' },
+    { type: 'illustration', alt: 'Two ten frames showing 14 dots.', image: 'assets/3d/abacus-3d.png', placeholder: 'Ten dots and four dots.' },
     { type: 'example', steps: ['Start at 10.', 'Count on: 11, 12, 13, 14.', 'There are 14 dots.'] }
   ],
   vocabulary: [
@@ -371,6 +371,26 @@ test('validateTracks rejects gaps, duplicates, and over-long blocks', () => {
   const errors = core.validateTracks(data).errors;
   assert.ok(errors.some(e => /order/i.test(e)));
   assert.ok(errors.some(e => /word limit/i.test(e)));
+});
+
+test('validateTracks requires a local 3D image and a fallback description', () => {
+  const data = validData();
+  const art = data.tracks[0].subjects[0].modules[0].lessons[0]
+    .blocks.find(b => b.type === 'illustration');
+
+  art.image = 'https://example.com/abacus.png';
+  let errors = core.validateTracks(data).errors;
+  assert.ok(errors.some(e => /local assets\/3d image/i.test(e)));
+
+  art.image = 'assets/3d/../private.png';
+  errors = core.validateTracks(data).errors;
+  assert.ok(errors.some(e => /local assets\/3d image/i.test(e)));
+
+  delete art.image;
+  delete art.placeholder;
+  errors = core.validateTracks(data).errors;
+  assert.ok(errors.some(e => /needs a 3D image or an svg/i.test(e)));
+  assert.ok(errors.some(e => /placeholder description/i.test(e)));
 });
 
 test('parseHash recognises a review lesson deep link', () => {
