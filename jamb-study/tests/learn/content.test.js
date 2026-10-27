@@ -6,13 +6,16 @@ const assert = require('node:assert/strict');
 global.window = global;
 const core = require('../../students/core.js');
 require('../../students/data/tracks.js');
+require('../../students/data/primary/english.js');
 
 test('content loads and passes validation', () => {
   const result = core.validateTracks(global.window.LEARN_TRACKS);
   assert.deepEqual(result.errors, []);
   assert.equal(result.stats.tracks, 3);
-  assert.equal(result.stats.lessons, 18);
-  assert.equal(result.stats.questions, 54);
+  assert.equal(result.stats.subjects, 4);
+  assert.equal(result.stats.modules, 8);
+  assert.equal(result.stats.lessons, 24);
+  assert.equal(result.stats.questions, 72);
 });
 
 test('every track starts at Module 1, Lesson 1 with a playable lesson', () => {
@@ -84,4 +87,22 @@ test('lesson ids are unique and resolve to short route slugs', () => {
   assert.equal(core.lessonSlug('primary-maths-m1-l1'), 'l1');
   assert.equal(core.lessonSlug('lower-secondary-maths-m1-l1'), 'l1');
   assert.equal(core.lessonSlug('upper-secondary-maths-m1-l1'), 'l1');
+});
+
+test('english subjects have two modules of three lessons', () => {
+  const index = core.createIndex(global.window.LEARN_TRACKS);
+  const entries = [
+    ['primary', 'english']
+  ];
+  entries.forEach(([trackId, subjectId]) => {
+    const subject = core.getSubject(index, trackId, subjectId);
+    assert.ok(subject, trackId + '/' + subjectId + ' exists');
+    assert.equal(subject.modules.length, 2);
+    subject.modules.forEach((mod, mi) => {
+      assert.equal(mod.order, mi + 1);
+      assert.equal(mod.lessons.length, 3);
+      mod.lessons.forEach((lesson, li) => assert.equal(lesson.order, li + 1));
+    });
+    assert.equal(core.orderedLessons(index, trackId, subjectId).length, 6);
+  });
 });

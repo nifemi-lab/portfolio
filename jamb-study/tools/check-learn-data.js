@@ -8,6 +8,7 @@ const path = require('path');
 global.window = global;
 const core = require('../students/core.js');
 require('../students/data/tracks.js');
+require('../students/data/primary/english.js');
 
 const result = core.validateTracks(window.LEARN_TRACKS);
 result.errors.forEach((message) => console.error('FAIL: ' + message));

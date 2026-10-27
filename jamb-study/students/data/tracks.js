@@ -200,6 +200,10 @@ window.LEARN_TRACKS = {
             ]
           }]
         }]
+      }, {
+        id: 'english',
+        label: 'English',
+        description: 'Letters, reading, sentences, and writing a short story.'
       }]
     },
     {
