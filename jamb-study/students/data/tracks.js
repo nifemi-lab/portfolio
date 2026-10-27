@@ -15,7 +15,7 @@ window.LEARN_TRACKS = {
           id: 'm1',
           order: 1,
           title: 'Counting and Place Value',
-          description: 'Count, read, write, and compare whole numbers.',
+          description: 'Count, read, write, and compare whole numbers. Draft content.',
           lessons: [{
             id: 'primary-maths-m1-l1',
             order: 1,
@@ -109,7 +109,7 @@ window.LEARN_TRACKS = {
           id: 'm2',
           order: 2,
           title: 'Addition and Subtraction',
-          description: 'Add and subtract within 20, then use both in simple word problems.',
+          description: 'Add and subtract within 20, then use both in simple word problems. Draft content.',
           lessons: [{
             id: 'primary-maths-m2-l1',
             order: 1,
@@ -216,7 +216,7 @@ window.LEARN_TRACKS = {
           id: 'm1',
           order: 1,
           title: 'Number Foundations',
-          description: 'Whole numbers, order of operations, factors, multiples, and primes.',
+          description: 'Whole numbers, order of operations, factors, multiples, and primes. Draft content.',
           lessons: [{
             id: 'lower-secondary-maths-m1-l1',
             order: 1,
@@ -312,7 +312,7 @@ window.LEARN_TRACKS = {
           id: 'm2',
           order: 2,
           title: 'Algebra Foundations',
-          description: 'Write and use expressions, substitute values, and solve one-step equations.',
+          description: 'Write and use expressions, substitute values, and solve one-step equations. Draft content.',
           lessons: [{
             id: 'lower-secondary-maths-m2-l1',
             order: 1,
@@ -421,7 +421,7 @@ window.LEARN_TRACKS = {
           id: 'm1',
           order: 1,
           title: 'Number',
-          description: 'Fractions, decimals, percentages, percentage change, ratio, and proportion.',
+          description: 'Fractions, decimals, percentages, percentage change, ratio, and proportion. Draft content.',
           lessons: [{
             id: 'upper-secondary-maths-m1-l1',
             order: 1,
@@ -520,7 +520,7 @@ window.LEARN_TRACKS = {
           id: 'm2',
           order: 2,
           title: 'Algebra',
-          description: 'Simplify expressions, solve linear equations, and rearrange formulae.',
+          description: 'Simplify expressions, solve linear equations, and rearrange formulae. Draft content.',
           lessons: [{
             id: 'upper-secondary-maths-m2-l1',
             order: 1,
