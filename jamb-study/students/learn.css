@@ -412,3 +412,204 @@ html[data-theme="light"] .learn-app .learn-status.is-in-progress { color: #92400
     animation-duration: 0.01ms !important;
   }
 }
+
+.learn-app .lesson-shell {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.learn-app .lesson-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin-bottom: 12px;
+}
+
+.learn-app .lesson-top .learn-backline { margin: 0; }
+.learn-app .lesson-top-title { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+.learn-app .step-count {
+  margin: 0 0 0 auto;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.learn-app .learn-progress {
+  height: 8px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.learn-app .learn-progress-fill {
+  display: block;
+  width: 10%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--learn-accent);
+  transition: width 0.2s ease;
+}
+
+.learn-app .lesson-step { min-height: 280px; }
+.learn-app .lesson-step h1 { margin-bottom: 18px; }
+.learn-app .lesson-objective { font-size: 1.2rem; line-height: 1.6; }
+
+.learn-app .lesson-meta,
+.learn-app .lesson-muted {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.learn-app .lesson-body p,
+.learn-app .lesson-body li { line-height: 1.75; }
+.learn-app .lesson-body ul { padding-left: 1.2em; }
+
+.learn-app .lesson-tip {
+  padding: 16px 18px;
+  border-left: 4px solid var(--learn-accent);
+  border-radius: 12px;
+  background: var(--learn-accent-soft);
+}
+
+.learn-app .vocab-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.learn-app .vocab-card {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-elev);
+}
+
+.learn-app .vocab-card strong { color: var(--learn-accent); }
+.learn-app .vocab-card p { margin: 4px 0 0; line-height: 1.55; }
+.learn-app .vocab-example { color: var(--text-muted); font-size: 0.9rem; }
+
+.learn-app .lesson-figure {
+  margin: 0 0 20px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-elev);
+  text-align: center;
+}
+
+.learn-app .lesson-figure svg { max-width: 100%; height: auto; }
+
+.learn-app .illustration-plate {
+  display: flex;
+  min-height: 180px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  border: 1px dashed var(--border-strong, var(--border));
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.learn-app .plate-label {
+  color: var(--learn-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.learn-app .lesson-figure figcaption {
+  margin-top: 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.learn-app .example-steps {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.learn-app .example-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.learn-app .step-badge {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--learn-accent-soft);
+  color: var(--learn-accent);
+  font-weight: 700;
+}
+
+.learn-app .example-steps p { margin: 4px 0 0; line-height: 1.6; }
+
+.learn-app .lesson-recap {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-elev);
+}
+
+.learn-app .lesson-recap p { margin: 0; line-height: 1.7; }
+
+.learn-app .confidence-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 12px;
+}
+
+.learn-app .confidence-btn {
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-elev);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.learn-app .confidence-btn.is-picked {
+  border-color: var(--learn-accent);
+  background: var(--learn-accent-soft);
+}
+
+.learn-app .confidence-note {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.learn-app .lesson-actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 32px;
+  padding: 12px 0;
+  background: var(--bg);
+}
+
+.learn-app .lesson-actions .learn-btn[hidden] { display: none; }
+
+@media (max-width: 560px) {
+  .learn-app .lesson-actions { padding-bottom: 16px; }
+}

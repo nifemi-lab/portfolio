@@ -331,6 +331,343 @@
     main.appendChild(list);
   }
 
+  function findLessonBySlug(trackId, subjectId, moduleId, slug) {
+    const lessons = index.lessonsByModule.get(
+      trackId + '/' + subjectId + '/' + moduleId) || [];
+    return lessons.find((lesson) => core.lessonSlug(lesson.id) === slug) || null;
+  }
+
+  function lessonHash(trackId, subjectId, moduleId, lesson) {
+    return core.buildHash([
+      trackId, subjectId, moduleId, core.lessonSlug(lesson.id)
+    ]);
+  }
+
+  function persistProgress(next) {
+    state.progress = next;
+    progressStore.write(next);
+  }
+
+  function recordLessonOpen(lesson) {
+    persistProgress(core.markInProgress(
+      state.progress, lesson.id, new Date().toISOString()));
+  }
+
+  function buildSteps(lesson) {
+    const steps = [{ kind: 'objective' }, { kind: 'vocabulary' }];
+    lesson.blocks
+      .filter((block) => block.type === 'text' || block.type === 'tip')
+      .forEach((block) => steps.push({ kind: 'block', block }));
+    const illustration = lesson.blocks.find((block) => block.type === 'illustration');
+    if (illustration) steps.push({ kind: 'illustration', block: illustration });
+    const example = lesson.blocks.find((block) => block.type === 'example');
+    if (example) steps.push({ kind: 'example', block: example });
+    steps.push({ kind: 'recap' }, { kind: 'confidence' });
+    return steps;
+  }
+
+  function stepHeading(step, lesson) {
+    if (step.kind === 'objective') return lesson.title;
+    if (step.kind === 'vocabulary') return 'Words to know';
+    if (step.kind === 'block') return step.block.type === 'tip' ? 'Tip' : 'The idea';
+    if (step.kind === 'illustration') return 'Look at the diagram';
+    if (step.kind === 'example') return 'Worked example';
+    if (step.kind === 'recap') return 'Recap';
+    return 'How ready do you feel?';
+  }
+
+  function appendText(target, text) {
+    core.textToParagraphs(text).forEach((node) => {
+      if (node.type === 'ul') {
+        const list = el('ul');
+        node.items.forEach((item) => list.appendChild(el('li', { text: item })));
+        target.appendChild(list);
+      } else {
+        target.appendChild(el('p', { text: node.text }));
+      }
+    });
+  }
+
+  function renderIllustration(block) {
+    const figure = el('figure', { className: 'lesson-figure' });
+    let inserted = false;
+
+    if (typeof block.svg === 'string' && block.svg.trim()) {
+      try {
+        const doc = new DOMParser().parseFromString(block.svg, 'image/svg+xml');
+        const svg = doc.documentElement;
+        if (svg && svg.nodeName.toLowerCase() === 'svg' &&
+            !doc.querySelector('parsererror')) {
+          const imported = document.importNode(svg, true);
+          imported.setAttribute('aria-hidden', 'true');
+          imported.setAttribute('focusable', 'false');
+          figure.appendChild(imported);
+          inserted = true;
+        }
+      } catch (e) {
+        inserted = false;
+      }
+    }
+
+    if (!inserted) {
+      figure.appendChild(el('div', { className: 'illustration-plate' }, [
+        el('span', { className: 'plate-label', text: 'Diagram' }),
+        el('p', { text: block.placeholder || block.alt })
+      ]));
+    }
+    figure.appendChild(el('figcaption', { text: block.alt }));
+    return figure;
+  }
+
+  function renderStepBody(step, lesson, holder) {
+    if (step.kind === 'objective') {
+      holder.appendChild(el('p', { className: 'lesson-objective', text: lesson.objective }));
+      holder.appendChild(el('p', {
+        className: 'lesson-meta',
+        text: 'About ' + lesson.minutes + ' minutes. Take your time.'
+      }));
+      return;
+    }
+
+    if (step.kind === 'vocabulary') {
+      holder.appendChild(el('p', {
+        className: 'lesson-muted',
+        text: 'These words will help with this lesson.'
+      }));
+      const list = el('ul', { className: 'vocab-list' });
+      lesson.vocabulary.forEach((word) => {
+        list.appendChild(el('li', { className: 'vocab-card' }, [
+          el('strong', { text: word.word }),
+          el('p', { text: word.meaning }),
+          el('p', { className: 'vocab-example', text: word.example })
+        ]));
+      });
+      holder.appendChild(list);
+      return;
+    }
+
+    if (step.kind === 'block') {
+      const body = el('div', {
+        className: 'lesson-body' + (step.block.type === 'tip' ? ' lesson-tip' : '')
+      });
+      appendText(body, step.block.body);
+      holder.appendChild(body);
+      return;
+    }
+
+    if (step.kind === 'illustration') {
+      holder.appendChild(renderIllustration(step.block));
+      return;
+    }
+
+    if (step.kind === 'example') {
+      const list = el('ol', { className: 'example-steps' });
+      step.block.steps.forEach((text, i) => {
+        list.appendChild(el('li', {}, [
+          el('span', { className: 'step-badge', text: String(i + 1) }),
+          el('p', { text })
+        ]));
+      });
+      holder.appendChild(list);
+      return;
+    }
+
+    if (step.kind === 'recap') {
+      holder.appendChild(el('div', { className: 'lesson-recap' }, [
+        el('p', { text: lesson.recap })
+      ]));
+      return;
+    }
+
+    const saved = state.settings.confidence[lesson.id];
+    const labels = { ready: 'Ready', unsure: 'A bit unsure', 'not-yet': 'Not yet' };
+    const grid = el('div', { className: 'confidence-grid' });
+    const note = el('p', {
+      className: 'confidence-note',
+      attrs: { 'aria-live': 'polite' },
+      text: saved
+        ? 'You chose: ' + labels[saved] + '. You can change this any time.'
+        : 'Choose one. This is not graded.'
+    });
+
+    [['ready', 'Ready'], ['unsure', 'A bit unsure'], ['not-yet', 'Not yet']]
+      .forEach((pair) => {
+        const value = pair[0];
+        const button = el('button', {
+          className: 'confidence-btn' + (saved === value ? ' is-picked' : ''),
+          attrs: {
+            type: 'button',
+            'aria-pressed': saved === value ? 'true' : 'false'
+          },
+          text: pair[1]
+        });
+        button.addEventListener('click', () => {
+          const confidence = Object.assign({}, state.settings.confidence);
+          confidence[lesson.id] = value;
+          saveSettings({ confidence });
+          Array.prototype.forEach.call(grid.children, (child) => {
+            child.classList.remove('is-picked');
+            child.setAttribute('aria-pressed', 'false');
+          });
+          button.classList.add('is-picked');
+          button.setAttribute('aria-pressed', 'true');
+          note.textContent = 'You chose: ' + pair[1] + '. You can change this any time.';
+          announce('Confidence saved: ' + pair[1] + '.');
+        });
+        grid.appendChild(button);
+      });
+
+    holder.appendChild(el('p', {
+      className: 'lesson-muted',
+      text: 'This check is private. It is not part of your score.'
+    }));
+    holder.appendChild(grid);
+    holder.appendChild(note);
+  }
+
+  function renderStep(focus) {
+    const holder = document.getElementById('lessonStep');
+    if (!holder || !state.lesson) return;
+
+    const lesson = state.lesson.lesson;
+    const steps = state.lesson.steps;
+    const stepIndex = state.lesson.step;
+    const step = steps[stepIndex];
+
+    holder.replaceChildren();
+    const heading = el('h1', { text: stepHeading(step, lesson) });
+    holder.appendChild(heading);
+    renderStepBody(step, lesson, holder);
+
+    const count = document.getElementById('stepCount');
+    if (count) {
+      count.textContent = 'Step ' + (stepIndex + 1) + ' of ' + steps.length;
+    }
+
+    const bar = document.querySelector('.learn-progress');
+    if (bar) bar.setAttribute('aria-valuenow', String(stepIndex + 1));
+    const fill = document.querySelector('.learn-progress-fill');
+    if (fill) fill.style.width = (((stepIndex + 1) / steps.length) * 100) + '%';
+
+    const back = document.getElementById('stepBack');
+    const next = document.getElementById('stepNext');
+    if (back) back.disabled = stepIndex === 0;
+    if (next) next.hidden = stepIndex === steps.length - 1;
+
+    if (focus) {
+      heading.setAttribute('tabindex', '-1');
+      heading.focus({ preventScroll: true });
+      window.scrollTo(0, 0);
+      announce('Step ' + (stepIndex + 1) + ' of ' + steps.length +
+        '. ' + heading.textContent);
+    }
+  }
+
+  function moveStep(delta) {
+    if (!state.lesson) return;
+    const max = state.lesson.steps.length - 1;
+    const next = Math.min(max, Math.max(0, state.lesson.step + delta));
+    if (next === state.lesson.step) return;
+    state.lesson.step = next;
+    renderStep(true);
+  }
+
+  function renderLessonPlayer(main, track, subject, mod, lesson) {
+    const steps = buildSteps(lesson);
+    state.lesson = { lesson, steps, step: 0 };
+
+    const top = el('div', { className: 'lesson-top' }, [
+      el('a', {
+        className: 'learn-backline',
+        attrs: { href: core.buildHash([track.id, subject.id, mod.id]) },
+        text: 'Back to lessons'
+      }),
+      el('p', { className: 'lesson-top-title', text: lesson.title }),
+      el('p', {
+        className: 'step-count',
+        attrs: { id: 'stepCount' },
+        text: 'Step 1 of ' + steps.length
+      })
+    ]);
+
+    const bar = el('div', {
+      className: 'learn-progress',
+      attrs: {
+        role: 'progressbar',
+        'aria-valuemin': '1',
+        'aria-valuemax': String(steps.length),
+        'aria-valuenow': '1',
+        'aria-label': 'Lesson progress'
+      }
+    }, [el('span', { className: 'learn-progress-fill' })]);
+
+    const panel = el('section', {
+      className: 'lesson-step',
+      attrs: { id: 'lessonStep' }
+    });
+
+    const backButton = el('button', {
+      className: 'learn-btn is-ghost',
+      attrs: { type: 'button', id: 'stepBack' },
+      text: 'Back'
+    });
+    const nextButton = el('button', {
+      className: 'learn-btn',
+      attrs: { type: 'button', id: 'stepNext' },
+      text: 'Next'
+    });
+    backButton.addEventListener('click', () => moveStep(-1));
+    nextButton.addEventListener('click', () => moveStep(1));
+
+    main.appendChild(el('div', { className: 'lesson-shell' }, [
+      top,
+      bar,
+      panel,
+      el('div', { className: 'lesson-actions' }, [backButton, nextButton])
+    ]));
+
+    renderStep(false);
+  }
+
+  function renderLockedLesson(main, track, subject, mod, lesson) {
+    const ordered = core.orderedLessons(index, track.id, subject.id);
+    const pos = core.lessonPosition(index, lesson.id);
+    const previous = pos && pos.index > 0 ? ordered[pos.index - 1] : null;
+
+    main.appendChild(el('a', {
+      className: 'learn-backline',
+      attrs: { href: core.buildHash([track.id, subject.id, mod.id]) },
+      text: 'Back to lessons'
+    }));
+
+    const children = [
+      el('p', { className: 'learn-eyebrow', text: 'Lesson locked' }),
+      el('h1', { text: 'Finish the lesson before this one.' }),
+      el('p', {
+        text: previous
+          ? 'Finish Lesson ' + previous.order + ': ' + previous.title + ' first.'
+          : 'Start with the first lesson in this module.'
+      })
+    ];
+
+    if (previous) {
+      children.push(el('a', {
+        className: 'learn-btn',
+        attrs: {
+          href: lessonHash(track.id, subject.id, pos.moduleId, previous)
+        },
+        text: 'Go to “' + previous.title + '”'
+      }));
+    }
+    children.push(el('a', {
+      className: 'learn-btn is-ghost',
+      attrs: { href: core.buildHash([track.id, subject.id, mod.id]) },
+      text: 'Back to lessons'
+    }));
+
+    main.appendChild(el('section', { className: 'learn-empty' }, children));
+  }
+
   function renderNotFound(main) {
     main.appendChild(el('section', { className: 'learn-empty' }, [
       el('p', { className: 'learn-eyebrow', text: 'Not found' }),
@@ -347,6 +684,7 @@
 
     const parsed = core.parseHash(window.location.hash);
     state.route = parsed;
+    state.lesson = null;
     app.replaceChildren();
     main.dataset.track = parsed.trackId || '';
     window.scrollTo(0, 0);
@@ -367,6 +705,28 @@
       case 'modules':
         renderLessons(app, parsed);
         break;
+      case 'lesson': {
+        const track = core.getTrack(index, parsed.trackId);
+        const subject = core.getSubject(index, parsed.trackId, parsed.subjectId);
+        const mod = core.getModule(
+          index, parsed.trackId, parsed.subjectId, parsed.moduleId);
+        const lesson = mod
+          ? findLessonBySlug(
+              parsed.trackId, parsed.subjectId, parsed.moduleId, parsed.lessonSlug)
+          : null;
+
+        if (!track || !subject || !mod || !lesson) {
+          renderNotFound(app);
+          break;
+        }
+        if (!core.isUnlocked(index, lesson.id, state.progress)) {
+          renderLockedLesson(app, track, subject, mod, lesson);
+          break;
+        }
+        recordLessonOpen(lesson);
+        renderLessonPlayer(app, track, subject, mod, lesson);
+        break;
+      }
       default:
         renderNotFound(app);
     }
