@@ -8,15 +8,16 @@ const core = require('../../students/core.js');
 require('../../students/data/tracks.js');
 require('../../students/data/primary/english.js');
 require('../../students/data/lower-secondary/english.js');
+require('../../students/data/upper-secondary/english-language.js');
 
 test('content loads and passes validation', () => {
   const result = core.validateTracks(global.window.LEARN_TRACKS);
   assert.deepEqual(result.errors, []);
   assert.equal(result.stats.tracks, 3);
-  assert.equal(result.stats.subjects, 5);
-  assert.equal(result.stats.modules, 10);
-  assert.equal(result.stats.lessons, 30);
-  assert.equal(result.stats.questions, 90);
+  assert.equal(result.stats.subjects, 6);
+  assert.equal(result.stats.modules, 12);
+  assert.equal(result.stats.lessons, 36);
+  assert.equal(result.stats.questions, 108);
 });
 
 test('every track starts at Module 1, Lesson 1 with a playable lesson', () => {
@@ -94,7 +95,8 @@ test('english subjects have two modules of three lessons', () => {
   const index = core.createIndex(global.window.LEARN_TRACKS);
   const entries = [
     ['primary', 'english'],
-    ['lower-secondary', 'english']
+    ['lower-secondary', 'english'],
+    ['upper-secondary', 'english-language']
   ];
   entries.forEach(([trackId, subjectId]) => {
     const subject = core.getSubject(index, trackId, subjectId);

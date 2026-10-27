@@ -624,6 +624,10 @@ window.LEARN_TRACKS = {
             ]
           }]
         }]
+      }, {
+        id: 'english-language',
+        label: 'English Language',
+        description: 'Close reading, analysis, comparison, and purposeful writing.'
       }]
     }
   ]
