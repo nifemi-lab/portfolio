@@ -453,6 +453,167 @@ window.LEARN_TRACKS = {
               { type: 'multiple_choice', question: 'Which percentage equals 0.6?', options: ['6%', '60%', '600%'], answer: 1, why: '0.6 is 60 hundredths, which is 60%.' },
               { type: 'multiple_choice', question: 'What is one half as a percentage?', options: ['12%', '50%', '100%'], answer: 1, why: 'One half is 0.5, and 0.5 is 50%.' }
             ]
+          }, {
+            id: 'upper-secondary-maths-m1-l2',
+            order: 2,
+            title: 'Percentage Change',
+            objective: 'I can calculate percentage change and apply a percentage increase or decrease.',
+            minutes: 9,
+            recap: 'You calculated percentage change and applied increases and decreases.',
+            blocks: [
+              { type: 'text', body: 'Percentage change compares the size of a change with the original amount.' },
+              { type: 'text', body: 'Subtract the original value from the new value, divide by the original, then multiply by 100.' },
+              { type: 'text', body: 'For an increase, add the change. For a decrease, subtract it.' },
+              { type: 'text', body: 'A multiplier does the same job in one step. An increase of 10% uses 1.1.' },
+              { type: 'tip', body: 'Always divide by the original value, not the new one.' },
+              {
+                type: 'illustration',
+                alt: 'Two bars: an original amount of 20 and a taller new amount of 25, with the change labelled 5.',
+                image: 'assets/3d/chart-increasing-3d.png',
+                placeholder: 'Bar chart: original 20, new 25, change 5.'
+              },
+              { type: 'example', steps: ['A price rises from 20 to 25.', 'The change is 25 - 20 = 5.', 'Divide by 20: 5 ÷ 20 = 0.25.', 'Multiply by 100 to get 25%.'] }
+            ],
+            vocabulary: [
+              { word: 'percentage change', meaning: 'The change written as a percentage of the original.', example: 'The change from 20 to 25 is 25%.' },
+              { word: 'original', meaning: 'The starting amount before a change.', example: 'The original price was 20.' },
+              { word: 'multiplier', meaning: 'A number that scales an amount in one step.', example: 'For a 10% increase, use 1.1.' }
+            ],
+            quiz: [
+              { type: 'multiple_choice', question: 'A price rises from 20 to 25. What is the percentage increase?', options: ['5%', '20%', '25%'], answer: 2, why: 'The change is 5. Then 5 ÷ 20 × 100 = 25%.' },
+              { type: 'multiple_choice', question: 'A price falls from 80 to 60. What is the percentage decrease?', options: ['20%', '25%', '33%'], answer: 1, why: 'The change is 20. Then 20 ÷ 80 × 100 = 25%.' },
+              { type: 'multiple_choice', question: 'Increase 50 by 10%. What is the new amount?', options: ['55', '60', '65'], answer: 0, why: '10% of 50 is 5, and 50 + 5 = 55.' }
+            ]
+          }, {
+            id: 'upper-secondary-maths-m1-l3',
+            order: 3,
+            title: 'Ratio and Proportion',
+            objective: 'I can share an amount in a given ratio.',
+            minutes: 9,
+            recap: 'You shared amounts in a ratio by finding the value of one part.',
+            blocks: [
+              { type: 'text', body: 'A ratio compares parts of a whole. The ratio 1:3 means one part to three parts.' },
+              { type: 'text', body: 'Add the parts to find the total number of equal parts.' },
+              { type: 'text', body: 'Divide the amount by the total parts to find the value of one part.' },
+              { type: 'text', body: 'Multiply the value of one part by each ratio number.' },
+              { type: 'tip', body: 'Check that the shared amounts add back to the original total.' },
+              {
+                type: 'illustration',
+                alt: 'A bar split into four equal parts, labelled one part and three parts.',
+                image: 'assets/3d/chocolate-bar-3d.png',
+                placeholder: 'Bar split into four equal parts: 1 part and 3 parts.'
+              },
+              { type: 'example', steps: ['Share 40 in the ratio 1:3.', 'There are 4 parts in total.', 'One part is 40 ÷ 4 = 10.', 'The shares are 10 and 30.'] }
+            ],
+            vocabulary: [
+              { word: 'ratio', meaning: 'A comparison of two or more amounts.', example: 'The ratio 1:3 has two parts.' },
+              { word: 'proportion', meaning: 'A share of a whole in a given ratio.', example: 'Her proportion is 1 part in 4.' },
+              { word: 'share', meaning: 'One part of a divided amount.', example: 'The larger share is 30.' }
+            ],
+            quiz: [
+              { type: 'multiple_choice', question: 'Share 40 in the ratio 1:3. What is the larger share?', options: ['10', '30', '39'], answer: 1, why: 'There are 4 parts, so one part is 10. Three parts are 30.' },
+              { type: 'multiple_choice', question: 'Share 24 in the ratio 2:1. What is the smaller share?', options: ['8', '12', '16'], answer: 0, why: 'There are 3 parts, so one part is 8. The smaller share is 8.' },
+              { type: 'multiple_choice', question: 'Share 50 in the ratio 2:3. What is the smaller share?', options: ['20', '25', '30'], answer: 0, why: 'There are 5 parts, so one part is 10. Two parts are 20.' }
+            ]
+          }]
+        }, {
+          id: 'm2',
+          order: 2,
+          title: 'Algebra',
+          description: 'Simplify expressions, solve linear equations, and rearrange formulae.',
+          lessons: [{
+            id: 'upper-secondary-maths-m2-l1',
+            order: 1,
+            title: 'Simplifying Expressions',
+            objective: 'I can simplify algebraic expressions by collecting like terms.',
+            minutes: 8,
+            recap: 'You simplified expressions by collecting like terms.',
+            blocks: [
+              { type: 'text', body: 'Like terms have the same letter, raised to the same power.' },
+              { type: 'text', body: 'Collect like terms by adding or subtracting their numbers, called coefficients.' },
+              { type: 'text', body: 'Keep the letter the same. 4a and 3a combine to make 7a.' },
+              { type: 'text', body: 'A number on its own is a constant term. It only combines with other constants.' },
+              { type: 'tip', body: 'Take the sign in front of a term with that term when you move it.' },
+              {
+                type: 'illustration',
+                alt: 'Three a tiles and four a tiles grouped together to make seven a tiles.',
+                image: 'assets/3d/coin-3d.png',
+                placeholder: 'Tile diagram: 4a plus 3a grouped into 7a.'
+              },
+              { type: 'example', steps: ['Simplify 5x + 2 - 3x.', '5x - 3x = 2x.', 'The constant is 2.', 'The simplified expression is 2x + 2.'] }
+            ],
+            vocabulary: [
+              { word: 'like terms', meaning: 'Terms with the same letter and power.', example: '4a and 3a are like terms.' },
+              { word: 'coefficient', meaning: 'The number in front of a letter.', example: 'In 5x, the coefficient is 5.' },
+              { word: 'constant', meaning: 'A term with no letter.', example: 'In 2x + 3, the constant is 3.' }
+            ],
+            quiz: [
+              { type: 'multiple_choice', question: 'Simplify 4a + 3a.', options: ['7a', '7', '12a'], answer: 0, why: '4a and 3a are like terms, so they add to 7a.' },
+              { type: 'multiple_choice', question: 'Simplify 5x + 2 - 3x.', options: ['2x + 2', '2x - 2', '8x + 2'], answer: 0, why: '5x - 3x = 2x. The constant 2 stays, giving 2x + 2.' },
+              { type: 'multiple_choice', question: 'Simplify 2y + 3 + 4y + 1.', options: ['6y + 4', '6y + 3', '7y + 4'], answer: 0, why: '2y + 4y = 6y and 3 + 1 = 4, so 6y + 4.' }
+            ]
+          }, {
+            id: 'upper-secondary-maths-m2-l2',
+            order: 2,
+            title: 'Solving Linear Equations',
+            objective: 'I can solve a two-step linear equation.',
+            minutes: 9,
+            recap: 'You solved two-step equations by undoing operations in reverse order.',
+            blocks: [
+              { type: 'text', body: 'A linear equation has a letter with no power higher than one.' },
+              { type: 'text', body: 'Undo the operations in reverse order: deal with addition or subtraction first.' },
+              { type: 'text', body: 'Then divide by the coefficient to leave the letter on its own.' },
+              { type: 'text', body: 'Whatever you do to one side, do to the other side as well.' },
+              { type: 'tip', body: 'Substitute your answer back in to check both sides are equal.' },
+              {
+                type: 'illustration',
+                alt: 'A balance scale with 2x + 5 on one side and 13 on the other.',
+                image: 'assets/3d/balance-scale-3d.png',
+                placeholder: 'Balance scale: 2x + 5 balances 13.'
+              },
+              { type: 'example', steps: ['Solve 2x + 5 = 13.', 'Subtract 5: 2x = 8.', 'Divide by 2: x = 4.'] }
+            ],
+            vocabulary: [
+              { word: 'linear', meaning: 'A straight-line relationship where the letter has power one.', example: '2x + 5 = 13 is linear.' },
+              { word: 'coefficient', meaning: 'The number multiplying the letter.', example: 'In 2x, the coefficient is 2.' },
+              { word: 'solution', meaning: 'The value that makes the equation true.', example: 'The solution is x = 4.' }
+            ],
+            quiz: [
+              { type: 'multiple_choice', question: 'Solve 2x + 5 = 13.', options: ['3', '4', '9'], answer: 1, why: 'Subtract 5 to get 2x = 8, then divide by 2. x = 4.' },
+              { type: 'multiple_choice', question: 'Solve 3x - 4 = 11.', options: ['3', '5', '7'], answer: 1, why: 'Add 4 to get 3x = 15, then divide by 3. x = 5.' },
+              { type: 'multiple_choice', question: 'Solve 4x + 2 = 18.', options: ['4', '5', '6'], answer: 0, why: 'Subtract 2 to get 4x = 16, then divide by 4. x = 4.' }
+            ]
+          }, {
+            id: 'upper-secondary-maths-m2-l3',
+            order: 3,
+            title: 'Rearranging Formulae',
+            objective: 'I can rearrange a formula to make a different letter the subject.',
+            minutes: 9,
+            recap: 'You rearranged formulae by undoing operations in reverse order.',
+            blocks: [
+              { type: 'text', body: 'The subject of a formula is the letter on its own, usually on the left.' },
+              { type: 'text', body: 'Rearranging means changing the formula without changing its meaning.' },
+              { type: 'text', body: 'Undo operations in reverse order, doing the same to both sides.' },
+              { type: 'text', body: 'For y = 2x + 1, subtract 1 first, then divide by 2.' },
+              { type: 'tip', body: 'Keep the letter you want on one side and move everything else away.' },
+              {
+                type: 'illustration',
+                alt: 'A flow diagram from x to 2x to 2x + 1, reversing to y minus 1 divided by 2.',
+                image: 'assets/3d/counterclockwise-arrows-button-3d.png',
+                placeholder: 'Flow diagram: y = 2x + 1, reversed to x = (y - 1) ÷ 2.'
+              },
+              { type: 'example', steps: ['Make x the subject of y = 4x.', 'Divide both sides by 4.', 'x = y ÷ 4.'] }
+            ],
+            vocabulary: [
+              { word: 'subject', meaning: 'The letter that appears alone in a formula.', example: 'In y = 4x, y is the subject.' },
+              { word: 'formula', meaning: 'A rule written with letters and numbers.', example: 'y = 2x + 1 is a formula.' },
+              { word: 'rearrange', meaning: 'Change the form of a formula.', example: 'Rearrange y = 4x to get x = y ÷ 4.' }
+            ],
+            quiz: [
+              { type: 'multiple_choice', question: 'Make x the subject of y = x + 5.', options: ['x = y + 5', 'x = y - 5', 'x = 5 - y'], answer: 1, why: 'Subtract 5 from both sides to get x = y - 5.' },
+              { type: 'multiple_choice', question: 'Make x the subject of y = 4x.', options: ['x = 4y', 'x = y ÷ 4', 'x = y - 4'], answer: 1, why: 'Divide both sides by 4 to get x = y ÷ 4.' },
+              { type: 'multiple_choice', question: 'Make x the subject of y = 2x + 1.', options: ['x = (y - 1) ÷ 2', 'x = (y + 1) ÷ 2', 'x = 2y - 1'], answer: 0, why: 'Subtract 1, then divide by 2, giving x = (y - 1) ÷ 2.' }
+            ]
           }]
         }]
       }]

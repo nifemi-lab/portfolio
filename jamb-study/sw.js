@@ -5,7 +5,7 @@
    offline (including on a flaky campus connection).
    ========================================================= */
 
-const CACHE = 'jamb-study-v13';
+const CACHE = 'jamb-study-v14';
 
 const ASSETS = [
   './',
@@ -72,6 +72,20 @@ const ASSETS = [
   './students/assets/3d/abacus-3d.png',
   './students/assets/3d/thermometer-3d.png',
   './students/assets/3d/pizza-3d.png',
+  './students/assets/3d/input-numbers-3d.png',
+  './students/assets/3d/straight-ruler-3d.png',
+  './students/assets/3d/plus-3d.png',
+  './students/assets/3d/minus-3d.png',
+  './students/assets/3d/red-apple-3d.png',
+  './students/assets/3d/brain-3d.png',
+  './students/assets/3d/brick-3d.png',
+  './students/assets/3d/input-latin-letters-3d.png',
+  './students/assets/3d/puzzle-piece-3d.png',
+  './students/assets/3d/balance-scale-3d.png',
+  './students/assets/3d/chart-increasing-3d.png',
+  './students/assets/3d/chocolate-bar-3d.png',
+  './students/assets/3d/coin-3d.png',
+  './students/assets/3d/counterclockwise-arrows-button-3d.png',
   './manifest.webmanifest',
   './icon.svg'
 ];
