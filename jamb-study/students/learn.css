@@ -222,7 +222,22 @@
   text-decoration: none;
 }
 
-.learn-app .subject-card { max-width: 620px; }
+.learn-app .subject-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.learn-app .subject-grid .subject-card {
+  max-width: none;
+  height: 100%;
+}
+
+.learn-app .subject-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
 .learn-app .subject-card:hover,
 .learn-app .module-card:hover { border-color: var(--learn-accent); }
 

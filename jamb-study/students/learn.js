@@ -113,6 +113,18 @@
     return { total: lessons.length, done };
   }
 
+  function trackProgress(track) {
+    let done = 0;
+    let total = 0;
+    track.subjects.forEach((subject) => {
+      if (!subject.modules || !subject.modules.length) return;
+      const progress = subjectProgress(track.id, subject.id);
+      done += progress.done;
+      total += progress.total;
+    });
+    return { done, total };
+  }
+
   function lessonStatus(lesson) {
     const entry = state.progress.lessons[lesson.id];
     if (core.isCompleted(entry)) {
@@ -138,10 +150,11 @@
 
     const grid = el('div', { className: 'track-grid' });
     index.tracks.forEach((track) => {
-      const subject = track.subjects[0];
-      const progress = subject
-        ? subjectProgress(track.id, subject.id)
-        : { total: 0, done: 0 };
+      const progress = trackProgress(track);
+      const subjectCount = track.subjects.filter(
+        (subject) => subject.modules && subject.modules.length).length;
+      const subjectText = subjectCount === 1
+        ? '1 subject' : subjectCount + ' subjects';
       const card = el('a', {
         className: 'track-card',
         attrs: { href: core.buildHash([track.id]), 'data-track': track.id }
@@ -151,7 +164,8 @@
         el('p', { className: 'learn-muted', text: track.tone }),
         el('p', { className: 'track-meta' }, [
           el('span', { text: 'Ages ' + track.ages }),
-          el('span', { text: track.usEquivalent })
+          el('span', { text: track.usEquivalent }),
+          el('span', { text: subjectText })
         ]),
         el('p', {
           className: 'track-progress',
@@ -167,10 +181,22 @@
     }));
   }
 
-  function renderSubject(main, track) {
-    const subject = track.subjects[0];
-    if (!subject) return renderNotFound(main);
-    const progress = subjectProgress(track.id, subject.id);
+  function subjectImage(subject) {
+    const lessons = subject.modules
+      .slice().sort((a, b) => a.order - b.order)
+      .reduce((all, mod) => all.concat(mod.lessons || []), []);
+    for (let i = 0; i < lessons.length; i += 1) {
+      const art = (lessons[i].blocks || []).find(
+        (block) => block.type === 'illustration' && block.image);
+      if (art) return art.image;
+    }
+    return '';
+  }
+
+  function renderTrack(main, track) {
+    const subjects = track.subjects.filter(
+      (subject) => subject.modules && subject.modules.length);
+    if (!subjects.length) return renderNotFound(main);
 
     main.appendChild(el('a', {
       className: 'learn-backline',
@@ -181,21 +207,40 @@
     main.appendChild(el('section', { className: 'learn-hero' }, [
       el('p', { className: 'learn-eyebrow', text: track.stage }),
       el('h1', { text: track.label }),
-      el('p', { className: 'learn-lede', text: track.tone + ' Choose a subject to begin.' })
+      el('p', {
+        className: 'learn-lede',
+        text: track.tone + ' Choose a subject to begin.'
+      })
     ]));
 
-    main.appendChild(el('a', {
-      className: 'subject-card',
-      attrs: { href: core.buildHash([track.id, subject.id]) }
-    }, [
-      el('h2', { text: subject.label }),
-      el('p', { className: 'learn-muted', text: 'Start at Module 1 and work through one lesson at a time.' }),
-      el('p', {
-        className: 'learn-count',
-        text: progress.done + ' of ' + progress.total + ' lessons complete'
-      }),
-      el('span', { className: 'learn-cta', text: 'Open modules' })
-    ]));
+    const grid = el('div', { className: 'subject-grid' });
+    subjects.forEach((subject) => {
+      const progress = subjectProgress(track.id, subject.id);
+      const image = subjectImage(subject);
+      grid.appendChild(el('a', {
+        className: 'subject-card',
+        attrs: {
+          href: core.buildHash([track.id, subject.id]),
+          'data-subject': subject.id
+        }
+      }, [
+        image ? el('img', {
+          className: 'subject-thumb',
+          attrs: { src: image, alt: '', width: 56, height: 56, loading: 'lazy' }
+        }) : null,
+        el('h2', { text: subject.label }),
+        el('p', {
+          className: 'learn-muted',
+          text: subject.description || 'Six short lessons, one step at a time.'
+        }),
+        el('p', {
+          className: 'learn-count',
+          text: progress.done + ' of ' + progress.total + ' lessons complete'
+        }),
+        el('span', { className: 'learn-cta', text: 'Open modules' })
+      ]));
+    });
+    main.appendChild(grid);
 
     main.appendChild(el('div', { className: 'learn-how' }, [
       el('p', { text: 'How this works: finish a lesson to unlock the next one. You can retry any quiz.' })
@@ -1579,7 +1624,7 @@
       case 'track': {
         const track = core.getTrack(index, parsed.trackId);
         if (!track) renderNotFound(app);
-        else renderSubject(app, track);
+        else renderTrack(app, track);
         break;
       }
       case 'subject':
