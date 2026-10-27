@@ -799,3 +799,72 @@ html[data-theme="light"] .learn-app .learn-status.is-in-progress { color: #92400
   background: #b91c1c;
   color: #ffffff;
 }
+
+.learn-app .learn-prose {
+  max-width: 720px;
+  margin-inline: auto;
+  padding-block: 32px 64px;
+  line-height: 1.7;
+}
+
+.learn-app .learn-prose h1 {
+  margin: 4px 0 12px;
+  font-size: clamp(1.8rem, 1.4rem + 1.6vw, 2.4rem);
+  line-height: 1.2;
+}
+
+.learn-app .learn-prose h2 {
+  margin: 32px 0 8px;
+  font-size: 1.15rem;
+}
+
+.learn-app .learn-prose p,
+.learn-app .learn-prose li {
+  max-width: 62ch;
+}
+
+.learn-app .learn-prose ul,
+.learn-app .learn-prose ol {
+  padding-left: 22px;
+  display: grid;
+  gap: 8px;
+}
+
+.learn-app .learn-prose a {
+  color: var(--learn-accent);
+  text-underline-offset: 3px;
+}
+
+.learn-app .learn-prose a:focus-visible {
+  outline: 2px solid var(--learn-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.learn-app .learn-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.learn-app .learn-footer-link {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-underline-offset: 3px;
+}
+
+.learn-app .learn-footer-link:hover { color: var(--text); }
+
+.learn-app .learn-inline-link {
+  color: var(--learn-accent);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.learn-app .learn-inline-link:focus-visible {
+  outline: 2px solid var(--learn-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}

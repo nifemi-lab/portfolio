@@ -81,6 +81,38 @@ Vanilla HTML/CSS/JS — no build step, no framework, no npm.
 
 ---
 
+## LearnStack
+
+`students/` is LearnStack: a calm, local-first learning section for a younger
+or international student. It starts at Module 1, Lesson 1 and unlocks one
+lesson at a time.
+
+- Three tracks: Primary (Key Stage 1–2), Lower Secondary (Key Stage 3), and
+  Upper Secondary (GCSE Foundation Maths & Science).
+- Mathematics first: 2 modules × 3 lessons per track.
+- No account, no name, no email. Progress is saved in this browser, then
+  optionally synced to the `learn_progress` table.
+- The section is separate from the exam tracker: separate storage keys,
+  separate anonymous session, separate table.
+- LearnStack contains no JAMB, UTME, WAEC, or NECO content, and no exam-board
+  branding.
+
+Run it locally:
+
+```bash
+python -m http.server 8000
+# then open http://localhost:8000/students/
+```
+
+Validate the lesson content before committing:
+
+```bash
+node tools/check-learn-data.js
+node --test "tests/learn/*.test.js"
+```
+
+---
+
 ## How your data is stored
 
 There are two modes, and the app picks automatically:

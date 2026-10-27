@@ -1376,6 +1376,22 @@
       })
     ]));
 
+    grid.appendChild(el('section', { className: 'settings-card' }, [
+      el('h2', { text: 'Privacy' }),
+      el('p', {
+        className: 'lesson-muted',
+        text: 'LearnStack saves lesson progress and scores. It does not ask for a name, ' +
+          'email, age, or school. You can delete everything at any time.'
+      }),
+      el('p', {}, [
+        el('a', {
+          className: 'learn-inline-link',
+          attrs: { href: 'privacy.html' },
+          text: 'Read the full privacy note'
+        })
+      ])
+    ]));
+
     const status = el('p', {
       className: 'settings-status',
       attrs: { role: 'status', 'aria-live': 'polite' }

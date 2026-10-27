@@ -5,7 +5,7 @@
    offline (including on a flaky campus connection).
    ========================================================= */
 
-const CACHE = 'jamb-study-v11';
+const CACHE = 'jamb-study-v12';
 
 const ASSETS = [
   './',
@@ -61,6 +61,14 @@ const ASSETS = [
   './js/notes-agricultural-science.js',
   './js/notes-principles-of-accounts.js',
   './js/config.js',
+  './students/',
+  './students/index.html',
+  './students/privacy.html',
+  './students/learn.css',
+  './students/core.js',
+  './students/cloud.js',
+  './students/learn.js',
+  './students/data/tracks.js',
   './manifest.webmanifest',
   './icon.svg'
 ];
@@ -95,10 +103,13 @@ self.addEventListener('fetch', (event) => {
         }
         return res;
       })
-      .catch(() =>
-        caches.match(req, { ignoreSearch: true }).then((hit) =>
-          hit || (req.mode === 'navigate' ? caches.match('./index.html') : Promise.reject(new Error('offline')))
-        )
-      )
+      .catch(() => {
+        const isLearn = new URL(req.url).pathname.indexOf('/students/') !== -1;
+        return caches.match(req, { ignoreSearch: true }).then((hit) => {
+          if (hit) return hit;
+          if (req.mode !== 'navigate') throw new Error('offline');
+          return caches.match(isLearn ? './students/index.html' : './index.html');
+        });
+      })
   );
 });

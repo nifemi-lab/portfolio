@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy — LearnStack</title>
+  <meta name="description" content="What LearnStack saves, what it does not save, and how to delete it." />
+  <meta name="theme-color" content="#0a0c11" />
+  <link rel="stylesheet" href="../css/app.css" />
+  <link rel="stylesheet" href="learn.css" />
+</head>
+<body class="learn-app">
+  <a class="skip-link" href="#privacyMain">Skip to content</a>
+
+  <header class="learn-header">
+    <div class="learn-wrap learn-header-inner">
+      <a class="learn-brand" href="index.html#/">LearnStack</a>
+      <nav class="learn-nav" aria-label="LearnStack">
+        <a class="learn-chip" href="index.html#/review">Review</a>
+        <a class="learn-chip" href="index.html#/settings">Settings</a>
+        <a class="learn-chip" href="../index.html">Back to study tracker</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="privacyMain" class="learn-wrap learn-main">
+    <article class="learn-prose">
+      <p class="learn-eyebrow">Privacy</p>
+      <h1>How LearnStack looks after your data</h1>
+      <p class="learn-lede">
+        LearnStack needs to remember where you got to. It does not need to know
+        who you are. This page explains exactly what is saved.
+      </p>
+
+      <h2>What is saved</h2>
+      <ul>
+        <li>Which lessons you have started and finished.</li>
+        <li>Your best quiz score and how many times you tried.</li>
+        <li>The date of your next review for a finished lesson.</li>
+        <li>Your display settings: theme, easy-read mode, and an optional nickname.</li>
+        <li>Whether you felt ready before a quiz. This is private, it is not a score, and no one else sees it.</li>
+      </ul>
+
+      <h2>What is not saved</h2>
+      <ul>
+        <li>Your name, email address, age, school, or home town.</li>
+        <li>Photos, voice recordings, or free text. There is no chat and nowhere to type a message.</li>
+        <li>Advertising identifiers or third-party analytics. There are no ads and no trackers.</li>
+        <li>Your answers to the tracker's practice questions. LearnStack keeps its own separate data.</li>
+      </ul>
+
+      <h2>Where it is saved</h2>
+      <p>
+        First, in this browser on this device. If the adult who set it up turned on
+        saving to the cloud, a copy is also kept in a private database row that only
+        this browser can read. That row has no name and no email attached to it.
+      </p>
+
+      <h2>Who can see it</h2>
+      <p>
+        You, on this device. Nobody else has a learner account, a class list, or a
+        dashboard showing your scores. LearnStack has no leaderboard and no public
+        profile.
+      </p>
+
+      <h2>How to delete it</h2>
+      <ol>
+        <li>Open <a href="index.html#/settings">Settings</a>.</li>
+        <li>Choose <strong>Delete my LearnStack data</strong>.</li>
+        <li>Read the confirmation, then confirm.</li>
+      </ol>
+      <p>
+        This removes your progress, scores, review dates, nickname, and display
+        settings from this browser. If a cloud copy exists, it is removed too. If you
+        are offline at the time, the cloud copy is removed the next time you are
+        online. Deletion cannot be undone.
+      </p>
+
+      <h2>If something worries you</h2>
+      <p>
+        Speak to the adult who set up LearnStack for you. This page does not collect
+        a contact address, and there is no public form to fill in.
+      </p>
+
+      <p class="lesson-muted">
+        LearnStack is a learning aid. It is not an exam board and does not give
+        certificates or official results.
+      </p>
+    </article>
+  </main>
+
+  <footer class="learn-footer">
+    <div class="learn-wrap">
+      <p>LearnStack · Learn one step at a time.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var theme = 'system';
+      var easy = false;
+      try {
+        var raw = JSON.parse(localStorage.getItem('learnstack.v1.settings') || '{}');
+        if (raw.theme === 'light' || raw.theme === 'dark') theme = raw.theme;
+        easy = !!raw.easyRead;
+      } catch (error) { /* a broken value must not block the page */ }
+      if (theme === 'system') {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
+          ? 'light'
+          : 'dark';
+      }
+      document.documentElement.dataset.theme = theme;
+      document.body.classList.toggle('is-easy-read', easy);
+    }());
+  </script>
+</body>
+</html>
