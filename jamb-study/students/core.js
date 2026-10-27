@@ -449,7 +449,7 @@
 
           mod.lessons.forEach((lesson, li) => {
             const lp = mp + '.lessons[' + li + ']';
-            validateLesson(errors, stats, lp, lesson, track.id, lessonIds);
+            validateLesson(errors, stats, lp, lesson, track.id, subject.id, lessonIds);
           });
 
           const lessonOrders = mod.lessons.map(l => l && l.order);
@@ -466,7 +466,7 @@
     return { errors, stats };
   }
 
-  function validateLesson(errors, stats, path, lesson, trackId, lessonIds) {
+  function validateLesson(errors, stats, path, lesson, trackId, subjectId, lessonIds) {
     stats.lessons += 1;
     if (!lesson || typeof lesson !== 'object') {
       return pushError(errors, path, 'must be an object');
@@ -475,7 +475,7 @@
     else {
       if (lessonIds.has(lesson.id)) pushError(errors, path, 'duplicate lesson id ' + lesson.id);
       lessonIds.add(lesson.id);
-      const pattern = new RegExp('^' + trackId + '-maths-m\\d+-l\\d+$');
+      const pattern = new RegExp('^' + trackId + '-' + subjectId + '-m\\d+-l\\d+$');
       if (!pattern.test(lesson.id)) pushError(errors, path + '.id', 'has an invalid lesson id format');
     }
     validateString(errors, path + '.title', lesson.title, 12, true);

@@ -398,3 +398,14 @@ test('parseHash recognises a review lesson deep link', () => {
   assert.equal(route.kind, 'review-lesson');
   assert.equal(route.lessonId, 'primary-maths-m1-l1');
 });
+
+test('validateTracks accepts lesson ids for subjects other than maths', () => {
+  const data = validData();
+  const subject = data.tracks[0].subjects[0];
+  subject.id = 'english-language';
+  subject.label = 'English Language';
+  subject.modules[0].lessons[0].id = 'primary-english-language-m1-l1';
+
+  const result = core.validateTracks(data);
+  assert.deepEqual(result.errors, []);
+});
