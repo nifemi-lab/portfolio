@@ -730,7 +730,38 @@
     holder.appendChild(startButton);
   }
 
+  function speechSupported() {
+    return typeof window.speechSynthesis === 'object' &&
+      typeof window.SpeechSynthesisUtterance === 'function';
+  }
+
+  function readAloudText(step, lesson) {
+    if (step.kind === 'objective') return lesson.title + '. ' + lesson.objective;
+    if (step.kind === 'vocabulary') {
+      return 'Words to know. ' + lesson.vocabulary.map((word) =>
+        word.word + '. ' + word.meaning + '. For example: ' + word.example
+      ).join(' ');
+    }
+    if (step.kind === 'block') return step.block.body;
+    if (step.kind === 'illustration') return step.block.alt;
+    if (step.kind === 'example') return 'Worked example. ' + step.block.steps.join(' ');
+    if (step.kind === 'recap') return 'Recap. ' + lesson.recap;
+    return 'How ready do you feel? Choose ready, a bit unsure, or not yet.';
+  }
+
+  function speakStep(step, lesson, button) {
+    window.speechSynthesis.cancel();
+    const utterance = new window.SpeechSynthesisUtterance(readAloudText(step, lesson));
+    utterance.lang = 'en-GB';
+    utterance.rate = 0.92;
+    utterance.onend = () => { button.textContent = 'Read aloud'; };
+    utterance.onerror = () => { button.textContent = 'Read aloud'; };
+    button.textContent = 'Stop reading';
+    window.speechSynthesis.speak(utterance);
+  }
+
   function renderStep(focus) {
+    if (speechSupported()) window.speechSynthesis.cancel();
     const holder = document.getElementById('lessonStep');
     if (!holder || !state.lesson) return;
 
@@ -743,6 +774,23 @@
     const heading = el('h1', { text: stepHeading(step, lesson) });
     holder.appendChild(heading);
     renderStepBody(step, lesson, holder);
+
+    if (speechSupported()) {
+      const speak = el('button', {
+        className: 'lesson-speak',
+        attrs: { type: 'button' },
+        text: 'Read aloud'
+      });
+      speak.addEventListener('click', () => {
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          speak.textContent = 'Read aloud';
+          return;
+        }
+        speakStep(step, lesson, speak);
+      });
+      holder.appendChild(speak);
+    }
 
     const count = document.getElementById('stepCount');
     if (count) {
@@ -1483,6 +1531,35 @@
     ]));
   }
 
+  const BREAK_AFTER_MS = 15 * 60 * 1000;
+  let breakNudgeShown = false;
+
+  function showBreakNudge() {
+    if (breakNudgeShown) return;
+    const main = document.getElementById('learnMain');
+    if (!main || main.querySelector('.break-nudge')) return;
+    breakNudgeShown = true;
+
+    const dismiss = el('button', {
+      className: 'learn-btn is-ghost',
+      attrs: { type: 'button' },
+      text: 'Keep learning'
+    });
+    const box = el('div', { className: 'break-nudge' }, [
+      el('p', {
+        text: 'Good stopping point. Your progress is saved.'
+      }),
+      dismiss
+    ]);
+    dismiss.addEventListener('click', () => {
+      box.remove();
+      announce('Break reminder dismissed.');
+    });
+
+    main.insertBefore(box, main.firstChild);
+    announce('Good stopping point. Your progress is saved.');
+  }
+
   function route() {
     const app = document.getElementById('app');
     const main = document.getElementById('learnMain');
@@ -1571,6 +1648,15 @@
     else if (query.addListener) query.addListener(onChange);
   }
 
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest && event.target.closest('a[href="#learnMain"]');
+    if (!link) return;
+    // The hash router would read #learnMain as a page, so focus directly instead.
+    event.preventDefault();
+    const target = document.getElementById('learnMain');
+    if (target) target.focus();
+  });
+
   window.addEventListener('hashchange', route);
 
   window.addEventListener('online', () => {
@@ -1583,4 +1669,5 @@
   applyDisplaySettings();
   route();
   initSync();
+  window.setTimeout(showBreakNudge, BREAK_AFTER_MS);
 })();
