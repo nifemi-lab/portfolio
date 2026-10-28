@@ -3,10 +3,9 @@ window.LEARN_TRACKS = {
   tracks: [
     {
       id: 'primary',
-      label: 'Primary',
+      label: 'Primary School',
       stage: 'UK Key Stage 1–2',
       ages: '5–11',
-      usEquivalent: 'Elementary',
       tone: 'Warm, concrete, guided',
       subjects: [{
         id: 'maths',
@@ -244,10 +243,9 @@ window.LEARN_TRACKS = {
     },
     {
       id: 'lower-secondary',
-      label: 'Lower Secondary',
+      label: 'Secondary School',
       stage: 'UK Key Stage 3 · Years 7–9',
       ages: '11–14',
-      usEquivalent: 'Middle School',
       tone: 'Calm, direct, respectful',
       subjects: [{
         id: 'maths',
@@ -497,10 +495,9 @@ window.LEARN_TRACKS = {
     },
     {
       id: 'upper-secondary',
-      label: 'Upper Secondary',
+      label: 'Senior School',
       stage: 'GCSE Foundation',
       ages: '14–16',
-      usEquivalent: 'High School (grades 9–10)',
       tone: 'Focused, encouraging, no hype',
       subjects: [{
         id: 'maths',

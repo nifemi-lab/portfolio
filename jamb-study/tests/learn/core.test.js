@@ -20,8 +20,8 @@ const lesson = (id, order, title) => ({
 const fixture = {
   version: 1,
   tracks: [{
-    id: 'primary', label: 'Primary', stage: 'UK Key Stage 1–2',
-    ages: '5–11', usEquivalent: 'Elementary', tone: 'Warm',
+    id: 'primary', label: 'Primary School', stage: 'UK Key Stage 1–2',
+    ages: '5–11', tone: 'Warm',
     subjects: [{
       id: 'maths', label: 'Mathematics',
       modules: [
@@ -40,7 +40,7 @@ const fixture = {
 
 test('createIndex and lookups find nested content', () => {
   const index = core.createIndex(fixture);
-  assert.equal(core.getTrack(index, 'primary').label, 'Primary');
+  assert.equal(core.getTrack(index, 'primary').label, 'Primary School');
   assert.equal(core.getSubject(index, 'primary', 'maths').label, 'Mathematics');
   assert.equal(core.getModule(index, 'primary', 'maths', 'm2').title, 'Two');
   assert.equal(core.getLesson(index, 'primary-maths-m2-l1').title, 'C');
@@ -317,8 +317,8 @@ const validLesson = () => ({
 const validData = () => ({
   version: 1,
   tracks: [{
-    id: 'primary', label: 'Primary', stage: 'UK Key Stage 1–2',
-    ages: '5–11', usEquivalent: 'Elementary', tone: 'Warm, concrete, guided',
+    id: 'primary', label: 'Primary School', stage: 'UK Key Stage 1–2',
+    ages: '5–11', tone: 'Warm, concrete, guided',
     subjects: [{
       id: 'maths', label: 'Mathematics',
       modules: [{

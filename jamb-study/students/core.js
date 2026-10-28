@@ -407,7 +407,7 @@
       if (trackIds.has(track.id)) pushError(errors, tp, 'duplicate track id ' + track.id);
       trackIds.add(track.id);
       if (!WORD_LIMITS[track.id]) pushError(errors, tp + '.id', 'is not a supported track id');
-      ['label', 'stage', 'ages', 'usEquivalent', 'tone'].forEach((field) => {
+      ['label', 'stage', 'ages', 'tone'].forEach((field) => {
         validateString(errors, tp + '.' + field, track[field], 0, true);
       });
       if (!Array.isArray(track.subjects) || !track.subjects.length) {

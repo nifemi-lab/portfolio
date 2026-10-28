@@ -164,7 +164,6 @@
         el('p', { className: 'learn-muted', text: track.tone }),
         el('p', { className: 'track-meta' }, [
           el('span', { text: 'Ages ' + track.ages }),
-          el('span', { text: track.usEquivalent }),
           el('span', { text: subjectText })
         ]),
         el('p', {
@@ -177,7 +176,7 @@
     main.appendChild(grid);
     main.appendChild(el('p', {
       className: 'learn-helper',
-      text: 'Not sure where to start? Begin with Primary.'
+      text: 'Not sure where to start? Begin with Primary School.'
     }));
   }
 
